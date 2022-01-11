@@ -1,0 +1,37 @@
+set shortmess=a
+set cmdheight=2
+silent !echo Hello
+set nocompatible
+set background=dark
+hi clear
+syntax on
+hi Normal		ctermbg=Black	ctermfg=DarkGray	guibg=Black	guifg=DarkGray
+hi Comment		term=italic	ctermbg=DarkGrey	ctermfg=Grey	guifg=Grey	guibg=darkGrey
+hi Constant		term=underline	ctermfg=DarkYellow 	guifg=DarkYellow		gui=NONE
+hi Identifier		term=underline	ctermfg=DarkRed  	guifg=DarkRed
+hi Ignore		ctermfg=black	guifg=bg
+hi PreProc		term=underline	ctermfg=DarkGreen  	guifg=Wheat
+hi Search		term=bold	ctermbg=Yellow		guifg=white	guibg=Blue
+hi Special		term=bold	ctermfg=LightRed   	guifg=magenta
+hi Statement		term=italic	ctermfg=Red	  	guifg=#ffff00	gui=NONE
+hi Type					ctermfg=Red		guifg=grey	gui=none
+hi Error		term=reverse   	ctermbg=Red	  	ctermfg=White 	guibg=Red 	guifg=White
+hi Todo			term=italic  	ctermbg=Red		ctermfg=Black 	guifg=Blue 	guibg=DarkRed
+" From the source:
+hi Cursor		ctermbg=Brown	guifg=Orchid		guibg=fg
+hi Directory		term=bold	ctermfg=LightCyan  	guifg=Cyan
+hi ErrorMsg		term=standout	ctermbg=DarkRed	  	ctermfg=White 	guibg=Red	guifg=White
+hi IncSearch		term=reverse	ctermbg=Yellow	  	gui=reverse
+hi LineNr		term=underline	ctermfg=DarkYellow	guifg=DarkYellow
+hi ModeMsg		term=bold	cterm=bold		gui=bold
+hi MoreMsg		term=bold	ctermfg=LightGreen 	gui=bold	guifg=SeaGreen
+hi NonText		term=bold	ctermfg=DarkYellow	gui=bold	guifg=Blue
+hi Question		term=standout  	ctermfg=LightGreen 	gui=bold	guifg=Cyan
+hi SpecialKey		term=bold	ctermfg=DarkRed  	guifg=Cyan
+hi StatusLine		term=bold 	cterm=reverse   	gui=NONE	guifg=White guibg=darkblue
+hi StatusLineNC 	term=reverse   	cterm=reverse	  	gui=NONE	guifg=white guibg=#333333
+hi Title		term=bold	ctermfg=LightMagenta 	gui=bold	guifg=Pink
+hi WarningMsg		term=standout  	ctermfg=LightRed   	guifg=Red
+
+
+
