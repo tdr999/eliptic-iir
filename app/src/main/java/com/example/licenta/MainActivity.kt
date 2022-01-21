@@ -15,7 +15,13 @@ import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import java.nio.charset.Charset
+import java.security.Key
+import java.security.spec.KeySpec
 import java.util.*
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.spec.SecretKeySpec
 
 
 //the punch through ultimate guide to bluetooth was immensely helpful
@@ -46,55 +52,72 @@ class MainActivity : AppCompatActivity() {
                     "Characteristic $uuid changed | value: ${value.toHexString()}"
                 )
                 this@MainActivity.globalRecievedCharacteristicReference += value.toString(Charsets.UTF_8)//we basically add the chcaracteristic
-                //value to our global refernce
-                //we update the displayed value in the app
 
-                //debug purposes la miband
                 var valoareHex = (value.toHexString()).split(" ")
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "01"){
                     Log.i("din on chcarac changesd", "Da dom'le, ne am legat si acuma trimetem auth number")
                     val authNumber = byteArrayOf(0x02, 0x08)
-                    this@MainActivity.globalCharacteristicReference?.setValue(authNumber)
+                    characteristic.setValue(authNumber)
+                    globalGattReference?.writeCharacteristic(globalCharacteristicReference)
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "01"){
                     Log.i("din on chcarac changesd", "Da dom'le, ne am legat si acuma trimetem ENCRYPTEDKEYACUMA number")
-                    //this@MainActivity.globalCharacteristicReference.setValue(authNumber)
+
+                    var tempKey = valoareHex.takeLast(16) // keia primita
+                    Log.i("ult16", "$tempKey\n")
+                    var SECRET_KEY : ByteArray = byteArrayOf(
+                        0x30,
+                        0x31,
+                        0x32,
+                        0x33,
+                        0x34,
+                        0x35,
+                        0x36,
+                        0x37,
+                        0x38,
+                        0x39,
+                        0x40,
+                        0x41,
+                        0x42,
+                        0x43,
+                        0x44,
+                        0x45
+                    ) //de tudor
+                    var generatedSecretKey = SecretKeySpec(SECRET_KEY, "AES")
+                    val crypto : Cipher = Cipher.getInstance("AES/ECB/NoPadding")
+
+
+                    crypto.init(Cipher.ENCRYPT_MODE,generatedSecretKey)
+
+                    var temp = byteArrayOf()
+
+                    for (i in tempKey){
+                        temp = temp + i.toByteArray()
+                        Log.i("din  for", "byte array ${i.toByteArray().toHexString()}")
+                    }
+
+
+                    var finalKey = crypto.doFinal(value.takeLast(16).toByteArray()) //amperecherea
+
+                    Log.i("sex", "${finalKey} \n ")
+                    Log.i("sex", "${(byteArrayOf(0x03, 0x08) + finalKey).toHexString()}")
+
+
+                    globalCharacteristicReference?.setValue(byteArrayOf(0x03, 0x08) + finalKey )
+                    globalGattReference?.writeCharacteristic(globalCharacteristicReference)
+
+
                 }
+                if (valoareHex[0] == "10" && valoareHex[1] == "03" && valoareHex[2] == "01") {
+                    Log.i("if4", "imperecheat succes\n")
 
-
+                }
+                Log.i("carac post", "${valoareHex.take(3)}")
 
             }
 
         }
 
-        override fun onCharacteristicRead(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic,
-            status: Int
-        ) {
-            with(characteristic) {
-                when (status) {
-                    BluetoothGatt.GATT_SUCCESS -> {
-                        Log.i(
-                            "BluetoothGattCallback",
-                            //     "Read characteristic $uuid:\n${value.toString()}"
-                            "Logging from onCharaceristicRead" + value.toString(Charsets.UTF_8)
-                        )
-
-                    }
-
-                    BluetoothGatt.GATT_READ_NOT_PERMITTED -> {
-                        Log.e("BluetoothGattCallback", "Read not permitted for $uuid!")
-                    }
-                    else -> {
-                        Log.e(
-                            "BluetoothGattCallback",
-                            "Characteristic read failed for $uuid, error: $status"
-                        )
-                    }
-                }
-            }
-        }
 
         fun ByteArray.toHexString(): String =
             joinToString(separator = " ", prefix = "") { String.format("%02X", it) }
@@ -152,9 +175,6 @@ class MainActivity : AppCompatActivity() {
 
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            //this discovers services and I hardcoded the ones i want so I dont bother with another
-            //horrible viewholder. Just use the logging console to see what services and characteristics
-            //your device has and modify accordingly
 
 
             gatt.printGattTable()//aici e clar conectat deja
@@ -196,24 +216,19 @@ class MainActivity : AppCompatActivity() {
             val AUTH_SEND_ENCRYPTED_AUTH_NUMBER: Byte = 0x03
             val AUTH_FAIL: Byte = 0x04
             val HEAD = byteArrayOf(0x01, 0x08)
+            val HEAD2 = byteArrayOf(0x01, 0x00)
             val SEND_KEY = HEAD + SECRET_KEY
 
 
 
             globalGattReference?.setCharacteristicNotification(globalCharacteristicReference, true)
-            globalDescriptorReference?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-            //     globalGattReference?.writeDescriptor(globalDescriptorReference) //pornit notificari
+//            globalDescriptorReference?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+//            globalGattReference?.writeDescriptor(globalDescriptorReference) //pornit notificari
+
 
             globalCharacteristicReference?.setValue(SEND_KEY)
-            var statusCarac = globalGattReference?.writeCharacteristic(globalCharacteristicReference)
+            globalGattReference?.writeCharacteristic(globalCharacteristicReference)
 
-            while (globalCharacteristicReference?.value == null){
-                Log.i("din WHILE trimis","\nValoarea Caracteristicii ${globalCharacteristicReference?.value}\n")
-            }
-
-            Log.i("dupa tr", "\n valoare status ${status}\n")
-            Log.i("dupa trimis","\nValoarea Caracteristicii ${caracteristicaAuth.value.toHexString()}\n")
-            //stopBleScan()
 
 
 
