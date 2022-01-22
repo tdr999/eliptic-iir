@@ -1,0 +1,13 @@
+Un ecran principal
+care iti spune ce
+dispozitive sunt
+conectate si citeste
+date de la ele-----------------> Daca nu e niciun dispozitiv conectat, ai buton sa cauti, activitate noua
+			-------> Buton sa trimiti masuratorile la doctor
+			-------> Buton sa deschida o activitate nou unde sa vezi recomandari / statistici`
+			-------> Telefonul sa trimita automat alerte la bratara daca e ceva 
+
+
+
+
+Miband si pulsoximetrul sa fie obiecte de sine statatoare, tu sa le instantiezi dupa ce te conectezi la ele

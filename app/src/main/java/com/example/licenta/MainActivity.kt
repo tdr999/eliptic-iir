@@ -1,21 +1,20 @@
 package com.example.licenta
 
-import android.R.attr.*
-import android.annotation.SuppressLint
-import android.bluetooth.*
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.Toast
-import java.util.*
 
 
 //the punch through ultimate guide to bluetooth was immensely helpful
@@ -64,14 +63,20 @@ class MainActivity : AppCompatActivity() {
 
 
 
-            val miBand = "CE:45:BF:69:5A:7A"
-            if (result.device.address.toString() == miBand ){
-                stopBleScan()
-                var band = MiBand(result.device)
-                band.authenticate()
-                Log.i("scan callback", "conectat la mibadn")
-            }
+//            if (result.device.address.toString() == "CE:45:BF:69:5A:7A" ){ //miband
+//                stopBleScan()
+//                var band = MiBand(result.device)
+//                band.authenticate()
+//                Log.i("scan callback", "conectat la mibadn")
+//            }
 
+
+            if (result.device.address.toString() == "2C:AB:33:C3:1A:EF" ){ //pulsoximetru
+                stopBleScan()
+                var oximetru = PulseOximeter(result.device)
+                oximetru.authenticate()
+                Log.i("scan callback", "conectat la pulsoximetru")
+            }
 
 
         }
