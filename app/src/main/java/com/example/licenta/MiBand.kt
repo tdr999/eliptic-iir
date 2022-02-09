@@ -6,6 +6,8 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
+
+
 class MiBand (device: BluetoothDevice) {
 
     val dev = device
@@ -13,6 +15,7 @@ class MiBand (device: BluetoothDevice) {
     var gatt : BluetoothGatt? = null
 
     var authChar : BluetoothGattCharacteristic? = null
+
 
     val gattCallback = object : BluetoothGattCallback() { //public callback so we get our variables
         //this callback is the core of our program honestly
@@ -78,6 +81,7 @@ class MiBand (device: BluetoothDevice) {
 
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
+                subscribeHeartRate()
 
             }
 
@@ -90,10 +94,8 @@ class MiBand (device: BluetoothDevice) {
 
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             val deviceAddress = gatt.device.address
-            // some logging stuff for when connection changes, ie it's either connected or disconnected
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                //    gatt.requestMtu(20) //ii zicem sa ne dea 512bytes odata
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     Log.w("BluetoothGattCallback", "Successfully connected to $deviceAddress")
                     gatt.discoverServices() //find services
@@ -119,7 +121,7 @@ class MiBand (device: BluetoothDevice) {
             if (services.isEmpty()) {
                 Log.i("gattTable", "nu merge dom le, e gol tabelu")
                 //val mesaj =
-                    //Toast.makeText(, "Eroare la servicii", Toast.LENGTH_SHORT)
+                //Toast.makeText(, "Eroare la servicii", Toast.LENGTH_SHORT)
                 //mesaj.show()
                 //daca tot avem eroarea, si deconectam
                 return
@@ -137,7 +139,6 @@ class MiBand (device: BluetoothDevice) {
                 }
             }
         }
-
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) { //aici gasim ce e important la logare
 
@@ -171,12 +172,53 @@ class MiBand (device: BluetoothDevice) {
                 0x45
             ) //de tudor
 
+
             val SEND_KEY =  byteArrayOf(0x01, 0x08) + SECRET_KEY
             referintaGatt?.setCharacteristicNotification(caracteristicaAuth, true)
             caracteristicaAuth?.setValue(SEND_KEY)
             referintaGatt?.writeCharacteristic(caracteristicaAuth)
         }
+
+
+
     }
+
+
+    fun subscribeHeartRate(){
+
+        //  https://github.com/MalveiraAlexander/Mi-Band-3-SDK/blob/master/MiBand3SDK/Components/HeartRate.cs
+        val HEART_RATE_SERVICE = UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb")
+        val HEART_RATE_MEASUREMENT_CHARACTERISTIC  = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")
+        val HEART_RATE_CONTROLPOINT_CHARACTERISTIC = UUID.fromString ("00002a39-0000-1000-8000-00805f9b34fb")
+        val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
+        val HEART_RATE_START_COMMAND = byteArrayOf(21, 2, 1)
+
+        val serviciuHeart = gatt?.getService(HEART_RATE_SERVICE)
+        val measHeart = serviciuHeart?.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC)
+        val controlHeart = serviciuHeart?.getCharacteristic(HEART_RATE_CONTROLPOINT_CHARACTERISTIC)
+        val descMeasHeart = measHeart?.getDescriptor(cccdUuid)
+        descMeasHeart?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        gatt?.writeDescriptor(descMeasHeart) //subscribed la ala care da efectiv valorile, acuma sa citim o comanda
+        controlHeart?.value = HEART_RATE_START_COMMAND
+        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+
+        //comenzile pentru diverse feluri de citire
+
+        val manualCmd = byteArrayOf(0x15, 0x02, 0 ) //pentru oprit prima e cu 1 la final a doua cu 0
+        val continuousCmd = byteArrayOf( 0x15, 0x01, 1)
+
+        controlHeart?.value = manualCmd
+        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+        Log.i("din subscribe", "am scris manual")
+        controlHeart?.value = continuousCmd
+        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+
+
+
+
+    }
+
+
 
 
     fun authenticate(){

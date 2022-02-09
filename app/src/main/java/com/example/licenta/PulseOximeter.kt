@@ -1,15 +1,11 @@
 package com.example.licenta
-//netestat
 import android.bluetooth.*
 import android.util.Log
-import java.nio.charset.Charset
 import java.util.*
 
 class PulseOximeter(device: BluetoothDevice) {
     var dev = device
     var gatt : BluetoothGatt? = null
-    var caracteristicaAuth : BluetoothGattCharacteristic? = null
-
 
     val gattCallBack = object : BluetoothGattCallback() {
 
@@ -17,40 +13,24 @@ class PulseOximeter(device: BluetoothDevice) {
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic
         ) {
-            with(characteristic){
-                Log.i("schimbat caracteristca", "$value\n")
+
+            with(characteristic) {
+                Log.i(
+                    "BluetoothGattCallback",
+                    "Characteristic $uuid changed | value: ${value.toHexString().toString()}"
+                )
             }
         }
 
-
-        private fun BluetoothGatt.printGattTable() { //de sters dupa ce o terminam de folosit
-            //this prints gatt service numbers
-
-            if (services.isEmpty()) {
-                Log.i("gattTable", "nu merge dom le, e gol tabelu")
-                return
-            } else {
-                var tempStr = "Servicii: \n"
-                services.forEach { service ->
-                    val table = service.characteristics.joinToString(
-                        "\n|--",
-                        "|--"
-                    ) {
-                        it.uuid.toString()
-                    }
-                    Log.i("printGattTable", "\nService ${service.uuid}\nCharacteristics:\n$table")
-                }
-            }
-        }
+        fun ByteArray.toHexString(): String =
+            joinToString(separator = " ", prefix = "") { String.format("%02X", it) }
 
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             val deviceAddress = gatt.device.address
-            // some logging stuff for when connection changes, ie it's either connected or disconnected
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                //    gatt.requestMtu(20) //ii zicem sa ne dea 512bytes odata
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    Log.w("BluetoothGattCallback", "Successfully connected to $deviceAddress")
+                    Log.i("BluetoothGattCallback", "Successfully connected to $deviceAddress")
                     gatt.discoverServices() //find services
 
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -66,34 +46,28 @@ class PulseOximeter(device: BluetoothDevice) {
             }
         }
 
-
-
-
-
-        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-            gatt?.printGattTable()
+       override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             this@PulseOximeter.gatt = gatt
             val serviciuDeConectare =
-               gatt?.getService(UUID.fromString("cdeacb80-5235-4c07-8846-93a37ee6b86d"))
-            this@PulseOximeter.caracteristicaAuth =
-                serviciuDeConectare?.getCharacteristic(UUID.fromString("cdeacb81-5235-4c07-8846-93a37ee6b86d"))
-            gatt?.setCharacteristicNotification(this@PulseOximeter.caracteristicaAuth, true)
+                gatt?.getService(UUID.fromString("cdeacb80-5235-4c07-8846-93a37ee6b86d"))
+            val caracteristicaTemp = serviciuDeConectare?.getCharacteristic(UUID.fromString("CDEACB81-5235-4C07-8846-93A37EE6B86D"))
+           if (caracteristicaTemp == null){
+               Log.i("car temop", "e nula coaie \n\n")
+           }
+           Log.i("dupa sx", "${caracteristicaTemp?.value}")
+            //gatt?.setCharacteristicNotification(caracteristicaTemp, true)
+           gatt?.setCharacteristicNotification(caracteristicaTemp, true)
+           val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //tre sa scriem la descriptor ptr ca sa subscribe
+           val desc = caracteristicaTemp?.getDescriptor(cccdUuid)
+           desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+           gatt?.writeDescriptor(desc)
+
+
         }
-
-
     }
-
-
-
-
-
-
 
     fun authenticate(){
         dev.connectGatt(null, false, gattCallBack) //fa tru falseul sa se faca automatt
         Log.i("din auth", "conectat la pulsoximetru")
     }
 }
-
-
-

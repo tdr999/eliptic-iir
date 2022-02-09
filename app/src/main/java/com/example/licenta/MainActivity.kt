@@ -63,20 +63,20 @@ class MainActivity : AppCompatActivity() {
 
 
 
-//            if (result.device.address.toString() == "CE:45:BF:69:5A:7A" ){ //miband
-//                stopBleScan()
-//                var band = MiBand(result.device)
-//                band.authenticate()
-//                Log.i("scan callback", "conectat la mibadn")
-//            }
-
-
-            if (result.device.address.toString() == "2C:AB:33:C3:1A:EF" ){ //pulsoximetru
+            if (result.device.address.toString() == "CE:45:BF:69:5A:7A" ){ //miband
                 stopBleScan()
-                var oximetru = PulseOximeter(result.device)
-                oximetru.authenticate()
-                Log.i("scan callback", "conectat la pulsoximetru")
+                var band = MiBand(result.device)
+                band.authenticate()
+                Log.i("scan callback", "conectat la mibadn")
             }
+
+
+//            if (result.device.address.toString() == "2C:AB:33:C3:1A:EF" ){ //pulsoximetru
+//                stopBleScan()
+//                var oximetru = PulseOximeter(result.device)
+//                oximetru.authenticate()
+//                //Log.i("scan callback", "conectat la pulsoximetru")
+//            }
 
 
         }
