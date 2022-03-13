@@ -12,6 +12,8 @@ class MiBand (device: BluetoothDevice) {
 
     val dev = device
 
+    var ESTE_AUTHENTICAT = 0
+
     var gatt : BluetoothGatt? = null
 
     var authChar : BluetoothGattCharacteristic? = null
@@ -20,19 +22,9 @@ class MiBand (device: BluetoothDevice) {
     val gattCallback = object : BluetoothGattCallback() { //public callback so we get our variables
         //this callback is the core of our program honestly
 
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt,
-            characteristic: BluetoothGattCharacteristic
-        ) {
-            //this is what happens when the characteristic value is changed
+        fun authenticateBand(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, valoareHex: List<String>){ //pentru authenticare
 
-            with(characteristic) {
-                Log.i(
-                    "BluetoothGattCallback",
-                    "Characteristic $uuid changed | value: ${value.toHexString()}"
-                )
-
-                var valoareHex = (value.toHexString()).split(" ")
+            with(characteristic){
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "01"){
                     Log.i("din on chcarac changesd", "Da dom'le, ne am legat si acuma trimetem auth number")
                     val authNumber = byteArrayOf(0x02, 0x08)
@@ -78,11 +70,37 @@ class MiBand (device: BluetoothDevice) {
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "03" && valoareHex[2] == "01") {
                     Log.i("if4", "imperecheat succes\n")
+                    ESTE_AUTHENTICAT = 1
 
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
                 subscribeHeartRate()
 
+
+
+            }
+        }
+
+
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic
+        ) {
+            //this is what happens when the characteristic value is changed
+
+            with(characteristic) {
+                Log.i(
+                    "BluetoothGattCallback",
+                    "Characteristic $uuid changed | value: ${value.toHexString()}"
+                )
+
+                var valoareHex = (value.toHexString()).split(" ")
+                if (this@MiBand.ESTE_AUTHENTICAT == 0) { //daca nu e authenticat
+                    authenticateBand(gatt, characteristic, valoareHex)
+                }
+            }
+            if (characteristic.uuid == UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")){
+               Log.i("din on char changed", "${characteristic.value.toHexString().split(" ")[1].toInt(16)}")
             }
 
         }
@@ -90,6 +108,7 @@ class MiBand (device: BluetoothDevice) {
 
         fun ByteArray.toHexString(): String =
             joinToString(separator = " ", prefix = "") { String.format("%02X", it) }
+
 
 
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
@@ -144,7 +163,7 @@ class MiBand (device: BluetoothDevice) {
 
             gatt.printGattTable()//aici e clar conectat deja
             val referintaGatt = gatt
-            val serviciuDeConectare =
+            val serviciuDeConectare = //fa clauza separata pentru authenticare
                 referintaGatt.getService(UUID.fromString("0000fee1-0000-1000-8000-00805f9b34fb"))
             val caracteristicaAuth =
                 serviciuDeConectare.getCharacteristic(UUID.fromString("00000009-0000-3512-2118-0009af100700"))
@@ -197,31 +216,59 @@ class MiBand (device: BluetoothDevice) {
         val measHeart = serviciuHeart?.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC)
         val controlHeart = serviciuHeart?.getCharacteristic(HEART_RATE_CONTROLPOINT_CHARACTERISTIC)
         val descMeasHeart = measHeart?.getDescriptor(cccdUuid)
-        descMeasHeart?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-        gatt?.writeDescriptor(descMeasHeart) //subscribed la ala care da efectiv valorile, acuma sa citim o comanda
-        controlHeart?.value = HEART_RATE_START_COMMAND
-        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+
+        /*
+        1. Scrie la descriptoru de control bytii de enable notify
+        2. Alege felul de measurememnt
+        3. Scrie bytii de comandaManual apoi de comandaContinua la caracteristica de control
+        4. Citeste valoarea la caracteristica de masurare
+         */
+
+
+        gatt?.setCharacteristicNotification(measHeart, true) // enable recv notif
+        descMeasHeart?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)//config carac de mas sa trimita notif
+        gatt?.writeDescriptor(descMeasHeart) //1
+
 
         //comenzile pentru diverse feluri de citire
 
-        val manualCmd = byteArrayOf(0x15, 0x02, 0 ) //pentru oprit prima e cu 1 la final a doua cu 0
-        val continuousCmd = byteArrayOf( 0x15, 0x01, 1)
+        //https://dzone.com/articles/miband-3-and-react-native-partnbsp1 inspirat de aici parca
 
-        controlHeart?.value = manualCmd
+        val manualCmd = byteArrayOf(0x15, 0x02, 0x00 ) //pentru oprit prima e cu 1 la final a doua cu 0
+        controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00))
+        gatt?.writeCharacteristic(controlHeart)
+        val continuousCmd = byteArrayOf( 0x15, 0x01, 0x01) //2
+        controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
+        gatt?.writeCharacteristic(controlHeart)
+
+
+
+        controlHeart?.setValue(byteArrayOf( 0x01, 0x00))
+        gatt?.writeCharacteristic(controlHeart)
+
+
+        controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
+        gatt?.writeCharacteristic(controlHeart)
+
+
+
+        gatt?.readCharacteristic(measHeart)
+
+        Log.i("din heart rate", "valoare ${measHeart?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16)}")//bytes primit in int
+
+
+
+        controlHeart?.value = HEART_RATE_START_COMMAND
         gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
-        Log.i("din subscribe", "am scris manual")
-        controlHeart?.value = continuousCmd
-        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
-
-
-
 
     }
 
 
 
+    fun ByteArray.toHexString(): String =
+        joinToString(separator = " ", prefix = "") { String.format("%02X", it) }
 
-    fun authenticate(){
+    fun connect(){
         dev.connectGatt(null, false, gattCallback) //schimba la true sa se conecteze automat
     }
     fun disconnect(){

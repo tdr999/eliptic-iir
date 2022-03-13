@@ -7,6 +7,11 @@ class PulseOximeter(device: BluetoothDevice) {
     var dev = device
     var gatt : BluetoothGatt? = null
 
+    var spo2 : Int  = 0
+    var pi : Int    = 0
+    var BPM : Int   = 0 //default values
+
+
     val gattCallBack = object : BluetoothGattCallback() {
 
         override fun onCharacteristicChanged(
@@ -15,10 +20,18 @@ class PulseOximeter(device: BluetoothDevice) {
         ) {
 
             with(characteristic) {
-                Log.i(
-                    "BluetoothGattCallback",
-                    "Characteristic $uuid changed | value: ${value.toHexString().toString()}"
-                )
+//                Log.i(
+//                    "BluetoothGattCallback",
+//                    "Characteristic $uuid changed | value: ${value.toHexString().toString()}"
+//                )
+                var valoare = value.toHexString().split(" ")
+
+                if (valoare[0] == "81"){
+                    BPM = valoare[1].toInt(16)//from base 16
+                    spo2 = valoare[2].toInt(16)
+                    pi = valoare[3].toInt(16)
+                    Log.i("din if", "val bpm ${BPM} ${spo2} ${pi}")
+                }
             }
         }
 
