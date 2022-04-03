@@ -63,12 +63,12 @@ class MainActivity : AppCompatActivity() {
 
 
 
-//            if (result.device.address.toString() == "CE:45:BF:69:5A:7A" ){ //miband
-//                stopBleScan()
-//                var band = MiBand(result.device)
-//                band.connect()
-//                Log.i("scan callback", "conectat la mibadn")
-//            }
+            if (result.device.address.toString() == "CE:45:BF:69:5A:7A" ){ //miband
+                stopBleScan()
+                var band = MiBand(result.device)
+                band.connect()
+                Log.i("scan callback", "conectat la mibadn")
+            }
 
 //
 //            if (result.device.address.toString() == "2C:AB:33:C3:1A:EF" ){ //pulsoximetru
@@ -78,12 +78,12 @@ class MainActivity : AppCompatActivity() {
 //                //Log.i("scan callback", "conectat la pulsoximetru")
 //            }
 
-            if (result.device.address.toString() == "F9:C1:93:F4:8F:00" ){ //pulsoximetru
-                stopBleScan()
-                var oximetru = BeurerOximeter(result.device)
-                oximetru.authenticate()
-                //Log.i("scan callback", "conectat la Beurer")
-            }
+//            if (result.device.address.toString() == "F9:C1:93:F4:8F:00" ){ //pulsoximetru
+//                stopBleScan()
+//                var oximetru = BeurerOximeter(result.device)
+//                oximetru.authenticate()
+//                //Log.i("scan callback", "conectat la Beurer")
+//            }
 
 
         }

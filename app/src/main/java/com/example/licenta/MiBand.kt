@@ -5,7 +5,8 @@ import android.util.Log
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
-
+import android.os.Handler
+import android.os.Looper
 
 
 class MiBand (device: BluetoothDevice) {
@@ -74,7 +75,9 @@ class MiBand (device: BluetoothDevice) {
 
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
-                subscribeHeartRate()
+                //subscribeHeartRate()
+                getSteps()
+                //getBattery()
 
 
 
@@ -243,14 +246,8 @@ class MiBand (device: BluetoothDevice) {
 
 
 
-        controlHeart?.setValue(byteArrayOf( 0x01, 0x00))
-        gatt?.writeCharacteristic(controlHeart)
-
-
         controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
         gatt?.writeCharacteristic(controlHeart)
-
-
 
         gatt?.readCharacteristic(measHeart)
 
@@ -260,6 +257,55 @@ class MiBand (device: BluetoothDevice) {
 
         controlHeart?.value = HEART_RATE_START_COMMAND
         gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+
+    }
+
+    fun getBattery() {
+
+        val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
+        val steps_info_characteristic_uuid = UUID.fromString("00000006-0000-3512-2118-0009af100700")
+        val miband_service = gatt?.getService(miband_service_uuid)
+        val steps_characteristic = miband_service?.getCharacteristic(steps_info_characteristic_uuid)
+
+        Handler(Looper.getMainLooper()).postDelayed({//adding a delay of 1s
+            var valoare_citita = gatt?.readCharacteristic(steps_characteristic)
+            Log.i("din get battery", "valoarea citita ${valoare_citita}")
+            Log.i("din get battery", "valoarea battery ${steps_characteristic?.value}")
+            //var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
+            var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
+            var charge_value = byte_arr?.get(1)?.toInt(16)
+            Log.i("valoare baterie", "${charge_value}")
+        }, 1000)
+    }
+
+
+    //de dat seama
+    fun getSteps(){
+
+        val miband_service_uuid  = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
+        val steps_info_characteristic_uuid = UUID.fromString ("00000007-0000-3512-2118-0009af100700")
+        val miband_service = gatt?.getService(miband_service_uuid)
+        val steps_characteristic = miband_service?.getCharacteristic(steps_info_characteristic_uuid)
+
+
+        Handler(Looper.getMainLooper()).postDelayed({//adding a delay of 1s
+            var valoare_citita = gatt?.readCharacteristic(steps_characteristic)
+            Log.i("din get steps", "valoarea citita ${valoare_citita}")
+            Log.i("din get steps", "valoarea steps ${steps_characteristic?.value?.toHexString()}")
+            //var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
+            var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
+            var bitul_2 =  byte_arr?.get(2)?.toInt(16)?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+            var bitul_1 = byte_arr?.get(1)?.toInt(16)
+            var charge_value = bitul_2?.let { bitul_1?.plus(it) }
+
+            //practic hexii nu bitii
+
+            Log.i("valoare baterie", "${charge_value}")
+        }, 1500)
+
+
+        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
+
 
     }
 
