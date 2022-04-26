@@ -1,6 +1,8 @@
 package com.example.licenta
 
+import CustomAdapter
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
@@ -14,7 +16,10 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.widget.LinearLayout
 
 
 //the punch through ultimate guide to bluetooth was immensely helpful
@@ -25,7 +30,12 @@ import android.util.Log
 class MainActivity : AppCompatActivity() {
 
     var globalGattReference : BluetoothGatt? = null
-    private val listaRezultate = mutableListOf<ScanResult>()
+    private val lista_scanare = mutableListOf<ScanResult>()
+    var adaptorRezultate = CustomAdapter(lista_scanare)
+    private val lista_adrese = mutableListOf<BluetoothDevice>()
+
+
+
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -34,6 +44,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 200 )
+        var rec_view = findViewById<RecyclerView>(R.id.recycler_view_scan)
+        rec_view.layoutManager = LinearLayoutManager(this)
+        rec_view.adapter = adaptorRezultate
 
     }
 
@@ -48,14 +61,22 @@ class MainActivity : AppCompatActivity() {
         bluetoothAdapter.bluetoothLeScanner
     }
 
-    private val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build()  //scan settings, which are necessary
+    private val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build()  //scan settings, which are necessaryva
 
     val scanCallBack = object : ScanCallback(){
 
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val indexQuery = listaRezultate.indexOfFirst {
-                it.device.address == result.device.address
+
+
+            if (result.device in lista_adrese == false){//tinem doua liste in paralel, una cu adrese, alta cu results
+                lista_scanare.add(result)
+                lista_adrese.add(result.device)
+                adaptorRezultate.notifyItemInserted(lista_scanare.indexOf(lista_scanare.last()))
             }
+
+//            val indexQuery = listaRezultate.indexOfFirst {
+//                it.device.address == result.device.address
+//            }
 
             with(result.device){
                 Log.i("ScanCallback", "Found Device! Name: ${name?: "Unnamed"}, Adress: $address")
