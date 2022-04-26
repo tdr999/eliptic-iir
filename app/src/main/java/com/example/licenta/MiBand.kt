@@ -20,6 +20,49 @@ class MiBand (device: BluetoothDevice) {
     var authChar : BluetoothGattCharacteristic? = null
 
 
+//    var SECRET_KEY = byteArrayOf(
+//        9.toByte(),
+//        29.toByte(),
+//        223.toByte(),
+//        23.toByte(),
+//        189.toByte(),
+//        98.toByte(),
+//        65.toByte(),
+//        195.toByte(),
+//        165.toByte(),
+//        110.toByte(),
+//        125.toByte(),
+//        202.toByte(),
+//        43.toByte(),
+//        117.toByte(),
+//        28.toByte(),
+//        137.toByte(),
+//    )
+
+
+    var SECRET_KEY = byteArrayOf(
+        1.toByte(),
+        2.toByte(),
+        3.toByte(),
+        4.toByte(),
+        5.toByte(),
+        6.toByte(),
+        7.toByte(),
+        8.toByte(),
+        9.toByte(),
+        10.toByte(),
+        11.toByte(),
+        12.toByte(),
+        13.toByte(),
+        14.toByte(),
+        15.toByte(),
+        16.toByte(),
+    )
+
+
+
+
+
     val gattCallback = object : BluetoothGattCallback() { //public callback so we get our variables
         //this callback is the core of our program honestly
 
@@ -28,7 +71,7 @@ class MiBand (device: BluetoothDevice) {
             with(characteristic){
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "01"){
                     Log.i("din on chcarac changesd", "Da dom'le, ne am legat si acuma trimetem auth number")
-                    val authNumber = byteArrayOf(0x02, 0x08)
+                    val authNumber = byteArrayOf(0x02, 0x00, 0x02) //schimbat de la 0x02 0x08 la 0x02 0x00
                     characteristic.setValue(authNumber)
                     gatt.writeCharacteristic(authChar)
                 }
@@ -37,34 +80,17 @@ class MiBand (device: BluetoothDevice) {
 
                     var tempKey = valoareHex.takeLast(16) // keia primita
                     Log.i("ult16", "$tempKey\n")
-                    var SECRET_KEY : ByteArray = byteArrayOf(
-                        0x30,
-                        0x31,
-                        0x32,
-                        0x33,
-                        0x34,
-                        0x35,
-                        0x36,
-                        0x37,
-                        0x38,
-                        0x39,
-                        0x40,
-                        0x41,
-                        0x42,
-                        0x43,
-                        0x44,
-                        0x45
-                    ) //de tudor
+
 
                     //criptare aes cum vrea miband
-                    var generatedSecretKey = SecretKeySpec(SECRET_KEY, "AES")
+                    var generatedSecretKey = SecretKeySpec(this@MiBand.SECRET_KEY, "AES")
                     val crypto : Cipher = Cipher.getInstance("AES/ECB/NoPadding")
                     crypto.init(Cipher.ENCRYPT_MODE,generatedSecretKey)
 
                     var finalKey = crypto.doFinal(value.takeLast(16).toByteArray()) //amperecherea
 
 
-                    authChar?.setValue(byteArrayOf(0x03, 0x08) + finalKey )
+                    authChar?.setValue(byteArrayOf(0x03, 0x00) + finalKey ) //schimbat de la 0308 la 0300 ptr miband 4/miband 3 postupdate
                     gatt.writeCharacteristic(authChar)
 
 
@@ -73,16 +99,64 @@ class MiBand (device: BluetoothDevice) {
                     Log.i("if4", "imperecheat succes\n")
                     ESTE_AUTHENTICAT = 1
 
+                    //subscribeHeartRate()
+//                    getSteps()
+//                    getBattery()
+//                    setDateTime()
+//                    setCaloriesDistanceMetric()
+//                    sendShortVibration()
+                    sendCustomMessage()
+
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
-                //subscribeHeartRate()
-                getSteps()
-                //getBattery()
 
+                if (valoareHex[0] == "10" && valoareHex[1] == "03" && valoareHex[2] == "04") {
+                    Log.i("esec", "la criptare")
+
+                }
+
+                if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
+                    Log.i("primit 10 01 04", " bomba")
+                    authChar?.value= byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+//                    authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
+                    gatt.writeCharacteristic(authChar)
+
+                }
 
 
             }
         }
+
+
+        override fun onCharacteristicWrite(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
+            super.onCharacteristicWrite(gatt, characteristic, status)
+
+            with(characteristic) {
+                Log.i(
+                    "bg call",
+                    "wrote characteristic $uuid  value: ${value.toHexString()}"
+                )
+            }
+        }
+
+//        override fun onCharacteristicRead(
+//            gatt: BluetoothGatt,
+//            characteristic: BluetoothGattCharacteristic,
+//            status: Int
+//        ) {
+//            super.onCharacteristicRead(gatt, characteristic, status)
+//            with(characteristic) {
+//                Log.i(
+//                    "bg call",
+//                    "read characteristic $uuid  value: ${value.toHexString()}"
+//                )
+//            }
+//        }
+
 
 
         override fun onCharacteristicChanged(
@@ -103,7 +177,7 @@ class MiBand (device: BluetoothDevice) {
                 }
             }
             if (characteristic.uuid == UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")){
-               Log.i("din on char changed", "${characteristic.value.toHexString().split(" ")[1].toInt(16)}")
+                Log.i("din on char changed", "${characteristic.value.toHexString().split(" ")[1].toInt(16)}")
             }
 
         }
@@ -170,38 +244,209 @@ class MiBand (device: BluetoothDevice) {
                 referintaGatt.getService(UUID.fromString("0000fee1-0000-1000-8000-00805f9b34fb"))
             val caracteristicaAuth =
                 serviciuDeConectare.getCharacteristic(UUID.fromString("00000009-0000-3512-2118-0009af100700"))
+            val descAuth =
+                caracteristicaAuth.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
 
 
             this@MiBand.gatt = referintaGatt
             this@MiBand.authChar = caracteristicaAuth
             //enable our stuff
-            val SECRET_KEY = byteArrayOf(
-                0x30,
-                0x31,
-                0x32,
-                0x33,
-                0x34,
-                0x35,
-                0x36,
-                0x37,
-                0x38,
-                0x39,
-                0x40,
-                0x41,
-                0x42,
-                0x43,
-                0x44,
-                0x45
-            ) //de tudor
 
 
-            val SEND_KEY =  byteArrayOf(0x01, 0x08) + SECRET_KEY
-            referintaGatt?.setCharacteristicNotification(caracteristicaAuth, true)
-            caracteristicaAuth?.setValue(SEND_KEY)
-            referintaGatt?.writeCharacteristic(caracteristicaAuth)
+//            val SEND_KEY =  byteArrayOf(0x01, 0x00) + this@MiBand.SECRET_KEY
+            referintaGatt.setCharacteristicNotification(caracteristicaAuth, true) //enable phone to receive notifications
+////
+            descAuth.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+            referintaGatt.writeDescriptor(descAuth) //configure characteristic on device to send notificaitons
+//
+//
+//            caracteristicaAuth?.setValue(SEND_KEY)
+//            caracteristicaAuth?.setValue(byteArrayOf(0x02, 0x00, 0x02))
+
+
+            for (i in 1..2) {
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    caracteristicaAuth?.setValue(
+                        byteArrayOf(
+                            1.toByte(),
+                            0.toByte()
+                        )
+                    ) //si comanda 01 face ceva
+                    referintaGatt.writeCharacteristic(caracteristicaAuth)
+                }, 1000)
+            }
         }
 
 
+
+    }
+
+
+    fun sendCustomMessage(){
+
+
+        //vom incerca o alerta de tipul 5
+
+        val alert_sv_uuid = UUID.fromString("00001802-0000-1000-8000-00805f9b34fb")  // Immediate Alert on Mi Band 3
+        val notif_sv_uuid = UUID.fromString("00001811-0000-1000-8000-00805F9B34FB")
+        val alert_lv_char_uuid = UUID.fromString("00002a06-0000-1000-8000-00805f9b34fb")
+        val send_alert_char_uuid = UUID.fromString("00002a46-0000-1000-8000-00805f9b34fb")  // New Alert on Mi Band 3
+        val miband_sv_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
+        val config_char_uuid = UUID.fromString("00000003-0000-3512-2118-0009af100700")
+        val special_uuid = UUID.fromString("00000002-0000-3512-2118-0009af100700")
+
+        val alert_sv = gatt?.getService(notif_sv_uuid)
+        val alert_char = alert_sv?.getCharacteristic(send_alert_char_uuid)
+
+        val type = byteArrayOf(0x01) //mesaj type 0x01, tipul 0x02 e apel, merge pe alert sv uuid si alert lvl char uuid //mergea cu tipurile 1 si 5 bine
+        val nr_alerts = byteArrayOf(0x01)    //alerta 250 e custom
+
+//        var mesaj = "Fut bine si apasat la cioc".toByteArray()
+        val mesaj = //prima linie titlul, in rest, lasa absolut totul asa, vezi care e faza cu 0a
+            """
+               Received Muie:                
+                       /\)
+                      / /
+                     / /
+                  (  Y  ) 
+                  
+            """.trimIndent()
+        var titlu = ""
+        var icon = 0.toByte()
+
+        val command = type + nr_alerts + byteArrayOf(0x00) +  titlu.toByteArray() +  byteArrayOf(0x00)+ mesaj.toByteArray() + byteArrayOf(0x00)
+//        val command = type + nr_alerts + byteArrayOf(0x00) +   mesaj.toByteArray() + byteArrayOf(0x00)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            alert_char?.setValue(command)
+            gatt?.writeCharacteristic(alert_char)
+        }, 2000)
+
+
+
+    }
+
+    fun sendShortVibration(){
+        val alert_sv_uuid = UUID.fromString("00001802-0000-1000-8000-00805f9b34fb")  // Immediate Alert on Mi Band 3
+        val notif_sv_uuid = UUID.fromString("00001811-0000-1000-8000-00805F9B34FB")
+        val alert_lv_char_uuid = UUID.fromString("00002a06-0000-1000-8000-00805f9b34fb")
+        val send_alert_char_uuid = UUID.fromString("00002a46-0000-1000-8000-00805f9b34fb")  // New Alert on Mi Band 3
+        val miband_sv_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
+        val config_char_uuid = UUID.fromString("00000003-0000-3512-2118-0009af100700")
+
+        val alert_sv = gatt?.getService(alert_sv_uuid)
+        val alert_char = alert_sv?.getCharacteristic(alert_lv_char_uuid)
+
+        val short_vibration = intArrayOf(200, 200)
+        val vibration = short_vibration[0]
+        val pause = short_vibration[1]
+        val repeat = 0x02.toByte()
+        //val command =  -1.toByte()  + vibration.toByte() and 255 + vibration.toByte() shr 8 and 255 + pause.toByte() and 255 + pause.toByte() shr 8 and 255 + repeat
+        var command = byteArrayOf(-1)
+        command =  command + (vibration and 255).toByte() + ((vibration shr 8) and 255).toByte() + (pause and 255).toByte() + ((pause shr 8) and 255).toByte() + repeat
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            alert_char?.setValue(command)
+            gatt?.writeCharacteristic(alert_char)
+        }, 1000)
+
+
+    }
+
+    fun setCaloriesDistanceMetric(){
+
+        val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
+        val miband_config_char_uuid = UUID.fromString ("00000003-0000-3512-2118-0009AF100700")
+        val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
+
+        val miband_service = gatt?.getService(miband_service_uuid)
+        val miband_config_char = miband_service?.getCharacteristic(miband_config_char_uuid)
+        val desc = miband_config_char?.getDescriptor(cccdUuid)
+
+
+        gatt?.setCharacteristicNotification(miband_config_char, true)
+        desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        gatt?.writeDescriptor(desc)
+
+        //set 24 h format
+        var format = byteArrayOf(0x10, 0x10, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            miband_config_char?.value = format
+            gatt?.writeCharacteristic(miband_config_char)
+        }, 2000)
+
+
+
+        //executarea comenzilor din log
+
+//
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            miband_config_char?.value = byteArrayOf(12.toByte())
+//            gatt?.writeCharacteristic(miband_config_char)
+//        }, 2000)
+//
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            miband_config_char?.value = byteArrayOf(0x11)
+//            gatt?.writeCharacteristic(miband_config_char)
+//        }, 3000)
+//
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            miband_config_char?.value = byteArrayOf(0x13)
+//            gatt?.writeCharacteristic(miband_config_char)
+//        }, 4000)
+
+
+    }
+
+
+
+    fun setDateTime(){
+
+        val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
+        val time_characteristic_uuid  = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb")
+//        val time_characteristic_uuid  = UUID.fromString("00000004-0000-3512-2118-0009AF100700")
+        val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
+
+        val miband_service = gatt?.getService(miband_service_uuid)
+        val time_characteristic = miband_service?.getCharacteristic(time_characteristic_uuid)
+        val desc_time_char = time_characteristic?.getDescriptor(cccdUuid)
+
+
+        //setting a random date for testing purposes
+        //year is transmitted in little endian, therefore 2022 is not sent as 7e6 but as 6e07
+        //we will try to set the year 2023, 1/1
+//        var year = byteArrayOf(230.toByte(), 0x07)
+//        //e7 written in int.
+//        var day = 0x02.toByte()
+//        var month = 0x05.toByte()
+//        var hours = 0x02.toByte()
+//        var minutes = 0x02.toByte()
+//        var seconds = 0x02.toByte()
+//        var fractions = 0x00.toByte()
+//        var adjust_reason = 0x08.toByte()
+//        var caracter_terminal = 0x0c.toByte()
+
+//        gatt?.setCharacteristicNotification(time_characteristic, true)
+//
+//       Handler(Looper.getMainLooper()).postDelayed({
+//           desc_time_char?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+//           gatt?.writeDescriptor(desc_time_char)
+//       }, 750)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            gatt?.readCharacteristic(time_characteristic)
+        }, 500)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+//            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
+            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
+
+//            Log.i("curr time", "${time_characteristic?.value?.toHexString()}")
+            time_characteristic?.value = numarul_care_trebe_scris
+            gatt?.writeCharacteristic(time_characteristic)
+        }, 2500)
 
     }
 
@@ -263,19 +508,30 @@ class MiBand (device: BluetoothDevice) {
     fun getBattery() {
 
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
-        val steps_info_characteristic_uuid = UUID.fromString("00000006-0000-3512-2118-0009af100700")
+        val battery_info_characteristic_uuid = UUID.fromString("00000006-0000-3512-2118-0009af100700")
         val miband_service = gatt?.getService(miband_service_uuid)
-        val steps_characteristic = miband_service?.getCharacteristic(steps_info_characteristic_uuid)
+        val battery_characteristic = miband_service?.getCharacteristic(battery_info_characteristic_uuid)
 
-        Handler(Looper.getMainLooper()).postDelayed({//adding a delay of 1s
-            var valoare_citita = gatt?.readCharacteristic(steps_characteristic)
+        val descAuth =
+            battery_characteristic?.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
+
+
+        var valoare_citita = gatt?.readCharacteristic(battery_characteristic)
+        Handler(Looper.getMainLooper()).postDelayed({
             Log.i("din get battery", "valoarea citita ${valoare_citita}")
-            Log.i("din get battery", "valoarea battery ${steps_characteristic?.value}")
-            //var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
-            var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
+            Log.i(
+                "din get battery",
+                "valoarea battery ${battery_characteristic?.value?.toHexString()}"
+            )
+            //var byte_arr = battery_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
+            var byte_arr = battery_characteristic?.value?.toHexString()?.split(" ")
             var charge_value = byte_arr?.get(1)?.toInt(16)
             Log.i("valoare baterie", "${charge_value}")
-        }, 1000)
+        }, 2000)
+        gatt?.setCharacteristicNotification(battery_characteristic, true)
+        descAuth?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        gatt?.writeDescriptor(descAuth)
+
     }
 
 
@@ -287,24 +543,28 @@ class MiBand (device: BluetoothDevice) {
         val miband_service = gatt?.getService(miband_service_uuid)
         val steps_characteristic = miband_service?.getCharacteristic(steps_info_characteristic_uuid)
 
+        val descAuth =
+            steps_characteristic?.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
+
+        gatt?.readCharacteristic(steps_characteristic)
 
         Handler(Looper.getMainLooper()).postDelayed({//adding a delay of 1s
-            var valoare_citita = gatt?.readCharacteristic(steps_characteristic)
-            Log.i("din get steps", "valoarea citita ${valoare_citita}")
-            Log.i("din get steps", "valoarea steps ${steps_characteristic?.value?.toHexString()}")
-            //var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
             var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
-            var bitul_2 =  byte_arr?.get(2)?.toInt(16)?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+            var bitul_2 = byte_arr?.get(2)?.toInt(16)
+                ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
             var bitul_1 = byte_arr?.get(1)?.toInt(16)
             var charge_value = bitul_2?.let { bitul_1?.plus(it) }
 
             //practic hexii nu bitii
 
-            Log.i("valoare baterie", "${charge_value}")
-        }, 1500)
+            Log.i("valoare steps", "${charge_value}")
 
+            gatt?.setCharacteristicNotification(steps_characteristic, true)
+            descAuth?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+            gatt?.writeDescriptor(descAuth)
+        }, 2000)
 
-        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
+//        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
 
 
     }
