@@ -1,22 +1,28 @@
 import android.bluetooth.le.ScanResult
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.licenta.R
 
 
 
-class CustomAdapter(private val dataSet: List<ScanResult>) :
+class CustomAdapter(private val dataSet: List<ScanResult>,
+                    private val listener : OnItemClickListener
+) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
      */
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view),
+        View.OnClickListener{
+
         val nume_device: TextView
         val imagine_device : ImageView
         val signal_strength : TextView
@@ -27,7 +33,20 @@ class CustomAdapter(private val dataSet: List<ScanResult>) :
             nume_device = view.findViewById(R.id.nume_device)
             signal_strength = view.findViewById(R.id.signal_strength)
             imagine_device = view.findViewById(R.id.imagine_viewholder)
+            view.setOnClickListener(this)
         }
+
+
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position)
+            }
+        }
+    }
+
+    interface OnItemClickListener{
+        fun onItemClick(position : Int)
     }
 
     // Create new views (invoked by the layout manager)
@@ -49,10 +68,15 @@ class CustomAdapter(private val dataSet: List<ScanResult>) :
         viewHolder.nume_device.text = dataSet[position].device.name
         viewHolder.signal_strength.text = dataSet[position].rssi.toString() + "db"
         viewHolder.imagine_device.setImageResource(R.drawable.jumper)
+
+
     }
+
+
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
+
 
 }
 

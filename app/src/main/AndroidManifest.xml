@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Licenta">
-        <activity android:name=".search_device_activity"></activity>
+        <activity android:name=".ScanningActivity"></activity>
+        <activity android:name=".search_device_activity" />
         <activity android:name=".OximeterWindow" />
         <activity
             android:name=".OxiGraph"
