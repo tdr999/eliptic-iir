@@ -67,7 +67,12 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
 //        viewHolder.signal_strength.text = dataSet[position]
         viewHolder.nume_device.text = dataSet[position].device.name
         viewHolder.signal_strength.text = dataSet[position].rssi.toString() + "db"
-        viewHolder.imagine_device.setImageResource(R.drawable.jumper)
+        if (dataSet[position].device.name == "Mi Band 3") {
+            viewHolder.imagine_device.setImageResource(R.drawable.miband3)
+        }
+        else{
+            viewHolder.imagine_device.setImageResource(R.drawable.jumper)
+        }
 
 
     }

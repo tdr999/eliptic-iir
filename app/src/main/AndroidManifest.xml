@@ -14,14 +14,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Licenta">
-        <activity android:name=".ScanningActivity"></activity>
-        <activity android:name=".search_device_activity" />
-        <activity android:name=".OximeterWindow" />
-        <activity
-            android:name=".OxiGraph"
-            android:label="@string/title_activity_oxi_graph"
-            android:theme="@style/Theme.Licenta.NoActionBar" />
+        android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
+        <activity android:name=".miband_view_activity"></activity>
+        <activity android:name=".oximeter_view_activity" /> <!-- scoate actionabarul tema asta -->
+        <activity android:name=".scanning_view_activity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

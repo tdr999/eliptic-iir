@@ -1,9 +1,11 @@
 package com.example.licenta
 import android.bluetooth.*
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import java.util.*
 
-class PulseOximeter(device: BluetoothDevice) {
+class PulseOximeter(device: BluetoothDevice)  {
     var dev = device
     var gatt : BluetoothGatt? = null
 
@@ -27,10 +29,11 @@ class PulseOximeter(device: BluetoothDevice) {
                 var valoare = value.toHexString().split(" ")
 
                 if (valoare[0] == "81"){
-                    BPM = valoare[1].toInt(16)//from base 16
-                    spo2 = valoare[2].toInt(16)
-                    pi = valoare[3].toInt(16)
-                    Log.i("din if", "val bpm ${BPM} ${spo2} ${pi}")
+                    this@PulseOximeter.BPM = valoare[1].toInt(16)//from base 16
+                    this@PulseOximeter.spo2 = valoare[2].toInt(16)
+                    this@PulseOximeter.pi = valoare[3].toInt(16)
+
+                   Log.i("din if", "val bpm ${BPM} ${spo2} ${pi}")
                 }
             }
         }
@@ -59,21 +62,21 @@ class PulseOximeter(device: BluetoothDevice) {
             }
         }
 
-       override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             this@PulseOximeter.gatt = gatt
             val serviciuDeConectare =
                 gatt?.getService(UUID.fromString("cdeacb80-5235-4c07-8846-93a37ee6b86d"))
             val caracteristicaTemp = serviciuDeConectare?.getCharacteristic(UUID.fromString("CDEACB81-5235-4C07-8846-93A37EE6B86D"))
-           if (caracteristicaTemp == null){
-               Log.i("car temop", "e nula coaie \n\n")
-           }
-           Log.i("dupa sx", "${caracteristicaTemp?.value}")
+            if (caracteristicaTemp == null){
+                Log.i("car temop", "e nula coaie \n\n")
+            }
+            Log.i("dupa sx", "${caracteristicaTemp?.value}")
             //gatt?.setCharacteristicNotification(caracteristicaTemp, true)
-           gatt?.setCharacteristicNotification(caracteristicaTemp, true)
-           val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //tre sa scriem la descriptor ptr ca sa subscribe
-           val desc = caracteristicaTemp?.getDescriptor(cccdUuid)
-           desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-           gatt?.writeDescriptor(desc)
+            gatt?.setCharacteristicNotification(caracteristicaTemp, true)
+            val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //tre sa scriem la descriptor ptr ca sa subscribe
+            val desc = caracteristicaTemp?.getDescriptor(cccdUuid)
+            desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+            gatt?.writeDescriptor(desc)
 
 
         }
@@ -83,4 +86,8 @@ class PulseOximeter(device: BluetoothDevice) {
         dev.connectGatt(null, false, gattCallBack) //fa tru falseul sa se faca automatt
         Log.i("din auth", "conectat la pulsoximetru")
     }
+
+
+
+
 }

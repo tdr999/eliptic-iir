@@ -3,7 +3,6 @@ package com.example.licenta
 import CustomAdapter
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -21,7 +20,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.widget.Toast
 
-class ScanningActivity : AppCompatActivity(), CustomAdapter.OnItemClickListener {
+class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickListener {
 
 
 
@@ -76,15 +75,19 @@ class ScanningActivity : AppCompatActivity(), CustomAdapter.OnItemClickListener 
 
         override fun onScanResult(callbackType: Int, result: ScanResult) {
 
+            if (result.device.name == "My Oximeter" || result.device.name == "Mi Band 3") {
+                if (result.device in lista_adrese == false) {//tinem doua liste in paralel, una cu adrese, alta cu results
+                    lista_scanare.add(result)
+                    lista_adrese.add(result.device)
+                    adaptorRezultate.notifyItemInserted(lista_scanare.indexOf(lista_scanare.last()))
+                }
 
-            if (result.device in lista_adrese == false){//tinem doua liste in paralel, una cu adrese, alta cu results
-                lista_scanare.add(result)
-                lista_adrese.add(result.device)
-                adaptorRezultate.notifyItemInserted(lista_scanare.indexOf(lista_scanare.last()))
-            }
-
-            with(result.device){
-                Log.i("ScanCallback", "Found Device! Name: ${name?: "Unnamed"}, Adress: $address")
+                with(result.device) {
+                    Log.i(
+                        "ScanCallback",
+                        "Found Device! Name: ${name ?: "Unnamed"}, Adress: $address"
+                    )
+                }
             }
 
         }
@@ -122,10 +125,27 @@ class ScanningActivity : AppCompatActivity(), CustomAdapter.OnItemClickListener 
         }
     }
 
-    override fun onItemClick(position: Int) {
-        Toast.makeText(this@ScanningActivity, "Item $position click", Toast.LENGTH_SHORT).show()
+    override fun onItemClick(position: Int) { //functia asta e rulata cand dai click pe un item din lista
+        Toast.makeText(this@scanning_view_activity, "Item $position click", Toast.LENGTH_SHORT).show()
         val clickedItem = lista_scanare[position]
         adaptorRezultate.notifyItemChanged(position)
         //https://www.youtube.com/watch?v=wKFJsrdiGS8/
+        if (clickedItem.device.name == "Mi Band 3"){
+            stopBleScan()
+
+            intent = Intent(this, miband_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
+            intent.putExtra("bt_device", clickedItem.device)
+            startActivity(intent)
+
+
+        }
+        else{
+            //cod ximetr
+                //cel mai simplu e de passuit bluetooth deviceul la alt activity si instantiat obiectul acolo
+            stopBleScan()
+            intent = Intent(this, oximeter_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
+            intent.putExtra("bt_device", clickedItem.device)
+            startActivity(intent)
+        }
     }
 }

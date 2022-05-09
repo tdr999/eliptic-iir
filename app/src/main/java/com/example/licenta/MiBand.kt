@@ -19,6 +19,9 @@ class MiBand (device: BluetoothDevice) {
 
     var authChar : BluetoothGattCharacteristic? = null
 
+    var steps : Int? = null
+    var baterie : Int? = null
+
 
 //    var SECRET_KEY = byteArrayOf(
 //        9.toByte(),
@@ -105,7 +108,7 @@ class MiBand (device: BluetoothDevice) {
 //                    setDateTime()
 //                    setCaloriesDistanceMetric()
 //                    sendShortVibration()
-                    sendCustomMessage()
+//                    sendCustomMessage()
 
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
@@ -527,6 +530,7 @@ class MiBand (device: BluetoothDevice) {
             var byte_arr = battery_characteristic?.value?.toHexString()?.split(" ")
             var charge_value = byte_arr?.get(1)?.toInt(16)
             Log.i("valoare baterie", "${charge_value}")
+            this@MiBand.baterie = charge_value
         }, 2000)
         gatt?.setCharacteristicNotification(battery_characteristic, true)
         descAuth?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
@@ -553,16 +557,18 @@ class MiBand (device: BluetoothDevice) {
             var bitul_2 = byte_arr?.get(2)?.toInt(16)
                 ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
             var bitul_1 = byte_arr?.get(1)?.toInt(16)
-            var charge_value = bitul_2?.let { bitul_1?.plus(it) }
+            var steps_value = bitul_2?.let { bitul_1?.plus(it) }
 
             //practic hexii nu bitii
 
-            Log.i("valoare steps", "${charge_value}")
-
-            gatt?.setCharacteristicNotification(steps_characteristic, true)
-            descAuth?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-            gatt?.writeDescriptor(descAuth)
+            Log.i("valoare steps", "${steps_value}")
+            this@MiBand.steps = steps_value
+            //aici luam pasii continuu
+//            gatt?.setCharacteristicNotification(steps_characteristic, true)
+//            descAuth?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+//            gatt?.writeDescriptor(descAuth)
         }, 2000)
+
 
 //        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
 
