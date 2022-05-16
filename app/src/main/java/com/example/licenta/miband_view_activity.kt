@@ -28,19 +28,27 @@ class miband_view_activity : AppCompatActivity() {
         miband.connect() //asta dureaza cam 2 secunde
         miband_global = miband
 
-        Handler(Looper.getMainLooper()).postDelayed({
 
-            getBattery(findViewById(R.id.text_baterie)) //astea trebuie rulate in paralel, aceste comenzi
+//        Handler(Looper.getMainLooper()).postDelayed({
+//
+//            getBattery(findViewById(R.id.text_baterie)) //astea trebuie rulate in paralel, aceste comenzi
+//
+//        }, 8000)
+//
+//        Handler(Looper.getMainLooper()).postDelayed({
+//
+//            getSteps(findViewById(R.id.text_steps)) //ca sa ruleze in paralel comenzile
+//        }, 7900)
+//
+//
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            miband.sendShortVibration()
+//        }, 7800)
 
-        }, 8000)
 
-        Handler(Looper.getMainLooper()).postDelayed({
-
-            getSteps(findViewById(R.id.text_steps)) //ca sa ruleze in paralel comenzile
-        }, 7900)
     }
 
-    fun getSteps(view: View){
+    fun getSteps(view: View){ //functie apelata initial ca sa citeasca cei mai recenti pasi de la bratara
         miband_global?.getSteps()
         Handler(Looper.getMainLooper()).postDelayed({ //trebuie 2.1 secunde intarziere ptr ca dureaza 2 secunde sa getSteps
             var steps = miband_global?.steps
