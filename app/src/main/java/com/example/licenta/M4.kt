@@ -118,6 +118,7 @@ class M4(device: BluetoothDevice)  {
 //            )
 
             caracteristicaComenzi?.writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
+//test
 
             Handler(Looper.getMainLooper()).postDelayed({
                 caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x0d, 0x36, 0x03, 0x10, 0x00, 0x00, 0x08, 0x64, 0x64, 0x37, 0x35, 0x65, 0x31, 0x33, 0x32)
