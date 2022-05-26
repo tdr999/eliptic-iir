@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
         <activity android:name=".miband_view_activity"></activity>
+        <activity android:name=".m4_view_activity"></activity>
         <activity android:name=".oximeter_view_activity" /> <!-- scoate actionabarul tema asta -->
         <activity android:name=".scanning_view_activity" />
         <activity android:name=".MainActivity">

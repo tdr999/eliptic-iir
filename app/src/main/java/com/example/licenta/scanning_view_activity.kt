@@ -75,7 +75,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
 
         override fun onScanResult(callbackType: Int, result: ScanResult) {
 
-            if (result.device.name == "My Oximeter" || result.device.name == "Mi Band 3") {
+            if (result.device.name == "My Oximeter" || result.device.name == "Mi Band 3" || result.device.name == "B01H_M4") {
                 if (result.device in lista_adrese == false) {//tinem doua liste in paralel, una cu adrese, alta cu results
                     lista_scanare.add(result)
                     lista_adrese.add(result.device)
@@ -134,6 +134,16 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             stopBleScan()
 
             intent = Intent(this, miband_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
+            intent.putExtra("bt_device", clickedItem.device)
+            startActivity(intent)
+
+
+        }
+
+        else if (clickedItem.device.name == "B01H_M4"){
+            stopBleScan()
+
+            intent = Intent(this, m4_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)
 

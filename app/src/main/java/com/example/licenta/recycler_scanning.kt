@@ -70,6 +70,10 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
         if (dataSet[position].device.name == "Mi Band 3") {
             viewHolder.imagine_device.setImageResource(R.drawable.miband3)
         }
+
+        else if (dataSet[position].device.name == "B01H_M4") {
+            viewHolder.imagine_device.setImageResource(R.drawable.m4)
+        }
         else{
             viewHolder.imagine_device.setImageResource(R.drawable.jumper)
         }
