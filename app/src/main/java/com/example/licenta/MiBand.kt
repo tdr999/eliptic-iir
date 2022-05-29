@@ -122,8 +122,8 @@ class MiBand (device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
                     Log.i("primit 10 01 04", " bomba")
-                    authChar?.value= byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-//                    authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
+//                    authChar?.value= byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+                    authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
                     gatt.writeCharacteristic(authChar)
 
                 }
@@ -434,190 +434,189 @@ class MiBand (device: BluetoothDevice) {
 //        }, 2000)
 
     /*========================DE AICI INCEPE CODUL GENERAT DE GENERATUDOR=================*/
-
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x0c)
             gatt?.writeCharacteristic(charac_3)
         }, 2000)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x0c, 0x05)
+            charac_3?.value = byteArrayOf(0x11)
             gatt?.writeCharacteristic(charac_3)
         }, 2125)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x11)
+            charac_3?.value = byteArrayOf(0x13)
             gatt?.writeCharacteristic(charac_3)
         }, 2250)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x11, 0x01, 0x02, 0x0b, 0x02, 0x07, 0x00, 0x00, 0x00, 0x31, 0x03, 0x00, 0x00, 0x00, 0x01, 0x07, 0x00, 0x00, 0x00)
+            charac_3?.value = byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)
             gatt?.writeCharacteristic(charac_3)
         }, 2375)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x13)
+            charac_3?.value = byteArrayOf(0x11)
             gatt?.writeCharacteristic(charac_3)
         }, 2500)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x13, 0x05)
-            gatt?.writeCharacteristic(charac_3)
-        }, 2625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)
-            gatt?.writeCharacteristic(charac_3)
-        }, 2750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x17, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 2875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x11)
-            gatt?.writeCharacteristic(charac_3)
-        }, 3000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x11, 0x01, 0x02, 0x0b, 0x02, 0x07, 0x00, 0x00, 0x00, 0x31, 0x03, 0x00, 0x00, 0x00, 0x01, 0x07, 0x00, 0x00, 0x00)
-            gatt?.writeCharacteristic(charac_3)
-        }, 3125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
             charac_6?.value = byteArrayOf(0x0f, 0x47, 0x00, 178.toByte(), 0x07, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 178.toByte(), 0x07, 0x01, 0x01, 0x00, 0x2c, 0x1d, 128.toByte(), 0x5c)
             gatt?.writeCharacteristic(charac_6)
-        }, 3250)
+        }, 2625)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_7?.value = byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_7)
-        }, 3375)
+        }, 2750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_6?.value = byteArrayOf(0x01, 0x46, 0x00)
             gatt?.writeCharacteristic(charac_6)
-        }, 3500)
+        }, 2875)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_6?.value = byteArrayOf(0x0f, 0x46, 0x00, 178.toByte(), 0x07, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 178.toByte(), 0x07, 0x01, 0x01, 0x00, 0x2c, 0x1d, 128.toByte(), 0x5c)
             gatt?.writeCharacteristic(charac_6)
-        }, 3625)
+        }, 3000)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_7?.value = byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_7)
-        }, 3750)
+        }, 3125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x19, 0x00, 0x01)
             gatt?.writeCharacteristic(charac_3)
-        }, 3875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x19, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 4000)
+        }, 3250)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_4?.value = byteArrayOf(0x01, 0x01, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x07, 0x08)
             gatt?.writeCharacteristic(charac_4)
-        }, 4125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x00, 0x0c)
-            gatt?.writeCharacteristic(charac_4)
-        }, 4250)
+        }, 3375)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_4?.value = byteArrayOf(0x03)
             gatt?.writeCharacteristic(charac_4)
-        }, 4375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x03, 0x01)
-            gatt?.writeCharacteristic(charac_4)
-        }, 4500)
+        }, 3500)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_8?.value = byteArrayOf(0x4f, 0x00, 0x00, 206.toByte(), 0x07, 0x07, 0x01, 0x01, 170.toByte(), 0x00, 224.toByte(), 0x2e, 0x15, 0x77, 206.toByte(), 164.toByte())
             gatt?.writeCharacteristic(charac_8)
-        }, 4625)
+        }, 3625)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_4?.value = byteArrayOf(0x01, 0x02, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x07, 0x08)
             gatt?.writeCharacteristic(charac_4)
-        }, 4750)
+        }, 3750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x03, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 4875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 230.toByte(), 0x07, 0x05, 0x0b, 0x14, 0x22, 0x07, 0x00)
-            gatt?.writeCharacteristic(charac_4)
-        }, 5000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x03, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 5125)
+        }, 3875)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_4?.value = byteArrayOf(0x03)
             gatt?.writeCharacteristic(charac_4)
-        }, 5250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x03, 0x01)
-            gatt?.writeCharacteristic(charac_4)
-        }, 5375)
+        }, 4000)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00)
             gatt?.writeCharacteristic(charac_20)
-        }, 5500)
+        }, 4125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x02, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 5625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 5750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x02, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 5875)
+        }, 4250)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x04, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 255.toByte(), 255.toByte(), 0x00)
             gatt?.writeCharacteristic(charac_20)
-        }, 6000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 6125)
+        }, 4375)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_4?.value = byteArrayOf(0x01, 0x02, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x07, 0x08)
             gatt?.writeCharacteristic(charac_4)
-        }, 6250)
+        }, 4500)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_20?.value = byteArrayOf(0x00, 0x01, 0x00, 0x01, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x05, 0x00, 0x01, 0x19, 0x0b, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
             gatt?.writeCharacteristic(charac_20)
+        }, 4625)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 0x41, 0x01, 0x00, 0x00, 0x1c, 0x0d, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00, 0x00, 0x03, 0x1e, 0x0e, 0x43, 0x6c, 0x65)
+            gatt?.writeCharacteristic(charac_20)
+        }, 4750)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_3?.value = byteArrayOf(0x06, 0x0a, 0x00, 0x00)
+            gatt?.writeCharacteristic(charac_3)
+        }, 4875)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_4?.value = byteArrayOf(0x03)
+            gatt?.writeCharacteristic(charac_4)
+        }, 5000)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 0x41, 0x02, 0x61, 0x72, 0x00, 0x03, 0x01, 0x1a, 0x0f, 0x53, 0x68, 0x6f, 0x77, 0x65, 0x72, 0x00, 0x04, 0x00, 0x18)
+            gatt?.writeCharacteristic(charac_20)
+        }, 5125)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 129.toByte(), 0x03, 0x0e, 0x54, 0x68, 0x75, 0x6e, 0x64, 0x65, 0x72, 0x73, 0x74, 0x6f, 0x72, 0x6d, 0x00)
+            gatt?.writeCharacteristic(charac_20)
+        }, 5250)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x02, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x00, 0x18, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
+            gatt?.writeCharacteristic(charac_20)
+        }, 5375)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03)
+            gatt?.writeCharacteristic(charac_20)
+        }, 5500)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_3?.value = byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)
+            gatt?.writeCharacteristic(charac_3)
+        }, 5625)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_4?.value = byteArrayOf(0x01, 0x05, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x21, 0x1d, 0x0c)
+            gatt?.writeCharacteristic(charac_4)
+        }, 5750)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_4?.value = byteArrayOf(0x03)
+            gatt?.writeCharacteristic(charac_4)
+        }, 5875)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_3?.value = byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)
+            gatt?.writeCharacteristic(charac_3)
+        }, 6000)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_3?.value = byteArrayOf(0x06, 0x1e, 0x00, 0x4d, 0x4d, 0x2f, 0x64, 0x64, 0x2f, 0x79, 0x79, 0x79, 0x79, 0x00)
+            gatt?.writeCharacteristic(charac_3)
+        }, 6125)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00)
+            gatt?.writeCharacteristic(charac_20)
+        }, 6250)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x04, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 255.toByte(), 255.toByte(), 0x00)
+            gatt?.writeCharacteristic(charac_20)
         }, 6375)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 230.toByte(), 0x07, 0x05, 0x0b, 0x14, 0x22, 0x07, 0x00)
-            gatt?.writeCharacteristic(charac_4)
+            charac_20?.value = byteArrayOf(0x00, 0x01, 0x00, 0x01, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x05, 0x00, 0x01, 0x19, 0x0b, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
+            gatt?.writeCharacteristic(charac_20)
         }, 6500)
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -626,489 +625,186 @@ class MiBand (device: BluetoothDevice) {
         }, 6625)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x06, 0x0a, 0x00, 0x00)
-            gatt?.writeCharacteristic(charac_3)
+            charac_20?.value = byteArrayOf(0x00, 0x41, 0x02, 0x61, 0x72, 0x00, 0x03, 0x01, 0x1a, 0x0f, 0x53, 0x68, 0x6f, 0x77, 0x65, 0x72, 0x00, 0x04, 0x00, 0x18)
+            gatt?.writeCharacteristic(charac_20)
         }, 6750)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x03)
-            gatt?.writeCharacteristic(charac_4)
+            charac_20?.value = byteArrayOf(0x00, 129.toByte(), 0x03, 0x0e, 0x54, 0x68, 0x75, 0x6e, 0x64, 0x65, 0x72, 0x73, 0x74, 0x6f, 0x72, 0x6d, 0x00)
+            gatt?.writeCharacteristic(charac_20)
         }, 6875)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 0x41, 0x02, 0x61, 0x72, 0x00, 0x03, 0x01, 0x1a, 0x0f, 0x53, 0x68, 0x6f, 0x77, 0x65, 0x72, 0x00, 0x04, 0x00, 0x18)
+            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x02, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x00, 0x18, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
             gatt?.writeCharacteristic(charac_20)
         }, 7000)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 129.toByte(), 0x03, 0x0e, 0x54, 0x68, 0x75, 0x6e, 0x64, 0x65, 0x72, 0x73, 0x74, 0x6f, 0x72, 0x6d, 0x00)
+            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03)
             gatt?.writeCharacteristic(charac_20)
         }, 7125)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x0a, 0x00, 0x01)
+            charac_3?.value = byteArrayOf(0x50)
             gatt?.writeCharacteristic(charac_3)
         }, 7250)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x03, 0x01)
-            gatt?.writeCharacteristic(charac_4)
-        }, 7375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 129.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 7500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x02, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x00, 0x18, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
-            gatt?.writeCharacteristic(charac_20)
-        }, 7625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 7750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03)
-            gatt?.writeCharacteristic(charac_20)
-        }, 7875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 8000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 8125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x10, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 8250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x01, 0x05, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x21, 0x1d, 0x0c)
-            gatt?.writeCharacteristic(charac_4)
-        }, 8375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 230.toByte(), 0x07, 0x05, 0x0b, 0x13, 0x21, 0x1d, 0x00)
-            gatt?.writeCharacteristic(charac_4)
-        }, 8500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x03)
-            gatt?.writeCharacteristic(charac_4)
-        }, 8625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 8750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_4?.value = byteArrayOf(0x10, 0x03, 0x01)
-            gatt?.writeCharacteristic(charac_4)
-        }, 8875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x10, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 9000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x06, 0x1e, 0x00, 0x4d, 0x4d, 0x2f, 0x64, 0x64, 0x2f, 0x79, 0x79, 0x79, 0x79, 0x00)
-            gatt?.writeCharacteristic(charac_3)
-        }, 9125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x1e, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 9250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00)
-            gatt?.writeCharacteristic(charac_20)
-        }, 9375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 9500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x04, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 255.toByte(), 255.toByte(), 0x00)
-            gatt?.writeCharacteristic(charac_20)
-        }, 9625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 9750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 0x01, 0x00, 0x01, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x05, 0x00, 0x01, 0x19, 0x0b, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
-            gatt?.writeCharacteristic(charac_20)
-        }, 9875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 0x41, 0x01, 0x00, 0x00, 0x1c, 0x0d, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00, 0x00, 0x03, 0x1e, 0x0e, 0x43, 0x6c, 0x65)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 0x41, 0x02, 0x61, 0x72, 0x00, 0x03, 0x01, 0x1a, 0x0f, 0x53, 0x68, 0x6f, 0x77, 0x65, 0x72, 0x00, 0x04, 0x00, 0x18)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 129.toByte(), 0x03, 0x0e, 0x54, 0x68, 0x75, 0x6e, 0x64, 0x65, 0x72, 0x73, 0x74, 0x6f, 0x72, 0x6d, 0x00)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 129.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 0x02, 177.toByte(), 0x0f, 0x7c, 0x62, 0x0c, 0x00, 0x18, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x00)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_20?.value = byteArrayOf(0x10, 0x00, 193.toByte(), 0x01, 0x01)
-            gatt?.writeCharacteristic(charac_20)
-        }, 10875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x50)
-            gatt?.writeCharacteristic(charac_3)
-        }, 11000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x50, 0x05)
-            gatt?.writeCharacteristic(charac_3)
-        }, 11125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_8?.value = byteArrayOf(0x10, 0x00, 0x00, 0x40, 0x1f, 0x00, 0x00)
-            gatt?.writeCharacteristic(charac_8)
-        }, 11250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x06, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 11375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x06, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 11500)
+        }, 7375)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x00, 0x07, 0x00, 0x1f)
             gatt?.writeCharacteristic(charac_3)
-        }, 11625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 11750)
+        }, 7500)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x01, 0x07, 0x00, 0x7f)
             gatt?.writeCharacteristic(charac_3)
-        }, 11875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 12000)
+        }, 7625)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x02, 0x07, 0x00, 128.toByte())
             gatt?.writeCharacteristic(charac_3)
-        }, 12125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 12250)
+        }, 7750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x03, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 12375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 12500)
+        }, 7875)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x04, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 12625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 12750)
+        }, 8000)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x05, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 12875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 13000)
+        }, 8125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x06, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 13125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 13250)
+        }, 8250)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x07, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 13375)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 13500)
+        }, 8375)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x08, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 13625)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 13750)
+        }, 8500)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x02, 0x09, 0x12, 0x2c, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 13875)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x02, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 14000)
+        }, 8625)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x01, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 14125)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x01, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 14250)
+        }, 8750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_8?.value = byteArrayOf(0x4f, 0x00, 0x00, 206.toByte(), 0x07, 0x07, 0x01, 0x01, 170.toByte(), 0x00, 224.toByte(), 0x2e, 0x15, 0x77, 206.toByte(), 164.toByte())
             gatt?.writeCharacteristic(charac_8)
-        }, 14375)
+        }, 8875)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x08, 0x00, 0x3c, 0x00, 0x08, 0x00, 0x15, 0x00, 0x00, 0x00, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 14500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x08, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 14625)
+        }, 9000)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x09, 130.toByte())
             gatt?.writeCharacteristic(charac_3)
-        }, 14750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x09, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 14875)
+        }, 9125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x03, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 15000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x03, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 15125)
+        }, 9250)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x02, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 15250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x02, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 15375)
+        }, 9375)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x0a, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 15500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x0a, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 15625)
+        }, 9500)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)
             gatt?.writeCharacteristic(charac_3)
-        }, 15750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x10, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 15875)
+        }, 9625)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)
             gatt?.writeCharacteristic(charac_3)
-        }, 16000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x10, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 16125)
+        }, 9750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 16250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x05, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 16375)
+        }, 9875)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x07, 0x00, 155.toByte(), 0x2c, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 16500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x07, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 16625)
+        }, 10000)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x0d, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 16750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x0d, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 16875)
+        }, 10125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x0a, 255.toByte(), 0x30, 0x00, 0x05, 0x03, 0x04, 0x07, 0x01, 0x02, 0x06)
             gatt?.writeCharacteristic(charac_3)
-        }, 17000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x0a, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 17125)
+        }, 10250)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x16, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 17250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x16, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 17375)
+        }, 10375)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x1e, 0x00, 0x4d, 0x4d, 0x2f, 0x64, 0x64, 0x2f, 0x79, 0x79, 0x79, 0x79, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 17500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x1e, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 17625)
+        }, 10500)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x1d, 0x00, 0x01)
             gatt?.writeCharacteristic(charac_3)
-        }, 17750)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x1d, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 17875)
+        }, 10625)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x1a, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 18000)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x1a, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 18125)
+        }, 10750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x1f, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 18250)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x1f, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 18375)
+        }, 10875)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_3?.value = byteArrayOf(0x06, 0x20, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_3)
-        }, 18500)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            charac_3?.value = byteArrayOf(0x10, 0x06, 0x20, 0x00, 0x01)
-            gatt?.writeCharacteristic(charac_3)
-        }, 18625)
+        }, 11000)
 
         Handler(Looper.getMainLooper()).postDelayed({
             charac_7?.value = byteArrayOf(0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_7)
-        }, 18750)
+        }, 11125)
+
+
 
 
         /*===============Aici Se Termina==========================*/
