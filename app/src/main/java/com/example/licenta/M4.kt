@@ -134,11 +134,11 @@ class M4(device: BluetoothDevice)  {
                 caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x06, 0x04, 0x02, 0x10, 0x0a, 0x00, 0x01, 0x02)
                 gatt?.writeCharacteristic(caracteristicaComenzi)
             }, 2250)
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x09, 153.toByte(), 0x02, 0x10, 0x01, 0x00, 0x04, 0x59, 0x77, 0x05, 197.toByte())
-                gatt?.writeCharacteristic(caracteristicaComenzi)
-            }, 2375) //dupa multe teste, am ajuns la conculzia ca aceasta linie schimba data si ora
+//
+//            Handler(Looper.getMainLooper()).postDelayed({                                               //ora?
+//                caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x09, 153.toByte(), 0x02, 0x10, 0x01, 0x00, 0x04, 0x59, 0x77, 0x05, 197.toByte())
+//                gatt?.writeCharacteristic(caracteristicaComenzi)
+//            }, 2375) //dupa multe teste, am ajuns la conculzia ca aceasta linie schimba  macar ora , dar nu stim cum asa ca vom seta cu aplicati ainitiala
 
             Handler(Looper.getMainLooper()).postDelayed({
                 caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x09, 165.toByte(), 0x02, 0x10, 0x04, 0x00, 0x04, 151.toByte(), 0x61, 139.toByte(), 0x20)
@@ -175,24 +175,67 @@ class M4(device: BluetoothDevice)  {
                 gatt?.writeCharacteristic(caracteristicaComenzi)
             }, 3250)
 
-            Handler(Looper.getMainLooper()).postDelayed({
-                caracteristicaComenzi?.value = byteArrayOf(253.toByte(), 0x00, 0x05, 0x17, 0x0f, 0x05, 0x00, 0x00, 0x01)
-                gatt?.writeCharacteristic(caracteristicaComenzi)
-            }, 3375)
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                caracteristicaComenzi?.value = byteArrayOf(253.toByte(), 0x00, 0x05, 0x17, 0x0f, 0x05, 0x00, 0x00, 0x01)
+//                gatt?.writeCharacteristic(caracteristicaComenzi)
+//            }, 3375)
+//
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x06, 0x02, 0x05, 0x10, 0x06, 0x00, 0x01, 0x01)
+//                gatt?.writeCharacteristic(caracteristicaComenzi)
+//            }, 3500)  //aceasta cmanda si cea de deasupra banuiesc ca sunt ce trebe
+
+            //teste heart rate
+
+
+//            var bytes_to_write_hrt = byteArrayOf( //comanda ptr masurare puls, log hrt tarziu
+//                223.toByte(),
+//                0.toByte(),
+//                6.toByte(),
+//                6.toByte(),
+//                2.toByte(),
+//                16.toByte(),
+//                13.toByte(),
+//                0.toByte(),
+//                1.toByte(),
+//                1.toByte(),
+//            )
+//            var bytes_to_write_hrt = byteArrayOf( //comanda tensiune ultimii 2 bytes
+//                223.toByte(),
+//                0.toByte(),
+//                6.toByte(),
+//                7.toByte(),
+//                2.toByte(),
+//                16.toByte(),
+//                14.toByte(),
+//                0.toByte(),
+//                1.toByte(),
+//                1.toByte(),
+//            )
+
+            var bytes_to_write_hrt = byteArrayOf( // comanda saturatie
+                223.toByte(),
+                0.toByte(),
+                6.toByte(),
+                21.toByte(),
+                2.toByte(),
+                16.toByte(),
+                28.toByte(),
+                0.toByte(),
+                1.toByte(),
+                1.toByte(),
+            )
+
 
             Handler(Looper.getMainLooper()).postDelayed({
-                caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x06, 0x02, 0x05, 0x10, 0x06, 0x00, 0x01, 0x01)
+                caracteristicaComenzi?.value = bytes_to_write_hrt
                 gatt?.writeCharacteristic(caracteristicaComenzi)
-            }, 3500)  //aceasta cmanda si cea de deasupra banuiesc ca sunt ce trebe
-
-
-
+            }, 3625)
 
         }
 
 
     }
-
 
 
     fun authenticate(){

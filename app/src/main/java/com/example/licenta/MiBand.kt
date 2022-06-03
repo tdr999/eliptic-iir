@@ -8,7 +8,7 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import kotlin.experimental.or
-
+//add user info configuration using nightscout code as inspiration
 
 class MiBand (device: BluetoothDevice) {
 
@@ -21,6 +21,8 @@ class MiBand (device: BluetoothDevice) {
     var authChar : BluetoothGattCharacteristic? = null
 
     var steps : Int? = null
+    var distance : Int? = null
+    var calories : Int? = null
     var baterie : Int? = null
 
 
@@ -108,7 +110,7 @@ class MiBand (device: BluetoothDevice) {
 //                    getBattery()
 //                    setDateTime()
 //                    getActivityCharacteristic()
-                    setCaloriesDistanceMetric()
+//                    setCaloriesDistanceMetric()
 //                    sendShortVibration()
 //                    sendCustomMessage()
 
@@ -122,8 +124,8 @@ class MiBand (device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
                     Log.i("primit 10 01 04", " bomba")
-//                    authChar?.value= byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-                    authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
+                    authChar?.value= byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+//                    authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
                     gatt.writeCharacteristic(authChar)
 
                 }
@@ -997,13 +999,18 @@ class MiBand (device: BluetoothDevice) {
         data += (user_id.shr(8) and 255).toByte()
         data += (user_id.shr(16) and 255).toByte()
         data += (user_id.shr(24) and 255).toByte()
+        Handler(Looper.getMainLooper()).postDelayed({
+            Log.i("user info to be written", "${data.toHexString()}")
+            user_settings_characteristic?.value = data
+            gatt?.writeCharacteristic(user_settings_characteristic)
+        }, 1000)
 
-        Log.i("user info to be written", "${data.toHexString()}")
-        user_settings_characteristic?.value = data
-        gatt?.writeCharacteristic(user_settings_characteristic)
 
 
+    }
 
+
+    fun setUserInfo(){
 
     }
 
@@ -1026,11 +1033,21 @@ class MiBand (device: BluetoothDevice) {
             var bitul_2 = byte_arr?.get(2)?.toInt(16)
                 ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
             var bitul_1 = byte_arr?.get(1)?.toInt(16)
+            var bitul_5 = byte_arr?.get(5)?.toInt(16)
+            var bitul_6 = byte_arr?.get(6)?.toInt(16)
+            var bitul_9 = byte_arr?.get(9)?.toInt(16)
+            var bitul_10 = byte_arr?.get(10)?.toInt(16)
+//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
             var steps_value = bitul_2?.let { bitul_1?.plus(it) }
+            var distance_value = bitul_6?.let{bitul_5?.plus(it)}
+            var calories = bitul_9?.let{bitul_10?.plus(it)}
 
             //practic hexii nu bitii
 
             Log.i("valoare steps", "${steps_value}")
+            Log.i("valoare distance", "${distance_value}")
+            Log.i("valoare calories", "${calories}")
             this@MiBand.steps = steps_value
             //aici luam pasii continuu
             gatt?.setCharacteristicNotification(steps_characteristic, true)
