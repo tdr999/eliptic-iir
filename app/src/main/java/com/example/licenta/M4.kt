@@ -8,9 +8,20 @@ import java.util.*
 class M4(device: BluetoothDevice)  {
     var dev = device
     var gatt : BluetoothGatt? = null
-
-
-
+    var car_com : BluetoothGattCharacteristic? = null
+    var bpm : Int? = null
+    var pressure1 : Int? = null
+    var pressure2 : Int? = null
+    var saturation : Int? = null
+    var steps : Int? = null
+    var calories : Float? = null
+    var distance : Float? = null
+    var char_val : ByteArray? = null
+    var flagStep = 0
+    var flagBlood = 0
+    var flagSaturation = 0
+    var flagBPM = 0
+    var temp = ""
 
     val gattCallBack = object : BluetoothGattCallback() {
 
@@ -24,7 +35,60 @@ class M4(device: BluetoothDevice)  {
                     "BluetoothGattCallback",
                     "Characteristic $uuid changed | value: ${value.toHexString()}"
                 )
+                var valoare = value.toHexString().chunked(3) //split the string in chunks of 2 //also de ce mortii lui face o lista de liste, cine se crede
+                Log.i("lungimea valoare", "${valoare.size}")
+                if ( valoare.size == 20) {
+                    if (valoare[6] == "04 ") {
+                        flagBPM = 1
+                        Log.i("received", "BPM measurement")
+                    }
 
+                    if (valoare[6] == "05 ") {
+                        flagBlood = 1
+                        Log.i("received", "Blood Pressure measurement")
+                        pressure2 = valoare[19].trim().toInt(16)
+                    }
+
+
+                    if (valoare[6] == "0E ") {
+                        flagSaturation = 1
+                        Log.i("received", "Saturation measurement")
+                    }
+
+
+                    if (valoare[6] == "0C ") {
+                        flagStep = 1
+                        temp = valoare[17].trim() + valoare[18].trim() + valoare[19].trim()
+                        distance = (valoare[13].trim() + valoare[14].trim() + valoare[15].trim() + valoare[16].trim()).toInt(16).toFloat() / 1000
+                        steps = (valoare[9].trim() + valoare[10].trim() + valoare[11].trim() + valoare[12].trim()).toInt(16)
+                        Log.i("received", "Steps & Distance & Calories measurement")
+                    }
+
+                }
+                if (valoare.size == 1){
+                    if (flagBPM == 1){
+                        flagBPM = 0
+                        bpm = valoare[0].toInt(16)
+                        Log.i("valoare BPM", "${bpm}")
+                    }
+
+                    if (flagSaturation == 1){
+                        flagSaturation = 0
+                        saturation = valoare[0].trim().toInt(16)
+                    }
+
+                    if (flagBlood == 1){
+                        flagBlood = 0
+                        pressure1 = valoare[0].trim().toInt(16)
+                    }
+
+                    if (flagStep == 1){
+                        temp = temp + valoare[0].trim()
+                        calories = temp.toInt(16).toFloat() / 1000
+                    }
+
+
+                }
 
             }
         }
@@ -68,6 +132,7 @@ class M4(device: BluetoothDevice)  {
                 gatt?.getService(UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9f"))
             val caracteristicaNotificari = serviciuDeConectare?.getCharacteristic(UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9f"))
             val caracteristicaComenzi = serviciuDeConectare?.getCharacteristic(UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9f"))
+            this@M4.car_com = caracteristicaComenzi
             //comenzile le trimite pe 02 si primeste pe 03
             if (caracteristicaNotificari == null){
                 Log.i("car temop", "e nula coaie \n\n")
@@ -85,40 +150,8 @@ class M4(device: BluetoothDevice)  {
                 desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
                 gatt?.writeDescriptor(desc) //setam notificaari si tot
             }, 1200)
-//            var bytes_to_write = byteArrayOf(
-//                223.toByte(),
-//                0.toByte(),
-//                13.toByte(),
-//                54.toByte(),
-//                3.toByte(),
-//                16.toByte(),
-//                0.toByte(),
-//                0.toByte(),
-//                8.toByte(),
-//                100.toByte(),
-//                100.toByte(),
-//                55.toByte(),
-//                53.toByte(),
-//                101.toByte(),
-//                49.toByte(),
-//                51.toByte(),
-//                50.toByte(),
-//            )
-
-            var bytes_to_write = byteArrayOf(
-                253.toByte(),
-                0.toByte(),
-                5.toByte(),
-                20.toByte(),
-                5.toByte(),
-                12.toByte(),
-                0.toByte(),
-                0.toByte(),
-                1.toByte(),
-            )
 
             caracteristicaComenzi?.writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE
-//test
 
             Handler(Looper.getMainLooper()).postDelayed({
                 caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x0d, 214.toByte(), 0x03, 0x10, 0x00, 0x00, 0x08, 0x61, 0x37, 0x31, 0x33, 0x38, 0x33, 0x38, 0x30)
@@ -173,70 +206,100 @@ class M4(device: BluetoothDevice)  {
             Handler(Looper.getMainLooper()).postDelayed({
                 caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x05, 0x07, 0x0f, 0x10, 0x04, 0x00, 0x00)
                 gatt?.writeCharacteristic(caracteristicaComenzi)
-            }, 3250)
-
-//            Handler(Looper.getMainLooper()).postDelayed({
-//                caracteristicaComenzi?.value = byteArrayOf(253.toByte(), 0x00, 0x05, 0x17, 0x0f, 0x05, 0x00, 0x00, 0x01)
-//                gatt?.writeCharacteristic(caracteristicaComenzi)
-//            }, 3375)
-//
-//            Handler(Looper.getMainLooper()).postDelayed({
-//                caracteristicaComenzi?.value = byteArrayOf(223.toByte(), 0x00, 0x06, 0x02, 0x05, 0x10, 0x06, 0x00, 0x01, 0x01)
-//                gatt?.writeCharacteristic(caracteristicaComenzi)
-//            }, 3500)  //aceasta cmanda si cea de deasupra banuiesc ca sunt ce trebe
-
-            //teste heart rate
+            }, 3250) //toate comenzile astea sunt standarde de configuratie
 
 
-//            var bytes_to_write_hrt = byteArrayOf( //comanda ptr masurare puls, log hrt tarziu
-//                223.toByte(),
-//                0.toByte(),
-//                6.toByte(),
-//                6.toByte(),
-//                2.toByte(),
-//                16.toByte(),
-//                13.toByte(),
-//                0.toByte(),
-//                1.toByte(),
-//                1.toByte(),
-//            )
-//            var bytes_to_write_hrt = byteArrayOf( //comanda tensiune ultimii 2 bytes
-//                223.toByte(),
-//                0.toByte(),
-//                6.toByte(),
-//                7.toByte(),
-//                2.toByte(),
-//                16.toByte(),
-//                14.toByte(),
-//                0.toByte(),
-//                1.toByte(),
-//                1.toByte(),
-//            )
-
-            var bytes_to_write_hrt = byteArrayOf( // comanda saturatie
-                223.toByte(),
-                0.toByte(),
-                6.toByte(),
-                21.toByte(),
-                2.toByte(),
-                16.toByte(),
-                28.toByte(),
-                0.toByte(),
-                1.toByte(),
-                1.toByte(),
-            )
-
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                caracteristicaComenzi?.value = bytes_to_write_hrt
-                gatt?.writeCharacteristic(caracteristicaComenzi)
-            }, 3625)
 
         }
 
 
+
+
     }
 
+    fun getSteps(){
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            car_com?.value = byteArrayOf(253.toByte(), 0x00, 0x05, 0x17, 0x0f, 0x05, 0x00, 0x00, 0x01)
+            gatt?.writeCharacteristic(car_com)
+        }, 125)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            car_com?.value = byteArrayOf(223.toByte(), 0x00, 0x06, 0x02, 0x05, 0x10, 0x06, 0x00, 0x01, 0x01)
+            gatt?.writeCharacteristic(car_com)
+        }, 175)  //aceasta cmanda si cea de deasupra banuiesc ca sunt ce trebe
+    }
+
+    fun getHeart(){
+
+
+        var bytes_to_write_hrt = byteArrayOf( //comanda ptr masurare puls, log hrt tarziu
+            223.toByte(),
+            0.toByte(),
+            6.toByte(),
+            6.toByte(),
+            2.toByte(),
+            16.toByte(),
+            13.toByte(),
+            0.toByte(),
+            1.toByte(),
+            1.toByte(),
+        )
+
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            car_com?.value = bytes_to_write_hrt
+            gatt?.writeCharacteristic(car_com)
+        }, 125)
+
+    }
+
+    fun getBlood(){
+
+
+        var bytes_to_write = byteArrayOf( //comanda tensiune ultimii 2 bytes
+            223.toByte(),
+            0.toByte(),
+            6.toByte(),
+            7.toByte(),
+            2.toByte(),
+            16.toByte(),
+            14.toByte(),
+            0.toByte(),
+            1.toByte(),
+            1.toByte(),
+        )
+
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            car_com?.value = bytes_to_write
+            gatt?.writeCharacteristic(car_com)
+        }, 125)
+
+    }
+
+    fun getSaturation(){
+
+
+        var bytes_to_write = byteArrayOf( // comanda saturatie
+            223.toByte(),
+            0.toByte(),
+            6.toByte(),
+            21.toByte(),
+            2.toByte(),
+            16.toByte(),
+            28.toByte(),
+            0.toByte(),
+            1.toByte(),
+            1.toByte(),
+        )
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            car_com?.value = bytes_to_write
+            gatt?.writeCharacteristic(car_com)
+        }, 125)
+
+    }
 
     fun authenticate(){
         dev.connectGatt(null, false, gattCallBack) //fa tru falseul sa se faca automatt
