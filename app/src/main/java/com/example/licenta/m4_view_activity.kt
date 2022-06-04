@@ -20,6 +20,32 @@ class m4_view_activity : AppCompatActivity() {
     }
 
 
+   fun updateLoop() {
+       Thread{
+           while(true){
+               runOnUiThread{
+
+                   findViewById<TextView>(R.id.text_steps).text = m4_global?.steps.toString() + " Steps"
+                   findViewById<TextView>(R.id.text_calories).text = m4_global?.calories.toString() + " kCal"
+                   findViewById<TextView>(R.id.text_distance).text = m4_global?.distance.toString() + " km"
+
+                   findViewById<TextView>(R.id.text_heart_rate).text = m4_global?.bpm.toString() + " BPM"
+                   findViewById<TextView>(R.id.text_saturation).text = m4_global?.saturation.toString() + "% SpO2"
+                   findViewById<TextView>(R.id.text_blood).text = m4_global?.pressure2.toString() + "/" + m4_global?.pressure1.toString()+" mmHg"
+
+
+
+               }
+
+               Thread.sleep(125)
+           }
+
+
+
+       }.start()
+   }
+
+
 
 
     override fun onResume() {
@@ -28,30 +54,31 @@ class m4_view_activity : AppCompatActivity() {
         val m4 = M4(received_device)
         m4_global = m4
         m4.authenticate()
+        updateLoop()
     }
 
     fun getSteps(view : View){
-       m4_global?.getSteps()
-        findViewById<TextView>(R.id.text_steps).text = m4_global?.steps.toString() + " Steps"
-        findViewById<TextView>(R.id.text_calories).text = m4_global?.calories.toString() + " kCal"
-        findViewById<TextView>(R.id.text_distance).text = m4_global?.distance.toString() + " km"
+        m4_global?.getSteps()
+//        findViewById<TextView>(R.id.text_steps).text = m4_global?.steps.toString() + " Steps"
+//        findViewById<TextView>(R.id.text_calories).text = m4_global?.calories.toString() + " kCal"
+//        findViewById<TextView>(R.id.text_distance).text = m4_global?.distance.toString() + " km"
     }
 
     fun getBlood(view : View){
         m4_global?.getBlood()
-        findViewById<TextView>(R.id.text_blood).text = m4_global?.pressure2.toString() + "/" + m4_global?.pressure1.toString()+" mmHg"
+//        findViewById<TextView>(R.id.text_blood).text = m4_global?.pressure2.toString() + "/" + m4_global?.pressure1.toString()+" mmHg"
     }
 
 
     fun getSaturation(view : View){
         m4_global?.getSaturation()
-        findViewById<TextView>(R.id.text_saturation).text = m4_global?.saturation.toString() + "% SpO2"
+//        findViewById<TextView>(R.id.text_saturation).text = m4_global?.saturation.toString() + "% SpO2"
     }
 
 
     fun getHeart(view : View){
         m4_global?.getHeart()
-        findViewById<TextView>(R.id.text_heart_rate).text = m4_global?.bpm.toString() + " BPM"
+//        findViewById<TextView>(R.id.text_heart_rate).text = m4_global?.bpm.toString() + " BPM"
     }
 
 }
