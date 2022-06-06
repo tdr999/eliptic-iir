@@ -20,6 +20,27 @@ class miband_view_activity : AppCompatActivity() {
     }
 
 
+    fun updateLoop() {
+        Thread{
+            while(true){
+                runOnUiThread{
+
+                    findViewById<TextView>(R.id.text_steps).text = miband_global?.steps.toString() + " Steps"
+                    findViewById<TextView>(R.id.text_calories).text = miband_global?.calories.toString() + " kCal"
+                    findViewById<TextView>(R.id.text_distance).text = miband_global?.distance.toString() + " m"
+                    findViewById<TextView>(R.id.text_heart_rate).text = miband_global?.heart_rate.toString() + " BPM"
+                }
+
+                Thread.sleep(125)
+            }
+
+
+
+        }.start()
+    }
+
+
+
     override fun onResume() {
 
         super.onResume()
@@ -27,33 +48,12 @@ class miband_view_activity : AppCompatActivity() {
         val miband = MiBand(received_device)
         miband.connect() //asta dureaza cam 2 secunde
         miband_global = miband
-
-
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            getBattery(findViewById(R.id.text_baterie)) //astea trebuie rulate in paralel, aceste comenzi
-//
-//        }, 8000)
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            getSteps(findViewById(R.id.text_steps)) //ca sa ruleze in paralel comenzile
-//        }, 7900)
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            miband.sendShortVibration()
-//        }, 7800)
-
+        updateLoop()
 
     }
 
     fun getSteps(view: View){ //functie apelata initial ca sa citeasca cei mai recenti pasi de la bratara
         miband_global?.getSteps()
-        Handler(Looper.getMainLooper()).postDelayed({ //trebuie 2.1 secunde intarziere ptr ca dureaza 2 secunde sa getSteps
-            var steps = miband_global?.steps
-            findViewById<TextView>(R.id.text_steps).text = steps.toString()
-        }, 2100)
     }
 
     fun getBattery(view: View){
@@ -62,6 +62,10 @@ class miband_view_activity : AppCompatActivity() {
             var baterie = miband_global?.baterie
             findViewById<TextView>(R.id.text_baterie).text = baterie.toString() + "%"
         }, 2100)
+    }
+
+    fun getHeart(view : View){
+        miband_global?.subscribeHeartRate()
     }
 
 }

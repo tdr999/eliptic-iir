@@ -1,8 +1,11 @@
 package com.example.licenta
+import android.app.Activity
 import android.bluetooth.*
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import java.nio.charset.Charset
 import java.util.*
 
 class M4(device: BluetoothDevice)  {
@@ -85,7 +88,9 @@ class M4(device: BluetoothDevice)  {
                     if (flagStep == 1){
                         temp = temp + valoare[0].trim()
                         calories = temp.toInt(16).toFloat() / 1000
+
                     }
+
 
 
                 }
@@ -208,6 +213,8 @@ class M4(device: BluetoothDevice)  {
                 gatt?.writeCharacteristic(caracteristicaComenzi)
             }, 3250) //toate comenzile astea sunt standarde de configuratie
 
+            sendMessage()
+
 
 
         }
@@ -251,6 +258,55 @@ class M4(device: BluetoothDevice)  {
             car_com?.value = bytes_to_write_hrt
             gatt?.writeCharacteristic(car_com)
         }, 125)
+
+    }
+
+
+    fun sendMessage(){
+
+        var serviciu_mesaj = gatt?.getService(UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9f"))
+        var caracter_mesaj = serviciu_mesaj?.getCharacteristic(UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9f"))
+        var mesaj = "acesta este un mesaj de test si atata"
+        var mesaj_bytes =  mesaj.toByteArray(Charset.defaultCharset())
+        var bytes_to_write = byteArrayOf(
+            223.toByte(),
+            0.toByte(),
+//            44.toByte(),
+//            87.toByte(),
+//            2.toByte(),
+//            16.toByte(),
+//            18.toByte(),
+//            0.toByte(),
+//            8.toByte(), //byte lungime?
+//            10.toByte(),
+//            0.toByte(),
+//            0.toByte(),
+//            84.toByte(),
+//            117.toByte(),
+//            100.toByte(),
+//            111.toByte(),
+//            114.toByte(),
+//            32.toByte(),
+//            80.toByte(),
+//            114.toByte(),
+        )
+        bytes_to_write = bytes_to_write
+
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                caracter_mesaj?.setValue(bytes_to_write)
+                gatt?.writeCharacteristic(caracter_mesaj)
+
+            }, 4500)
+
+
+
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                caracter_mesaj?.setValue(mesaj_bytes)
+                gatt?.writeCharacteristic(caracter_mesaj)
+
+            }, 5000)
 
     }
 

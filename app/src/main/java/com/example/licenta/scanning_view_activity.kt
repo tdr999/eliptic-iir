@@ -39,6 +39,11 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         var rec_view = findViewById<RecyclerView>(R.id.recycler_view_scan)
         rec_view.layoutManager = LinearLayoutManager(this)
         rec_view.adapter = adaptorRezultate
+        var db = database(this, "Date.db", null, 1)
+        db.insertUser("adrian", "sexfut")
+
+
+
     }
 
 
