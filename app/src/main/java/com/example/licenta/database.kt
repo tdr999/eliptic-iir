@@ -72,7 +72,7 @@ class database(
         db?.execSQL(
                 "CREATE TABLE IF NOT EXISTS users( " +
                 "user_id INTEGER PRIMARY KEY,  " +
-                "user_name TEXT UNIQUE, " +
+                "user_name TEXT, " +
                 "user_pass TEXT " +
                 "); ")
         db?.execSQL(
@@ -137,7 +137,7 @@ class database(
 
     fun checkIfUserExists(user_name: String, user_password: String): Boolean {
         var db = this.readableDatabase
-        var cursor = db?.rawQuery("SELECT * FROM users WHERE (user_name = "+ user_name + "AND user_pass = "+user_password+")", null)
+        var cursor = db?.rawQuery("SELECT * FROM users WHERE (user_name = \'"+ user_name + "\' AND user_pass = \'"+user_password+"\')", null)
         if (cursor?.count == 1 ){
             return true
         }

@@ -19,6 +19,7 @@
         <activity android:name=".m4_view_activity"></activity>
         <activity android:name=".oximeter_view_activity" /> <!-- scoate actionabarul tema asta -->
         <activity android:name=".scanning_view_activity" />
+        <activity android:name=".new_user_activity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

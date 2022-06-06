@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         var gloabal_database = database(this, "Date.db", null, 1)
         global_db = gloabal_database
-        gloabal_database.insertUser("mihai", "parola_de_test") // test
+//        gloabal_database.insertUser("mihai", "parola_de_test") // test
 
     }
 
@@ -74,14 +74,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    fun newUser(view: View){
-//        intent = Intent(
-//            this,
-//            newUserActivity::class.java
-//        )//nu inteleg exact ce face scope res operatorul aici dar whatever
-//        startActivity(intent)
-//
-//    }
+    fun newUser(view: View){
+        intent = Intent(
+            this,
+            new_user_activity::class.java
+        )//nu inteleg exact ce face scope res operatorul aici dar whatever
+        startActivity(intent)
+
+    }
 
 }
 
