@@ -135,4 +135,14 @@ class database(
 
     }
 
+    fun checkIfUserExists(user_name: String, user_password: String): Boolean {
+        var db = this.readableDatabase
+        var cursor = db?.rawQuery("SELECT * FROM users WHERE (user_name = "+ user_name + "AND user_pass = "+user_password+")", null)
+        if (cursor?.count == 1 ){
+            return true
+        }
+        return false
+
+    }
+
 }

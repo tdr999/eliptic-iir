@@ -6,6 +6,10 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.widget.EditText
+import android.widget.Toast
+import org.w3c.dom.Text
 
 
 //the punch through ultimate guide to bluetooth was immensely helpful
@@ -45,16 +49,39 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        //incepe scanning activity
-        intent = Intent(this, scanning_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
-        startActivity(intent)
-
-
     }
+
 
     override fun onDestroy() {
         super.onDestroy() //adaugat disconnect
     }
+
+    fun login(view: View) {
+
+        if (global_db?.checkIfUserExists(
+                findViewById<EditText>(R.id.username_in).text.toString(),
+                findViewById<EditText>(R.id.pass_in).text.toString()
+            ) == true
+        ) {
+            intent = Intent(
+                this,
+                scanning_view_activity::class.java
+            )//nu inteleg exact ce face scope res operatorul aici dar whatever
+            startActivity(intent)
+        }
+        else    {
+            Toast.makeText(this, "User doesn't exist", Toast.LENGTH_LONG).show()
+        }
+    }
+
+//    fun newUser(view: View){
+//        intent = Intent(
+//            this,
+//            newUserActivity::class.java
+//        )//nu inteleg exact ce face scope res operatorul aici dar whatever
+//        startActivity(intent)
+//
+//    }
 
 }
 
