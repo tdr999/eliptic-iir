@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.example.licenta.R
 import com.example.licenta.database
 import com.example.licenta.globalContext
+import com.example.licenta.globalDatabase
 
 
 class CustomAdapter(private val dataSet: List<ScanResult>,
@@ -81,8 +82,7 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
             viewHolder.imagine_device.setImageResource(R.drawable.jumper)
         }
 
-        var  db = database(globalContext.context, "Date.db", null, 1 ) //bag picioru in contextu dumnezeilor mamilor lor
-        if (db.checkIfUserHasDevice(dataSet[position].device.address) == false){
+        if (globalDatabase.db.checkIfUserHasDevice(dataSet[position].device.address) == false){
             viewHolder.statut_device.text = "Unknown Device"
             viewHolder.statut_device.setTextColor(Color.RED)
         }

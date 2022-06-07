@@ -144,7 +144,6 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("Mi Band 3", current_user.user_id, clickedItem.device.address)
             }
-
             intent = Intent(this, miband_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)
@@ -162,6 +161,9 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                 globalDatabase.db.insertDevice("M4SmartBand", current_user.user_id, clickedItem.device.address)
                 Log.i("intrat in device know", "Inserteed dev")
             }
+
+            current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
+
             intent = Intent(this, m4_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)

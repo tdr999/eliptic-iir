@@ -1,25 +1,23 @@
 package com.example.licenta
-import android.app.Activity
 import android.bluetooth.*
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import java.nio.charset.Charset
+import java.text.SimpleDateFormat
 import java.util.*
 
 class M4(device: BluetoothDevice)  {
     var dev = device
     var gatt : BluetoothGatt? = null
     var car_com : BluetoothGattCharacteristic? = null
-    var bpm : Int? = null
-    var pressure1 : Int? = null
-    var pressure2 : Int? = null
-    var saturation : Int? = null
-    var steps : Int? = null
-    var calories : Float? = null
-    var distance : Float? = null
-    var char_val : ByteArray? = null
+    var bpm : Int? = 0
+    var pressure1 : Int? = 0
+    var pressure2 : Int? = 0
+    var saturation : Int? = 0
+    var steps : Int? = 0
+    var calories : Float? = 0.0f
+    var distance : Float? = 0.0f
     var flagStep = 0
     var flagBlood = 0
     var flagSaturation = 0
@@ -91,7 +89,9 @@ class M4(device: BluetoothDevice)  {
 
                     }
 
-
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        saveMeasurements()
+                    },125) //add a small delay for all parameters to update
 
                 }
 
@@ -213,7 +213,7 @@ class M4(device: BluetoothDevice)  {
                 gatt?.writeCharacteristic(caracteristicaComenzi)
             }, 3250) //toate comenzile astea sunt standarde de configuratie
 
-            sendMessage()
+//            sendMessage()
 
 
 
@@ -360,6 +360,11 @@ class M4(device: BluetoothDevice)  {
     fun authenticate(){
         dev.connectGatt(null, false, gattCallBack) //fa tru falseul sa se faca automatt
         Log.i("din auth", "conectat la m4")
+    }
+
+    fun saveMeasurements(){
+        globalDatabase.db.insertMeasurement(current_user.user_id, bpm, saturation  , (pressure2.toString() + "/" + pressure1.toString()), steps, distance, calories, current_user.current_device_id,
+            SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString() )
     }
 
 

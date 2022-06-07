@@ -1,6 +1,7 @@
 package com.example.licenta
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -19,11 +20,18 @@ object current_user{
     var user_id : Int? = null
     var username : String? = null
     var userpass : String? = null
+    var current_device_id : Int? = null
+    var current_device_mac : String? = null
 
     fun setUserPass(userid : Int?, user_name: String, user_password: String){
         username = user_name
         userpass = user_password
         user_id = userid
+    }
+
+    fun setDevice(cur_id : Int?, cur_mac : String){
+       current_device_id = cur_id
+       current_device_mac = cur_mac
     }
 
 }
@@ -71,7 +79,7 @@ class database(
         Log.i("suntem in on create", "executam creearea de taele")
 
         db?.execSQL("CREATE TABLE IF NOT EXISTS measurements ( " +
-                "measurement_id INT PRIMARY KEY,  " +
+                "measurement_id INTEGER PRIMARY KEY,  " +
                 "user_id INT,  " +
                 "bpm INT DEFAULT 0,  " +
                 "spo2 INT DEFAULT 0,  " +
@@ -124,16 +132,31 @@ class database(
     }
 
 
-    fun insertMeasurement(user_Id: Int, bpm: Int, spo2 : Int,
-                          press: String, pasi: Int, distance: Float,
-                          calories: Float, dev_id: Int, time_of_measurement : String){
+    fun insertMeasurement(
+        user_Id: Int?, bpm: Int?, spo2: Int?,
+        press: String, pasi: Int?, distance: Float?,
+        calories: Float?, dev_id: Int?, time_of_measurement: String){
 
         var db = this.writableDatabase
-        db?.execSQL("INSERT INTO measurements(user_id, bpm, spo2, press, pasi, " +
+        var sql_string = "INSERT INTO measurements(user_id, bpm, spo2, press, pasi, " +
                 "distance, calories, device_id, time_of_measurement) VALUES(" +
-                user_Id.toString() + ", " + bpm.toString() +", " + spo2.toString()
-                + ", " + press + ", " + pasi.toString() + ", " + distance.toString() + ", " +
-                calories.toString() + ", " + dev_id.toString() + ", " + time_of_measurement + ")")
+                user_Id.toString() + ", " + bpm.toString() +", " + spo2.toString() +
+                ", " + press + ", " + pasi.toString() + ", " + distance.toString() + ", " +
+                calories.toString() + ", " + dev_id.toString() + ", " + time_of_measurement + ")"
+        Log.i("Valoare sql to be", "${sql_string}")
+        var values = ContentValues()
+        values.put("user_id", current_user.user_id)
+        values.put("bpm", bpm)
+        values.put("spo2", spo2)
+        values.put("press", press)
+        values.put("pasi", pasi)
+        values.put("distance", distance)
+        values.put("calories", calories)
+        values.put("device_id", current_user.current_device_id)
+        values.put("time_of_measurement", time_of_measurement)
+        var success = db.insert("measurements", null, values)
+        Log.i("rezultat inset","${success}" )
+
 
     }
     fun insertUser(user_name: String, pass : String){
@@ -183,6 +206,16 @@ class database(
         var cursor = db?.rawQuery("SELECT user_id FROM users WHERE user_name = \'"+ user_name + "\'", null)
         cursor?.moveToFirst()
         var col_index = cursor?.getColumnIndex("user_id")
+        return col_index?.let { cursor?.getInt(it) }
+
+    }
+
+
+    fun getDeviceId(mac : String): Int? {
+        var db = this.readableDatabase
+        var cursor = db?.rawQuery("SELECT device_id FROM devices WHERE mac = \'"+ mac + "\'" , null)
+        cursor?.moveToFirst()
+        var col_index = cursor?.getColumnIndex("device_id")
         return col_index?.let { cursor?.getInt(it) }
 
     }
