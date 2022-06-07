@@ -1,13 +1,9 @@
 import android.bluetooth.le.ScanResult
-import android.content.Context
 import android.graphics.Color
-import android.provider.CalendarContract
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.licenta.R
@@ -86,7 +82,7 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
         }
 
         var  db = database(globalContext.context, "Date.db", null, 1 ) //bag picioru in contextu dumnezeilor mamilor lor
-        if (db.checkIfDeviceExists(dataSet[position].device.address) == false){
+        if (db.checkIfUserHasDevice(dataSet[position].device.address) == false){
             viewHolder.statut_device.text = "Unknown Device"
             viewHolder.statut_device.setTextColor(Color.RED)
         }

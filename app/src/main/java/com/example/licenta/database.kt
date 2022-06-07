@@ -151,7 +151,10 @@ class database(
 
     }
 
-    fun checkIfDeviceExists(mac_address: String): Boolean { //vedem daca userul curent are deviceul aparut
+
+
+
+    fun checkIfUserHasDevice(mac_address: String): Boolean { //vedem daca userul curent are deviceul aparut
         var db = this.readableDatabase
         var current_user_id = current_user.user_id //ne trebe sa vedem daca userul curent stie deviceul
         var cursor = db?.rawQuery("SELECT * FROM devices WHERE (user_id = "+ current_user_id.toString() + " AND mac = \'"+mac_address+"\')", null)

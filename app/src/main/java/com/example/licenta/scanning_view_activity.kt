@@ -141,7 +141,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()
             globalIsKnownDevice.checkIsKnown(state)
 
-            if (globalDatabase.db.checkIfDeviceExists(clickedItem.device.address) == false){
+            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("Mi Band 3", current_user.user_id, clickedItem.device.address)
             }
 
@@ -158,7 +158,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()
             globalIsKnownDevice.checkIsKnown(state)
 
-            if (globalDatabase.db.checkIfDeviceExists(clickedItem.device.address) == false){
+            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("M4SmartBand", current_user.user_id, clickedItem.device.address)
                 Log.i("intrat in device know", "Inserteed dev")
             }
@@ -177,7 +177,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()
             globalIsKnownDevice.checkIsKnown(state)
 
-            if (globalDatabase.db.checkIfDeviceExists(clickedItem.device.address) == false){
+            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("Jumper Pulseoximeter", current_user.user_id, clickedItem.device.address)
             }
 
