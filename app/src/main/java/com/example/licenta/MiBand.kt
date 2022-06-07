@@ -4,6 +4,7 @@ import android.bluetooth.*
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -19,10 +20,10 @@ class MiBand (device: BluetoothDevice) {
     var gatt : BluetoothGatt? = null
 
     var authChar : BluetoothGattCharacteristic? = null
-    var heart_rate : Int? = null
-    var steps : Int? = null
-    var distance : Int? = null
-    var calories : Int? = null
+    var heart_rate : Int? = 0
+    var steps : Int? = 0
+    var distance : Float? = 0.0f
+    var calories : Float? = 0.0f
     var baterie : Int? = null
 
 
@@ -183,33 +184,39 @@ class MiBand (device: BluetoothDevice) {
                     authenticateBand(gatt, characteristic, valoareHex)
                 }
             }
-            if (characteristic.uuid == UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")){
-                Log.i("din on char changed", "${characteristic.value.toHexString().split(" ")[1].toInt(16)}")
-                this@MiBand.heart_rate = characteristic.value.toHexString().split(" ")[1].toInt(16)
-            }
+            if(characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700") || characteristic.uuid == UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")) {
+                if (characteristic.uuid == UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")) {
+                    Log.i(
+                        "din on char changed",
+                        "${characteristic.value.toHexString().split(" ")[1].toInt(16)}"
+                    )
+                    this@MiBand.heart_rate =
+                        characteristic.value.toHexString().split(" ")[1].toInt(16)
+                }
 
-            //mai jos e ptr steps characteristic
-            if (characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700")){
-                var byte_arr = characteristic?.value?.toHexString()?.split(" ")
-                var bitul_2 = byte_arr?.get(2)?.toInt(16)
-                    ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
-                var bitul_1 = byte_arr?.get(1)?.toInt(16)
-                var bitul_5 = byte_arr?.get(5)?.toInt(16)
-                var bitul_6 = byte_arr?.get(6)?.toInt(16)
-                var bitul_9 = byte_arr?.get(9)?.toInt(16)
-                var bitul_10 = byte_arr?.get(10)?.toInt(16)
+                //mai jos e ptr steps characteristic
+                if (characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700")) {
+                    var byte_arr = characteristic?.value?.toHexString()?.split(" ")
+                    var bitul_2 = byte_arr?.get(2)?.toInt(16)
+                        ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+                    var bitul_1 = byte_arr?.get(1)?.toInt(16)
+                    var bitul_5 = byte_arr?.get(5)?.toInt(16)
+                    var bitul_6 = byte_arr?.get(6)?.toInt(16)
+                    var bitul_9 = byte_arr?.get(9)?.toInt(16)
+                    var bitul_10 = byte_arr?.get(10)?.toInt(16)
 //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
 //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-                var steps_value = bitul_2?.let { bitul_1?.plus(it) }
-                var distance_value = bitul_6?.let{bitul_5?.plus(it)}
-                var calories = bitul_9?.let{bitul_10?.plus(it)}
-                this@MiBand.steps = steps_value
-                this@MiBand.calories = calories
-                this@MiBand.distance = distance_value
+                    var steps_value = bitul_2?.let { bitul_1?.plus(it) }
+                    var distance_value = bitul_6?.let { bitul_5?.plus(it) }
+                    var calories = bitul_9?.let { bitul_10?.plus(it) }
+                    this@MiBand.steps = steps_value
+                    this@MiBand.calories = calories?.toFloat()
+                    this@MiBand.distance = distance_value?.toFloat()?.div(100)
+
+                }
+                saveMeasurements()
 
             }
-
-
 
 
 
@@ -314,6 +321,10 @@ class MiBand (device: BluetoothDevice) {
 
 
 
+    }
+    fun saveMeasurements(){
+        globalDatabase.db.insertMeasurement(current_user.user_id, heart_rate, 0, 0  ,"No pressure on Miband" , steps, distance, calories, current_user.current_device_id,
+            SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString() )
     }
 
 
@@ -897,7 +908,6 @@ class MiBand (device: BluetoothDevice) {
         val HEART_RATE_MEASUREMENT_CHARACTERISTIC  = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")
         val HEART_RATE_CONTROLPOINT_CHARACTERISTIC = UUID.fromString ("00002a39-0000-1000-8000-00805f9b34fb")
         val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
-        val HEART_RATE_START_COMMAND = byteArrayOf(21, 2, 1)
 
 
         val serviciuHeart = gatt?.getService(HEART_RATE_SERVICE)
@@ -941,6 +951,8 @@ class MiBand (device: BluetoothDevice) {
 //            gatt?.writeCharacteristic(controlHeart)
 //        }, 125)
 
+
+
         Handler(Looper.getMainLooper()).postDelayed({
             controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
             gatt?.writeCharacteristic(controlHeart)
@@ -952,13 +964,14 @@ class MiBand (device: BluetoothDevice) {
             controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01)) //start continuous
             gatt?.writeCharacteristic(controlHeart)
         }, 500)
-//aici se termina codul de citire a pulsului remote
 
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
-            gatt?.writeCharacteristic(controlHeart)
-        }, 625)
+
+
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
+//            gatt?.writeCharacteristic(controlHeart)
+//        }, 625)
 
 
 
@@ -1097,8 +1110,8 @@ class MiBand (device: BluetoothDevice) {
             var distance_value = bitul_6?.let{bitul_5?.plus(it)}
             var calories = bitul_9?.let{bitul_10?.plus(it)}
             this@MiBand.steps = steps_value
-            this@MiBand.calories = calories
-            this@MiBand.distance = distance_value
+            this@MiBand.calories = calories?.toFloat()
+            this@MiBand.distance = distance_value?.toFloat()?.div(100)
 
             //practic hexii nu bitii
 

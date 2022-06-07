@@ -27,7 +27,7 @@ class miband_view_activity : AppCompatActivity() {
 
                     findViewById<TextView>(R.id.text_steps).text = miband_global?.steps.toString() + " Steps"
                     findViewById<TextView>(R.id.text_calories).text = miband_global?.calories.toString() + " kCal"
-                    findViewById<TextView>(R.id.text_distance).text = miband_global?.distance.toString() + " m"
+                    findViewById<TextView>(R.id.text_distance).text = miband_global?.distance.toString() + " km"
                     findViewById<TextView>(R.id.text_heart_rate).text = miband_global?.heart_rate.toString() + " BPM"
                 }
 

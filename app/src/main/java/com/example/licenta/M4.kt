@@ -363,7 +363,7 @@ class M4(device: BluetoothDevice)  {
     }
 
     fun saveMeasurements(){
-        globalDatabase.db.insertMeasurement(current_user.user_id, bpm, saturation  , (pressure2.toString() + "/" + pressure1.toString()), steps, distance, calories, current_user.current_device_id,
+        globalDatabase.db.insertMeasurement(current_user.user_id, bpm, saturation, 0  , (pressure2.toString() + "/" + pressure1.toString()), steps, distance, calories, current_user.current_device_id,
             SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString() )
     }
 

@@ -3,6 +3,7 @@ import android.bluetooth.*
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import java.text.SimpleDateFormat
 import java.util.*
 
 class PulseOximeter(device: BluetoothDevice)  {
@@ -33,7 +34,13 @@ class PulseOximeter(device: BluetoothDevice)  {
                     this@PulseOximeter.spo2 = valoare[2].toInt(16)
                     this@PulseOximeter.pi = valoare[3].toInt(16)
 
-                   Log.i("din if", "val bpm ${BPM} ${spo2} ${pi}")
+                    Log.i("din if", "val bpm ${BPM} ${spo2} ${pi}")
+                    //insert into database
+                    globalDatabase.db.insertMeasurement(current_user.user_id, BPM, spo2, pi,
+                        "no pressure on Oximeter", 0, 0.0f, 0.0f,
+                        current_user.current_device_id,
+                        SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString())
+
                 }
             }
         }

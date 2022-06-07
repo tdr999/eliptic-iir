@@ -144,6 +144,9 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("Mi Band 3", current_user.user_id, clickedItem.device.address)
             }
+
+
+            current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
             intent = Intent(this, miband_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)
@@ -175,7 +178,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                 //cel mai simplu e de passuit bluetooth deviceul la alt activity si instantiat obiectul acolo
             stopBleScan()
 
-
+            current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()
             globalIsKnownDevice.checkIsKnown(state)
 
