@@ -18,6 +18,7 @@ import android.support.annotation.RequiresApi
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 
 class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickListener {
@@ -137,6 +138,12 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         //https://www.youtube.com/watch?v=wKFJsrdiGS8/
         if (clickedItem.device.name == "Mi Band 3"){
             stopBleScan()
+            var state= findViewById<TextView>(R.id.textView_statut).text.toString()
+            globalIsKnownDevice.checkIsKnown(state)
+
+            if (globalDatabase.db.checkIfDeviceExists(clickedItem.device.address) == false){
+                globalDatabase.db.insertDevice("Mi Band 3", current_user.user_id, clickedItem.device.address)
+            }
 
             intent = Intent(this, miband_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
@@ -148,6 +155,13 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         else if (clickedItem.device.name == "B01H_M4"){
             stopBleScan()
 
+            var state= findViewById<TextView>(R.id.textView_statut).text.toString()
+            globalIsKnownDevice.checkIsKnown(state)
+
+            if (globalDatabase.db.checkIfDeviceExists(clickedItem.device.address) == false){
+                globalDatabase.db.insertDevice("M4SmartBand", current_user.user_id, clickedItem.device.address)
+                Log.i("intrat in device know", "Inserteed dev")
+            }
             intent = Intent(this, m4_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)
@@ -158,6 +172,15 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             //cod ximetr
                 //cel mai simplu e de passuit bluetooth deviceul la alt activity si instantiat obiectul acolo
             stopBleScan()
+
+
+            var state= findViewById<TextView>(R.id.textView_statut).text.toString()
+            globalIsKnownDevice.checkIsKnown(state)
+
+            if (globalDatabase.db.checkIfDeviceExists(clickedItem.device.address) == false){
+                globalDatabase.db.insertDevice("Jumper Pulseoximeter", current_user.user_id, clickedItem.device.address)
+            }
+
             intent = Intent(this, oximeter_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)

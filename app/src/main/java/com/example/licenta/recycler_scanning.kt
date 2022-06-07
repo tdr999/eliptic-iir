@@ -1,4 +1,7 @@
 import android.bluetooth.le.ScanResult
+import android.content.Context
+import android.graphics.Color
+import android.provider.CalendarContract
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,7 +11,8 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.licenta.R
-
+import com.example.licenta.database
+import com.example.licenta.globalContext
 
 
 class CustomAdapter(private val dataSet: List<ScanResult>,
@@ -26,6 +30,8 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
         val nume_device: TextView
         val imagine_device : ImageView
         val signal_strength : TextView
+        val statut_device : TextView
+
 
 
         init {
@@ -33,6 +39,7 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
             nume_device = view.findViewById(R.id.nume_device)
             signal_strength = view.findViewById(R.id.signal_strength)
             imagine_device = view.findViewById(R.id.imagine_viewholder)
+            statut_device = view.findViewById(R.id.textView_statut)
             view.setOnClickListener(this)
         }
 
@@ -77,6 +84,17 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
         else{
             viewHolder.imagine_device.setImageResource(R.drawable.jumper)
         }
+
+        var  db = database(globalContext.context, "Date.db", null, 1 ) //bag picioru in contextu dumnezeilor mamilor lor
+        if (db.checkIfDeviceExists(dataSet[position].device.address) == false){
+            viewHolder.statut_device.text = "Unknown Device"
+            viewHolder.statut_device.setTextColor(Color.RED)
+        }
+        else{
+            viewHolder.statut_device.text = "Known device"
+            viewHolder.statut_device.setTextColor(Color.GREEN)
+        }
+
 
 
     }

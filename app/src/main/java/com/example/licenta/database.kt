@@ -1,5 +1,6 @@
 package com.example.licenta
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -13,11 +14,25 @@ data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, 
     var mac_number = mac
 }
 
-data class user(var user_Id:Int, var user_name:String, var user_password:String){
-   var user_id = user_Id
-   var user_Name = user_name
-   var user_pass = user_password
+
+object current_user{
+    var user_id : Int? = null
+    var username : String? = null
+    var userpass : String? = null
+
+    fun setUserPass(userid : Int?, user_name: String, user_password: String){
+        username = user_name
+        userpass = user_password
+        user_id = userid
+    }
+
 }
+
+//data class user(var user_Id:Int, var user_name:String, var user_password:String){
+//   var user_id = user_Id
+//   var user_Name = user_name
+//   var user_pass = user_password
+//}
 
 data class alert(var alert_id:Int, var user_Id: Int, var time : String, var descriere : String){
     var alert_ID = alert_id
@@ -102,10 +117,10 @@ class database(
 
     }
 
-    fun insertDevice(device_type : String, user_id : Int, mac_address : String){
+    fun insertDevice(device_type: String, user_id: Int?, mac_address: String){
         var db = this.writableDatabase
-        db?.execSQL("INSERT INTO devices(device_type, user_id, mac) VALUES(" +
-                device_type + "," + user_id.toString() + ","+ mac_address + ")")
+        db?.execSQL("INSERT INTO devices(device_type, user_id, mac) VALUES(\'" +
+                device_type + "\'," + user_id.toString() + ",\'"+ mac_address + "\')")
     }
 
 
@@ -123,8 +138,9 @@ class database(
     }
     fun insertUser(user_name: String, pass : String){
         var db = this.writableDatabase
-        db?.execSQL("INSERT INTO users(user_name, user_pass) VALUES(\'" + user_name + "\', \'" + pass + "\')")
-
+        if (checkIfUserExists(user_name, pass) == false) {
+            db?.execSQL("INSERT INTO users(user_name, user_pass) VALUES(\'" + user_name + "\', \'" + pass + "\')")
+        }
     }
 
 
@@ -134,6 +150,18 @@ class database(
     fun fetchAlert(){
 
     }
+
+    fun checkIfDeviceExists(mac_address: String): Boolean { //vedem daca userul curent are deviceul aparut
+        var db = this.readableDatabase
+        var current_user_id = current_user.user_id //ne trebe sa vedem daca userul curent stie deviceul
+        var cursor = db?.rawQuery("SELECT * FROM devices WHERE (user_id = "+ current_user_id.toString() + " AND mac = \'"+mac_address+"\')", null)
+        if (cursor?.count == 1 ){
+            return true
+        }
+        return false
+    }
+
+
 
     fun checkIfUserExists(user_name: String, user_password: String): Boolean {
         var db = this.readableDatabase
@@ -145,4 +173,39 @@ class database(
 
     }
 
+
+
+    fun getUserId(user_name: String, user_password: String): Int? {
+        var db = this.readableDatabase
+        var cursor = db?.rawQuery("SELECT user_id FROM users WHERE user_name = \'"+ user_name + "\'", null)
+        cursor?.moveToFirst()
+        var col_index = cursor?.getColumnIndex("user_id")
+        return col_index?.let { cursor?.getInt(it) }
+
+    }
+
+}
+
+
+@SuppressLint("StaticFieldLeak")
+object globalContext{
+    var context : Context? = null
+    fun setGlobalContext(contex: Context?){
+        context = contex
+
+    }
+
+}
+
+object globalIsKnownDevice{ //obiect global sa salvam stdiul unui device la imperechere
+    var isKnown : Boolean = false
+
+    fun checkIsKnown(state : String){
+        isKnown = state != "Unknown device"
+    }
+}
+
+
+object globalDatabase{ //instanta globala a helperului de baza de date ca sa nu mai instantiem peste tot alte instante
+    var db = database(globalContext.context, "Date.db", null, 1)
 }

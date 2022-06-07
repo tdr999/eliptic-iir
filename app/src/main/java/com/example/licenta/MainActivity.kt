@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         var gloabal_database = database(this, "Date.db", null, 1)
         global_db = gloabal_database
 //        gloabal_database.insertUser("mihai", "parola_de_test") // test
+        globalContext.setGlobalContext(this.applicationContext)
 
     }
 
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy() //adaugat disconnect
     }
 
+
     fun login(view: View) {
 
         if (global_db?.checkIfUserExists(
@@ -63,6 +65,11 @@ class MainActivity : AppCompatActivity() {
                 findViewById<EditText>(R.id.pass_in).text.toString()
             ) == true
         ) {
+            var temp_id = global_db?.getUserId(findViewById<EditText>(R.id.username_in).text.toString(),
+                findViewById<EditText>(R.id.pass_in).text.toString())
+            current_user.setUserPass(temp_id,findViewById<EditText>(R.id.username_in).text.toString(),
+                findViewById<EditText>(R.id.pass_in).text.toString())
+
             intent = Intent(
                 this,
                 scanning_view_activity::class.java
