@@ -3,9 +3,11 @@ package com.example.licenta
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.example.licenta.globalDatabase.db
 
 
 data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, var mac: String){
@@ -75,6 +77,7 @@ class database(
 
 
 
+
     override fun onCreate(db: SQLiteDatabase?) {
         Log.i("suntem in on create", "executam creearea de taele")
 
@@ -110,7 +113,7 @@ class database(
         db?.execSQL(
                 "CREATE TABLE IF NOT EXISTS alerts( " +
                 "alert_id INTEGER PRIMARY KEY,  " +
-                "timp TEXT, " +
+                "timp DATETIME, " +
                 "descriere TEXT, " +
                 "user_id INT, " +
                 "FOREIGN KEY (user_id) REFERENCES users(user_id) " +
@@ -169,10 +172,21 @@ class database(
     }
 
 
-    fun insertAlert(){
+    fun insertAlert(data : String, descriere : String){
 
+        var db = this.writableDatabase
+        var values = ContentValues()
+
+        values.put("timp", data.toString())
+        values.put("descriere", descriere.toString())
+        values.put("user_id", current_user.user_id.toString())
+        var success = db.insert("alerts", null, values)
+        Log.i("rezultat inset","${success}" )
     }
-    fun fetchAlert(){
+    fun fetchAlerts(): Cursor?{
+        var db = this.readableDatabase
+        var cursor = db?.rawQuery("Select * FROM alerts WHERE user_id = " + current_user.user_id.toString(), null)
+        return cursor
 
     }
 

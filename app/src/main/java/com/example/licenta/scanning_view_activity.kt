@@ -18,8 +18,10 @@ import android.support.annotation.RequiresApi
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import java.util.*
 
 class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickListener {
 
@@ -109,6 +111,15 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
 
     }
 
+    fun goToAlert(view : View){
+        intent = Intent(this, alerts_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
+        startActivity(intent)
+    }
+
+    fun insert_test_alert(view: View){
+        globalDatabase.db.insertAlert("2023-05-20 20:00:00", "viagra")
+    }
+
 
 
     private fun promptEnableBluetooth(){ //prompt for enabling bluetooth
@@ -177,6 +188,12 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             //cod ximetr
                 //cel mai simplu e de passuit bluetooth deviceul la alt activity si instantiat obiectul acolo
             stopBleScan()
+
+            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
+                globalDatabase.db.insertDevice("JPD 500", current_user.user_id, clickedItem.device.address)
+                Log.i("intrat in device know", "Inserteed dev")
+            }
+
 
             current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()

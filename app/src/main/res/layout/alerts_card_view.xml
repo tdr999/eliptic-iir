@@ -11,40 +11,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:id="@+id/imagine_viewholder"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
             android:textAlignment="center"
-            android:text="TEXT DE TEST"
+            android:text="alert_date_time"
             android:textSize="30dp"
-            android:id="@+id/nume_device"
+            android:id="@+id/alert_date_time"
             />
     <TextView
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginLeft="100dp"
         android:layout_marginTop="40dp"
         android:text="Signal Strength"
         android:textSize="20dp"
-        android:id="@+id/signal_strength"
+        android:id="@+id/alert_description"
         android:textAlignment="center"/>
 
-    <TextView
-        android:id="@+id/textView_statut"
-        android:layout_width="120dp"
-        android:layout_height="52dp"
-        android:layout_marginRight="0dp"
-        android:textColor="@color/purple_700"
-        android:layout_marginLeft="260dp"
-        android:textSize="20dp"
-        android:layout_marginTop="40dp"
-        android:text="Unknown Device" />
 
 </android.support.design.card.MaterialCardView>
-
