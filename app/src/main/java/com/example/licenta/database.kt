@@ -113,7 +113,7 @@ class database(
         db?.execSQL(
                 "CREATE TABLE IF NOT EXISTS alerts( " +
                 "alert_id INTEGER PRIMARY KEY,  " +
-                "timp DATETIME, " +
+                "timp TIME, " +
                 "descriere TEXT, " +
                 "user_id INT, " +
                 "FOREIGN KEY (user_id) REFERENCES users(user_id) " +
@@ -189,6 +189,7 @@ class database(
         return cursor
 
     }
+
 
 
 

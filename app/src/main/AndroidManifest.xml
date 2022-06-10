@@ -22,6 +22,7 @@
         <activity android:name=".oximeter_view_activity" /> <!-- scoate actionabarul tema asta -->
         <activity android:name=".scanning_view_activity" />
         <activity android:name=".alerts_view_activity" />
+        <activity android:name=".newalertactivty" />
         <activity android:name=".new_user_activity" />
         <activity android:name=".MainActivity">
             <intent-filter>

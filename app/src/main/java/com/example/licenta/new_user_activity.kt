@@ -63,7 +63,7 @@ class new_user_activity : AppCompatActivity() {
             }else{
                 global_db?.insertUser(username, pas1)
                 Handler(Looper.getMainLooper()).postDelayed({
-                                                           var intent = Intent(this, MainActivity::class.java)
+                    var intent = Intent(this, MainActivity::class.java)
                     startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 },2000)
             }
