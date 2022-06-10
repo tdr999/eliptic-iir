@@ -20,25 +20,20 @@
 
 
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="Alert"
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:contentDescription="alerts"
+        android:layout_margin="24dp"
+        android:src="@drawable/ic_baseline_alarm_on_24"
         android:id="@+id/go_to_alerts"
         android:onClick="goToAlert"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        tools:ignore="MissingConstraints" />
 
 
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="insert test alert"
-        android:id="@+id/add_test_alert"
-        android:onClick="insert_test_alert"
-        android:layout_marginBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="@id/go_to_alerts"
-        />
+
 
 </android.support.constraint.ConstraintLayout>

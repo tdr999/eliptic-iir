@@ -15,4 +15,14 @@
         android:id="@+id/recycler_view_alert"
         />
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:id="@+id/add_alarm"
+        android:src="@drawable/ic_baseline_add_alarm_24"
+        android:layout_margin="24dp"
+        app:fabSize="normal"
+        tools:ignore="MissingConstraints"></android.support.design.widget.FloatingActionButton>
+
 </android.support.constraint.ConstraintLayout>
