@@ -259,8 +259,13 @@ object globalIsKnownDevice{ //obiect global sa salvam stdiul unui device la impe
     var isKnown : Boolean = false
 
     fun checkIsKnown(state : String){
-//        isKnown = state != "Unknown device"
-        isKnown = (state == "Unknown device")
+        Log.i("fun checkIsKnown", "primit ${state}")
+        if (state == "Unknown Device"){
+           globalIsKnownDevice.isKnown = false
+        }
+        else if (state == "Known device"){
+            globalIsKnownDevice.isKnown = true
+        }
     }
 }
 

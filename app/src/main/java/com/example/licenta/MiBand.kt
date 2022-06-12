@@ -135,6 +135,7 @@ class MiBand (device: BluetoothDevice) {
                     if (globalIsKnownDevice.isKnown == true) {
                         authChar?.value =
                             byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+                        Log.i("valoarea globalisknowndevice", "${globalIsKnownDevice.isKnown}")
                     }else{
 
                         authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
