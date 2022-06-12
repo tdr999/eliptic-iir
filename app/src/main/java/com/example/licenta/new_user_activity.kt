@@ -65,7 +65,7 @@ class new_user_activity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     var intent = Intent(this, MainActivity::class.java)
                     startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                },2000)
+                },750)
             }
         }else{
             Toast.makeText(this, "Passwords don't match", Toast.LENGTH_LONG).show()

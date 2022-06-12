@@ -1,9 +1,11 @@
 package com.example.licenta
 
 import android.bluetooth.*
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.crypto.Cipher
@@ -84,7 +86,6 @@ class MiBand (device: BluetoothDevice) {
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "01"){
                     Log.i("din on chcarac changesd", "Da dom'le, ne am legat si acuma trimetem ENCRYPTEDKEYACUMA number")
-
                     var tempKey = valoareHex.takeLast(16) // keia primita
                     Log.i("ult16", "$tempKey\n")
 
@@ -111,7 +112,13 @@ class MiBand (device: BluetoothDevice) {
 //                    getBattery()
 //                    setDateTime()
 //                    getActivityCharacteristic()
-//                    setCaloriesDistanceMetric()
+                    if (globalIsKnownDevice.isKnown == false){ //initial setup
+
+                        setCaloriesDistanceMetric()
+                    }
+                    else{
+                        ESTE_AUTHENTICAT = 1
+                    }
 //                    sendShortVibration()
 //                    sendCustomMessage()
 
@@ -125,10 +132,15 @@ class MiBand (device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
                     Log.i("primit 10 01 04", " bomba")
-                    authChar?.value= byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-//                    authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
-                    gatt.writeCharacteristic(authChar)
+                    if (globalIsKnownDevice.isKnown == true) {
+                        authChar?.value =
+                            byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+                    }else{
 
+                        authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
+                    }
+
+                    gatt.writeCharacteristic(authChar)
                 }
 
 
@@ -841,12 +853,16 @@ class MiBand (device: BluetoothDevice) {
         Handler(Looper.getMainLooper()).postDelayed({
             charac_7?.value = byteArrayOf(0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
             gatt?.writeCharacteristic(charac_7)
+            ESTE_AUTHENTICAT = 1
         }, 11125)
 
-
+        setDateTime()
 
 
         /*===============Aici Se Termina==========================*/
+
+
+
 
     }
 

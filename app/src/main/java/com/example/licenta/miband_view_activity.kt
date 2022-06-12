@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import kotlin.concurrent.thread
 
 class miband_view_activity : AppCompatActivity() {
 
@@ -48,6 +50,14 @@ class miband_view_activity : AppCompatActivity() {
         val miband = MiBand(received_device)
         miband.connect() //asta dureaza cam 2 secunde
         miband_global = miband
+//        corou  {
+//            while (true){
+//                if (miband_global?.ESTE_AUTHENTICAT == 1){
+//                    Toast.makeText(this, "Connection success", Toast.LENGTH_LONG)
+//                }
+//                Log.i("din thread", "thread oprit cand nu mai e mesahu asta")
+//            }
+//        }.start() //add log to confirm connection
         updateLoop()
 
     }

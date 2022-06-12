@@ -150,7 +150,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         if (clickedItem.device.name == "Mi Band 3"){
             stopBleScan()
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()
-            globalIsKnownDevice.checkIsKnown(state)
+            globalIsKnownDevice.checkIsKnown(state) //folosim asta pentru a tine minte daca mibandul e conectat ptr prima data
 
             if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("Mi Band 3", current_user.user_id, clickedItem.device.address)
