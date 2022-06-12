@@ -1,16 +1,12 @@
-import android.bluetooth.le.ScanResult
-import android.graphics.Color
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import android.widget.Button
 import android.widget.TextView
 import com.example.licenta.R
-import com.example.licenta.database
-import com.example.licenta.globalContext
 import com.example.licenta.globalDatabase
-import java.util.*
 
 
 data class alerta(val alert_id : Int?, val user_id : Int?, val descriere : String?, val calendar : String?){
@@ -19,7 +15,7 @@ data class alerta(val alert_id : Int?, val user_id : Int?, val descriere : Strin
 
 
 
-class AlertAdapter(private val dataSet: List<alerta>,
+class AlertAdapter(private val dataSet: MutableList<alerta>,
                     private val listener : OnItemClickListener
 ) :
     RecyclerView.Adapter<AlertAdapter.ViewHolder>() {
@@ -33,13 +29,16 @@ class AlertAdapter(private val dataSet: List<alerta>,
 
         val alert_date_time: TextView = view.findViewById(R.id.alert_date_time)
         val alert_description : TextView = view.findViewById(R.id.alert_description)
+        var delete_button : Button = view.findViewById<Button>(R.id.delete_alert_button)
+
 
 
 
 
         init {
             // Define click listener for the ViewHolder's View.
-            view.setOnClickListener(this)
+//            view.setOnClickListener(this)
+            delete_button.setOnClickListener(this)
         }
 
 
@@ -48,7 +47,11 @@ class AlertAdapter(private val dataSet: List<alerta>,
             if (position != RecyclerView.NO_POSITION) {
                 listener.onItemClick(position)
             }
+            removeItem(position)
+
         }
+
+
     }
 
     interface OnItemClickListener{
@@ -75,6 +78,19 @@ class AlertAdapter(private val dataSet: List<alerta>,
         viewHolder.alert_description.text = dataSet[position].descriere
 
     }
+
+
+    fun removeItem(position: Int){
+
+        globalDatabase.db.removeAlert(dataSet[position].alert_id)
+        dataSet.removeAt(position)
+
+        notifyItemRemoved(position)
+
+    }
+
+
+
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size

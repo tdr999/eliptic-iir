@@ -7,7 +7,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.licenta.globalDatabase.db
 
 
 data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, var mac: String){
@@ -172,6 +171,11 @@ class database(
     }
 
 
+    fun removeAlert(alert_id: Int?){
+       var db = this.writableDatabase
+       db.delete("alerts", "alert_id=?", arrayOf(alert_id.toString()))
+    }
+
     fun insertAlert(data : String, descriere : String){
 
         var db = this.writableDatabase
@@ -203,6 +207,7 @@ class database(
         }
         return false
     }
+
 
 
 

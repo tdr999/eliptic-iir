@@ -33,8 +33,7 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 
 
         var cursor = globalDatabase.db.fetchAlerts()
-        cursor?.moveToFirst()
-        var result = true
+        var result = cursor?.moveToFirst()
         while (result != false){
             var index_alert_id = cursor?.getColumnIndex("alert_id")
             var index_user_id = cursor?.getColumnIndex("user_id")
@@ -77,26 +76,23 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
         super.onResume()
         lista_alerte.clear()
         var cursor = globalDatabase.db.fetchAlerts()
-        var result = true
-        cursor?.moveToFirst()
-        while (result != false) {
-            var index_alert_id = cursor?.getColumnIndex("alert_id")
-            var index_user_id = cursor?.getColumnIndex("user_id")
-            var index_date_time = cursor?.getColumnIndex("timp")
-            var index_descriere = cursor?.getColumnIndex("descriere")
+        while (cursor?.moveToNext() == true) {
+            var index_alert_id = cursor.getColumnIndex("alert_id")
+            var index_user_id = cursor.getColumnIndex("user_id")
+            var index_date_time = cursor.getColumnIndex("timp")
+            var index_descriere = cursor.getColumnIndex("descriere")
             var temp = alerta(
-                alert_id = cursor?.getInt(index_alert_id!!),
-                user_id = cursor?.getInt(index_user_id!!),
-                descriere = cursor?.getString(index_descriere!!),
-                calendar = cursor?.getString(index_date_time!!)
+                alert_id = cursor.getInt(index_alert_id),
+                user_id = cursor.getInt(index_user_id),
+                descriere = cursor.getString(index_descriere),
+                calendar = cursor.getString(index_date_time)
             )
 
             lista_alerte.add(temp)
-            result = cursor?.moveToNext()!!
         }
-
+        if ( cursor?.moveToFirst() != false)
         lista_alerte.sortBy { (it.calendar?.split(":")?.get(1)?.let { it1 ->
-            it.calendar?.split(":")?.get(0)?.toInt()?.times(100).plus(
+            it.calendar.split(":").get(0).toInt().times(100).plus(
                 it1.toInt()) //puteam sa fi facut o functie
         })
         } //sunt un zeu printre muritori
@@ -112,9 +108,10 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 
 
     override fun onItemClick(position: Int) { //functia asta e rulata cand dai click pe un item din lista
-        Toast.makeText(this@alerts_view_activity, "Item $position click", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this@alerts_view_activity, "Item $position click", Toast.LENGTH_SHORT).show()
         val clickedItem = lista_alerte[position]
         adaptorAlerte.notifyItemChanged(position)
+//        adaptorAlerte.notifyItemRemoved(position)
         //https://www.youtube.com/watch?v=wKFJsrdiGS8/
 
     }
