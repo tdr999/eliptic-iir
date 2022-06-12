@@ -263,6 +263,7 @@ object globalIsKnownDevice{ //obiect global sa salvam stdiul unui device la impe
         if (state == "Unknown Device"){
            globalIsKnownDevice.isKnown = false
         }
+
         else if (state == "Known device"){
             globalIsKnownDevice.isKnown = true
         }
