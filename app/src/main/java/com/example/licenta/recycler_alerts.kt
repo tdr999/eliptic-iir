@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.example.licenta.R
 import com.example.licenta.globalDatabase
+import com.example.licenta.globalSortedAlerts
 
 
 data class alerta(val alert_id : Int?, val user_id : Int?, val descriere : String?, val calendar : String?){
@@ -48,6 +49,8 @@ class AlertAdapter(private val dataSet: MutableList<alerta>,
                 listener.onItemClick(position)
             }
             removeItem(position)
+            globalSortedAlerts.updateList(dataSet)
+            globalSortedAlerts.getNextAlert()
 
         }
 

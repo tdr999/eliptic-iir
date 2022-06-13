@@ -1,5 +1,6 @@
 package com.example.licenta
 
+import alerta
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
@@ -7,6 +8,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import java.util.*
 
 
 data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, var mac: String){
@@ -172,8 +174,8 @@ class database(
 
 
     fun removeAlert(alert_id: Int?){
-       var db = this.writableDatabase
-       db.delete("alerts", "alert_id=?", arrayOf(alert_id.toString()))
+        var db = this.writableDatabase
+        db.delete("alerts", "alert_id=?", arrayOf(alert_id.toString()))
     }
 
     fun insertAlert(data : String, descriere : String){
@@ -261,7 +263,7 @@ object globalIsKnownDevice{ //obiect global sa salvam stdiul unui device la impe
     fun checkIsKnown(state : String){
         Log.i("fun checkIsKnown", "primit ${state}")
         if (state == "Unknown Device"){
-           globalIsKnownDevice.isKnown = false
+            globalIsKnownDevice.isKnown = false
         }
 
         else if (state == "Known device"){
@@ -273,4 +275,47 @@ object globalIsKnownDevice{ //obiect global sa salvam stdiul unui device la impe
 
 object globalDatabase{ //instanta globala a helperului de baza de date ca sa nu mai instantiem peste tot alte instante
     var db = database(globalContext.context, "Date.db", null, 1)
+}
+
+object globalSortedAlerts{
+    var alerte_sortate : MutableList<alerta>? = null
+    var next_alert_id : String? = null
+    var next_alert_index : Int? = null
+    fun updateList(mutableList: MutableList<alerta>){
+        alerte_sortate = mutableList
+    }
+
+    fun getList() : MutableList<alerta>?{
+        return alerte_sortate
+    }
+
+    fun getNextAlert(){
+        var hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY).toString()
+        var minute = Calendar.getInstance().get(Calendar.MINUTE).toString()
+        var time_for_sort = "1" + hour + minute
+
+        Log.i("time", "${time_for_sort}")
+        if (alerte_sortate?.size != null) {
+            var sz = alerte_sortate?.size!! - 1
+            for (i  in 0..sz!!) {
+                var timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
+                    ?.get(0) + alerte_sortate!![i].calendar?.split(":")?.get(1)
+                Log.i("timp din alerta", "${timp_din_alerta}")
+                if (timp_din_alerta.toInt() > time_for_sort.toInt()) {
+                    next_alert_id = alerte_sortate!![i].alert_id.toString()
+                    next_alert_index = i
+                    break
+
+                }
+
+            }
+            Log.i(
+                "Next alert ID",
+                " ${alerte_sortate!![next_alert_index!!].calendar}"
+            )
+        }
+    }
+
+
+
 }

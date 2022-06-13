@@ -90,13 +90,18 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 
             lista_alerte.add(temp)
         }
-        if ( cursor?.moveToFirst() != false)
-        lista_alerte.sortBy { (it.calendar?.split(":")?.get(1)?.let { it1 ->
-            it.calendar.split(":").get(0).toInt().times(100).plus(
-                it1.toInt()) //puteam sa fi facut o functie
-        })
-        } //sunt un zeu printre muritori
-
+        globalSortedAlerts.updateList(lista_alerte)
+        if ( cursor?.moveToFirst() != false) {
+            lista_alerte.sortBy {
+                (it.calendar?.split(":")?.get(1)?.let { it1 ->
+                    it.calendar.split(":").get(0).toInt().times(100).plus(
+                        it1.toInt()
+                    ) //puteam sa fi facut o functie
+                })
+            } //sunt un zeu printre muritori
+            globalSortedAlerts.updateList(lista_alerte)
+            globalSortedAlerts.getNextAlert()
+        }
     }
 
 
@@ -111,6 +116,7 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 //        Toast.makeText(this@alerts_view_activity, "Item $position click", Toast.LENGTH_SHORT).show()
         val clickedItem = lista_alerte[position]
         adaptorAlerte.notifyItemChanged(position)
+
 //        adaptorAlerte.notifyItemRemoved(position)
         //https://www.youtube.com/watch?v=wKFJsrdiGS8/
 

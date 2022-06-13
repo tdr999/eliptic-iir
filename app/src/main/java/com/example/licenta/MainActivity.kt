@@ -1,11 +1,13 @@
 package com.example.licenta
 
+import alerta
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -38,6 +40,11 @@ class MainActivity : AppCompatActivity() {
         global_db = gloabal_database
 //        gloabal_database.insertUser("mihai", "parola_de_test") // test
         globalContext.setGlobalContext(this.applicationContext)
+        // initializam tot ce avem nevoie pentru alerte
+
+
+
+
 
     }
 
