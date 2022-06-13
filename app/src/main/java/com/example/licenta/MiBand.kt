@@ -15,6 +15,7 @@ import kotlin.experimental.or
 
 class MiBand (device: BluetoothDevice) {
 
+
     val dev = device
 
     var ESTE_AUTHENTICAT = 0

@@ -2,6 +2,9 @@ package com.example.licenta
 
 import alerta
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -316,6 +319,13 @@ object globalSortedAlerts{
         }
     }
 
+}
 
-
+object globalNotificationManager{
+   //https://www.geeksforgeeks.org/notifications-in-kotlin/
+    lateinit var notificationManager: NotificationManager
+    lateinit var notificationChannel: NotificationChannel
+    lateinit var builder : Notification.Builder
+    val channelId  = "i.apps.notifications"
+    val description = "test"
 }

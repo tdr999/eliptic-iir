@@ -29,6 +29,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
 
 
 
+
     private val lista_scanare = mutableListOf<ScanResult>()
     var adaptorRezultate = CustomAdapter(lista_scanare, this)
 

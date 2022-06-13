@@ -10,6 +10,7 @@ import com.example.licenta.globalDatabase
 import com.example.licenta.globalSortedAlerts
 
 
+
 data class alerta(val alert_id : Int?, val user_id : Int?, val descriere : String?, val calendar : String?){
 }
 

@@ -12,6 +12,7 @@ import com.example.licenta.globalContext
 import com.example.licenta.globalDatabase
 
 
+
 class CustomAdapter(private val dataSet: List<ScanResult>,
                     private val listener : OnItemClickListener
 ) :

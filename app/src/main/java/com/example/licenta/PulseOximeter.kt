@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class PulseOximeter(device: BluetoothDevice)  {
+
     var dev = device
     var gatt : BluetoothGatt? = null
 
