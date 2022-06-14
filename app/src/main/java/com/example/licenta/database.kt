@@ -2,6 +2,7 @@ package com.example.licenta
 
 import alerta
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,6 +11,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.CountDownTimer
+import android.support.v4.content.ContextCompat.getSystemService
 import android.util.Log
 import java.util.*
 
@@ -282,10 +285,11 @@ object globalDatabase{ //instanta globala a helperului de baza de date ca sa nu 
 
 object globalSortedAlerts{
     var alerte_sortate : MutableList<alerta>? = null
-    var next_alert_id : String? = null
-    var next_alert_index : Int? = null
+    var next_alert_id : String? = "No next"
+    var next_alert_index : Int? = 0
     fun updateList(mutableList: MutableList<alerta>){
         alerte_sortate = mutableList
+
     }
 
     fun getList() : MutableList<alerta>?{
@@ -298,7 +302,7 @@ object globalSortedAlerts{
         var time_for_sort = "1" + hour + minute
 
         Log.i("time", "${time_for_sort}")
-        if (alerte_sortate?.size != null) {
+        if (alerte_sortate?.size!! > 0) {
             var sz = alerte_sortate?.size!! - 1
             for (i  in 0..sz!!) {
                 var timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
@@ -316,16 +320,9 @@ object globalSortedAlerts{
                 "Next alert ID",
                 " ${alerte_sortate!![next_alert_index!!].calendar}"
             )
+        }else{
+            Log.i("no", "no next alert")
         }
     }
 
-}
-
-object globalNotificationManager{
-   //https://www.geeksforgeeks.org/notifications-in-kotlin/
-    lateinit var notificationManager: NotificationManager
-    lateinit var notificationChannel: NotificationChannel
-    lateinit var builder : Notification.Builder
-    val channelId  = "i.apps.notifications"
-    val description = "test"
 }

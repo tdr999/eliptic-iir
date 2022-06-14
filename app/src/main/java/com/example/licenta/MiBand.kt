@@ -136,7 +136,7 @@ class MiBand (device: BluetoothDevice) {
                     if (globalIsKnownDevice.isKnown == true) {
                         authChar?.value =
                             byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-                        Log.i("valoarea globalisknowndevice", "${globalIsKnownDevice.isKnown}")
+                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
                     }else{
 
                         authChar?.setValue(byteArrayOf(0x01, 0x00) + SECRET_KEY) //uncomment this for first time pairing
@@ -857,8 +857,11 @@ class MiBand (device: BluetoothDevice) {
             gatt?.writeCharacteristic(charac_7)
             ESTE_AUTHENTICAT = 1
         }, 11125)
+        Handler(Looper.getMainLooper()).postDelayed({
 
-        setDateTime()
+           setDateTime()
+        }, 11250)
+
 
 
         /*===============Aici Se Termina==========================*/
@@ -885,13 +888,17 @@ class MiBand (device: BluetoothDevice) {
         //setting a random date for testing purposes
         //year is transmitted in little endian, therefore 2022 is not sent as 7e6 but as 6e07
         //we will try to set the year 2023, 1/1
-//        var year = byteArrayOf(230.toByte(), 0x07)
+        var sdf = SimpleDateFormat("yyyy:MM:dd:hh:mm:ss")
+        var current_date_time = sdf.format(Date())
+        var split_time = current_date_time.split(":")
+        Log.i("timp split", "${split_time}")
+        var year = byteArrayOf(230.toByte(), 0x07) //hardcodam anul pentru moment, nu merita eforturl
 //        //e7 written in int.
-//        var day = 0x02.toByte()
-//        var month = 0x05.toByte()
-//        var hours = 0x02.toByte()
-//        var minutes = 0x02.toByte()
-//        var seconds = 0x02.toByte()
+        var day = split_time[2].toInt().toByte()
+        var month = split_time[1].toInt().toByte()
+        var hours = split_time[3].toInt().toByte()
+        var minutes = split_time[4].toInt().toByte()
+        var seconds = split_time[5].toInt().toByte()
 //        var fractions = 0x00.toByte()
 //        var adjust_reason = 0x08.toByte()
 //        var caracter_terminal = 0x0c.toByte()
@@ -909,9 +916,10 @@ class MiBand (device: BluetoothDevice) {
 
         Handler(Looper.getMainLooper()).postDelayed({
 //            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
-            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
+            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + byteArrayOf(0x00, 0x00, 0x00, 0x16)
+//            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,     0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
 
-//            Log.i("curr time", "${time_characteristic?.value?.toHexString()}")
+            Log.i("curr time", "${numarul_care_trebe_scris.toHexString()}")
             time_characteristic?.value = numarul_care_trebe_scris
             gatt?.writeCharacteristic(time_characteristic)
         }, 2500)

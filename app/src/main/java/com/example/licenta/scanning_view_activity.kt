@@ -64,7 +64,6 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
 
             lista_alerte.add(temp)
         }
-        globalSortedAlerts.updateList(lista_alerte)
         if ( cursor?.moveToFirst() != false) {
             lista_alerte.sortBy {
                 (it.calendar?.split(":")?.get(1)?.let { it1 ->
@@ -74,7 +73,9 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                 })
             } //sunt un zeu printre muritori
             globalSortedAlerts.updateList(lista_alerte)
-            globalSortedAlerts.getNextAlert()
+//            if(cursor?.moveToFirst() != true) {
+                globalSortedAlerts.getNextAlert()
+//            }
         }
         Log.i("next alert", "${globalSortedAlerts.next_alert_index?.let {
             globalSortedAlerts.alerte_sortate?.get(

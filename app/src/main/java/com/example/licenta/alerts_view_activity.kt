@@ -100,7 +100,9 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
                 })
             } //sunt un zeu printre muritori
             globalSortedAlerts.updateList(lista_alerte)
-            globalSortedAlerts.getNextAlert()
+//            if (cursor?.moveToFirst() != true) {
+                globalSortedAlerts.getNextAlert()
+//            }
         }
     }
 
