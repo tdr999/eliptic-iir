@@ -300,6 +300,7 @@ object globalSortedAlerts{
         var hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY).toString()
         var minute = Calendar.getInstance().get(Calendar.MINUTE).toString()
         var time_for_sort = "1" + hour + minute
+        var intrat_in_for = 0
 
 //        Log.i("time", "${time_for_sort}")
         if (alerte_sortate?.size!! > 0) {
@@ -311,15 +312,28 @@ object globalSortedAlerts{
                 if (timp_din_alerta.toInt() > time_for_sort.toInt()) {
                     next_alert_id = alerte_sortate!![i].alert_id.toString()
                     next_alert_index = i
+                    intrat_in_for = 1
                     break
 
                 }
 
+
+
+
+
             }
-            Log.i(
-                "Next alert ID",
-                " ${alerte_sortate!![next_alert_index!!].calendar}"
-            )
+            if (intrat_in_for == 1) {
+                Log.i(
+                    "Next alert ID",
+                    " ${alerte_sortate!![next_alert_index!!].calendar}"
+                )
+
+            }
+            else{
+
+                next_alert_id = "No next"
+                next_alert_index = 0
+            }
         }else{
             Log.i("no", "no next alert")
         }
@@ -333,19 +347,24 @@ fun setAlarm(time : String){
     val sdf = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss")
     val date = sdf.format(Date())
     val timp_cur = date.split(":")[3].toInt() * 3600 * 1000 + date.split(":")[4].toInt() * 60 * 1000
-    val timp = time_milis - timp_cur
+    val timp = (time_milis - timp_cur).toLong()
     Log.i("set_alarm", "at ${timp} timp cur timp milis ${timp_cur}, ${time_milis}")
     val alarm_manager = globalContext.context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+
     val inten = Intent(globalContext.context, AlarmReceiver::class.java)
     val pendingInt = PendingIntent.getBroadcast(globalContext.context, 0, inten, 0 )
-    alarm_manager.setRepeating(AlarmManager.RTC,
-        timp.toLong(), AlarmManager.INTERVAL_DAY, pendingInt)
+//    alarm_manager.setRepeating(AlarmManager.RTC,
+//        timp.toLong(), AlarmManager.INTERVAL_DAY, pendingInt)
+//    alarm_manager.setExact(AlarmManager.RTC_WAKEUP, timp, pendingInt)
+    alarm_manager.setAlarmClock(AlarmManager.AlarmClockInfo(timp, pendingInt), pendingInt)
 }
 
 
-class AlarmReceiver : BroadcastReceiver(){
+class AlarmReceiver : BroadcastReceiver(){ //fa notificari si noptificari la miband
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.i("received_alarm", "yes received alarm")
+
     }
 
 }
