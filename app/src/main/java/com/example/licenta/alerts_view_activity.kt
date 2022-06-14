@@ -101,7 +101,10 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
             } //sunt un zeu printre muritori
             globalSortedAlerts.updateList(lista_alerte)
 //            if (cursor?.moveToFirst() != true) {
-                globalSortedAlerts.getNextAlert()
+            globalSortedAlerts.getNextAlert()
+            var next_alert_idx = globalSortedAlerts.next_alert_index
+            var next_time = globalSortedAlerts.alerte_sortate?.get(next_alert_idx!!)?.calendar
+            setAlarm(next_time.toString())
 //            }
         }
     }

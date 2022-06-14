@@ -2,18 +2,18 @@ package com.example.licenta
 
 import alerta
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
+import android.content.BroadcastReceiver
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.os.CountDownTimer
 import android.support.v4.content.ContextCompat.getSystemService
 import android.util.Log
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -301,13 +301,13 @@ object globalSortedAlerts{
         var minute = Calendar.getInstance().get(Calendar.MINUTE).toString()
         var time_for_sort = "1" + hour + minute
 
-        Log.i("time", "${time_for_sort}")
+//        Log.i("time", "${time_for_sort}")
         if (alerte_sortate?.size!! > 0) {
             var sz = alerte_sortate?.size!! - 1
             for (i  in 0..sz!!) {
                 var timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
                     ?.get(0) + alerte_sortate!![i].calendar?.split(":")?.get(1)
-                Log.i("timp din alerta", "${timp_din_alerta}")
+//                Log.i("timp din alerta", "${timp_din_alerta}")
                 if (timp_din_alerta.toInt() > time_for_sort.toInt()) {
                     next_alert_id = alerte_sortate!![i].alert_id.toString()
                     next_alert_index = i
@@ -323,6 +323,29 @@ object globalSortedAlerts{
         }else{
             Log.i("no", "no next alert")
         }
+    }
+
+}
+
+fun setAlarm(time : String){
+    val temp = time.split(":")
+    val time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000
+    val sdf = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss")
+    val date = sdf.format(Date())
+    val timp_cur = date.split(":")[3].toInt() * 3600 * 1000 + date.split(":")[4].toInt() * 60 * 1000
+    val timp = time_milis - timp_cur
+    Log.i("set_alarm", "at ${timp} timp cur timp milis ${timp_cur}, ${time_milis}")
+    val alarm_manager = globalContext.context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val inten = Intent(globalContext.context, AlarmReceiver::class.java)
+    val pendingInt = PendingIntent.getBroadcast(globalContext.context, 0, inten, 0 )
+    alarm_manager.setRepeating(AlarmManager.RTC,
+        timp.toLong(), AlarmManager.INTERVAL_DAY, pendingInt)
+}
+
+
+class AlarmReceiver : BroadcastReceiver(){
+    override fun onReceive(context: Context?, intent: Intent?) {
+        Log.i("received_alarm", "yes received alarm")
     }
 
 }
