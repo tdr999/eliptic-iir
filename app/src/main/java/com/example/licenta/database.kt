@@ -31,6 +31,8 @@ object current_user{
     var userpass : String? = null
     var current_device_id : Int? = null
     var current_device_mac : String? = null
+    var device_type : String? = null
+    var mb : MiBand? = null
 
     fun setUserPass(userid : Int?, user_name: String, user_password: String){
         username = user_name
@@ -41,6 +43,12 @@ object current_user{
     fun setDevice(cur_id : Int?, cur_mac : String){
        current_device_id = cur_id
        current_device_mac = cur_mac
+    }
+    fun setDeviceType(type : String){
+        device_type = type
+    }
+    fun setMiband(mib : MiBand){
+        mb = mib
     }
 
 }
@@ -364,6 +372,19 @@ fun setAlarm(time : String){
 class AlarmReceiver : BroadcastReceiver(){ //fa notificari si noptificari la miband
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.i("received_alarm", "yes received alarm")
+        if (current_user.device_type == "Mi Band 3" && globalSortedAlerts.next_alert_id != "No next"){
+            globalSortedAlerts.next_alert_index?.let {
+                globalSortedAlerts.alerte_sortate?.get(it)?.let {
+                    it.descriere?.let { it1 ->
+                        current_user.mb?.sendCustomMessage(
+                            it1
+                        )
+                    }
+                }
+            }
+
+
+        }
 
     }
 

@@ -185,14 +185,20 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         //https://www.youtube.com/watch?v=wKFJsrdiGS8/
         if (clickedItem.device.name == "Mi Band 3"){
             stopBleScan()
-            var state= findViewById<TextView>(R.id.textView_statut).text.toString()
-            globalIsKnownDevice.checkIsKnown(state) //folosim asta pentru a tine minte daca mibandul e conectat ptr prima data
+
 
             if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false){
                 globalDatabase.db.insertDevice("Mi Band 3", current_user.user_id, clickedItem.device.address)
+            }else{
+                globalIsKnownDevice.isKnown = true //doar ptr miband
             }
 
 
+//            var state= findViewById<TextView>(R.id.textView_statut).text.toString().trim() //asta nu crek merge ca nu se specifica pozitia in viewholder
+
+//            globalIsKnownDevice.checkIsKnown(state) //folosim asta pentru a tine minte daca mibandul e conectat ptr prima data
+
+            current_user.setDeviceType("Mi Band 3")
             current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
             intent = Intent(this, miband_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
             intent.putExtra("bt_device", clickedItem.device)
@@ -212,6 +218,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                 Log.i("intrat in device know", "Inserteed dev")
             }
 
+            current_user.setDeviceType("M4SmartBand")
             current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
 
             intent = Intent(this, m4_view_activity::class.java)//nu inteleg exact ce face scope res operatorul aici dar whatever
@@ -230,7 +237,7 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                 Log.i("intrat in device know", "Inserteed dev")
             }
 
-
+            current_user.setDeviceType("JPD 500")
             current_user.setDevice(globalDatabase.db.getDeviceId(clickedItem.device.address), clickedItem.device.address)
             var state= findViewById<TextView>(R.id.textView_statut).text.toString()
             globalIsKnownDevice.checkIsKnown(state)

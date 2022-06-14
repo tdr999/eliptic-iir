@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.channels.consumesAll
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.crypto.Cipher
@@ -342,7 +343,7 @@ class MiBand (device: BluetoothDevice) {
     }
 
 
-    fun sendCustomMessage(){
+    fun sendCustomMessage(msg : String){
 
 
         //vom incerca o alerta de tipul 5
@@ -362,19 +363,20 @@ class MiBand (device: BluetoothDevice) {
         val nr_alerts = byteArrayOf(0x01)    //alerta 250 e custom
 
 //        var mesaj = "Fut bine si apasat la cioc".toByteArray()
-        val mesaj = //prima linie titlul, in rest, lasa absolut totul asa, vezi care e faza cu 0a
-            """
-               Received Muie:                
-                       /\)
-                      / /
-                     / /
-                  (  Y  ) 
-                  
-            """.trimIndent()
-        var titlu = ""
+//        val mesaj = //prima linie titlul, in rest, lasa absolut totul asa, vezi care e faza cu 0a
+//            """
+//               Received Muie:
+//                       /\)
+//                      / /
+//                     / /
+//                  (  Y  )
+//
+//            """.trimIndent()
+        var mesaj = msg
+        var titlu = "New Alert"
         var icon = 0.toByte()
 
-        val command = type + nr_alerts + byteArrayOf(0x00) +  titlu.toByteArray() +  byteArrayOf(0x00)+ mesaj.toByteArray() + byteArrayOf(0x00)
+        val command = type + nr_alerts + byteArrayOf(0x00) +  mesaj.toByteArray() +  byteArrayOf(0x00)+ titlu.toByteArray() + byteArrayOf(0x00)
 //        val command = type + nr_alerts + byteArrayOf(0x00) +   mesaj.toByteArray() + byteArrayOf(0x00)
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -888,7 +890,7 @@ class MiBand (device: BluetoothDevice) {
         //setting a random date for testing purposes
         //year is transmitted in little endian, therefore 2022 is not sent as 7e6 but as 6e07
         //we will try to set the year 2023, 1/1
-        var sdf = SimpleDateFormat("yyyy:MM:dd:hh:mm:ss")
+        var sdf = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss")
         var current_date_time = sdf.format(Date())
         var split_time = current_date_time.split(":")
         Log.i("timp split", "${split_time}")

@@ -50,6 +50,7 @@ class miband_view_activity : AppCompatActivity() {
         val miband = MiBand(received_device)
         miband.connect() //asta dureaza cam 2 secunde
         miband_global = miband
+        current_user.setMiband(miband)
 //        corou  {
 //            while (true){
 //                if (miband_global?.ESTE_AUTHENTICAT == 1){
