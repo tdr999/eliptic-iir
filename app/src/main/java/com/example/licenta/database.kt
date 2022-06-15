@@ -28,7 +28,6 @@ data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, 
     var mac_number = mac
 }
 
-
 object current_user{
     var user_id : Int? = null
     var username : String? = null
@@ -57,11 +56,6 @@ object current_user{
 
 }
 
-//data class user(var user_Id:Int, var user_name:String, var user_password:String){
-//   var user_id = user_Id
-//   var user_Name = user_name
-//   var user_pass = user_password
-//}
 
 data class alert(var alert_id:Int, var user_Id: Int, var time : String, var descriere : String){
     var alert_ID = alert_id
@@ -409,6 +403,13 @@ class AlarmReceiver : BroadcastReceiver(){ //fa notificari si noptificari la mib
                     }
                 }
             }
+
+
+            globalSortedAlerts.next_alert_index?.let { globalSortedAlerts.alerte_sortate?.get(it)?.let { it.descriere?.let { it1 ->
+                globalAlertManager.sendNotif(
+                    it1
+                )
+            } } }
 
 
         }else if (globalSortedAlerts.next_alert_id != "No next"){
