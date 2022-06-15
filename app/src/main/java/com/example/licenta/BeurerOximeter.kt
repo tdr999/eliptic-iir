@@ -1,35 +1,22 @@
 package com.example.licenta
+
 import android.annotation.SuppressLint
 import android.bluetooth.*
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.support.annotation.RequiresApi
 import android.util.Log
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-
 //aceasta mizerie de oximetru este atat de cretina incat e nevoie de o coada ca sa implementam operatiile intr o ordine
 //suficient de inceata ca sa inteleaga oximetrul ce se petrece
 
-
-
-
-
-
-
 class BeurerOximeter(device: BluetoothDevice) {
     var dev = device
-    var referintaGatt : BluetoothGatt? = null
+    var referintaGatt: BluetoothGatt? = null
 
-    var spo2 : Int  = 0
-    var pi : Int    = 0
-    var BPM : Int   = 0 //default values
-
-
-
+    var spo2: Int = 0
+    var pi: Int = 0
+    var BPM: Int = 0 //default values
 
     val gattCallBack = object : BluetoothGattCallback() {
 
@@ -48,10 +35,9 @@ class BeurerOximeter(device: BluetoothDevice) {
         ) {
 
             with(characteristic) {
-                Log.i("din oxi","caracterista ${value.toHexString()}")
+                Log.i("din oxi", "caracterista ${value.toHexString()}")
             }
-       }
-
+        }
 
         fun ByteArray.toHexString(): String =
             joinToString(separator = " ", prefix = "") { String.format("%02X", it) }
@@ -76,6 +62,7 @@ class BeurerOximeter(device: BluetoothDevice) {
                 gatt.close()
             }
         }
+
         private fun BluetoothGatt.printGattTable() { //de sters dupa ce o terminam de folosit
             //this prints gatt service numbers
 
@@ -100,12 +87,13 @@ class BeurerOximeter(device: BluetoothDevice) {
                 }
             }
         }
+
         @SuppressLint("NewApi")
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             gatt?.printGattTable()
             val serviciuDeConectare =
                 gatt?.getService(UUID.fromString("0000ff12-0000-1000-8000-00805f9b34fb"))
-            if (serviciuDeConectare != null){
+            if (serviciuDeConectare != null) {
                 Log.i("on service discovere", "hei, nu e null serviciul de conectare")
                 this@BeurerOximeter.referintaGatt = gatt
             }
@@ -113,7 +101,8 @@ class BeurerOximeter(device: BluetoothDevice) {
                 serviciuDeConectare?.getCharacteristic(UUID.fromString("0000ff02-0000-1000-8000-00805f9b34fb"))
             val caracteristicaConfigurare =
                 serviciuDeConectare?.getCharacteristic(UUID.fromString("0000ff01-0000-1000-8000-00805f9b34fb"))
-            caracteristicaConfigurare?.writeType = BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE    //ca sa trimita comenz . Request e write cu response, comanda e write fara
+            caracteristicaConfigurare?.writeType =
+                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE    //ca sa trimita comenz . Request e write cu response, comanda e write fara
             if (caracteristicaTemp == null) { //ptr notificcari
                 Log.i("car temop", "e nula coaie \n\n")
             }
@@ -121,8 +110,6 @@ class BeurerOximeter(device: BluetoothDevice) {
             if (caracteristicaConfigurare == null) { //ptr notificcari
                 Log.i("car temop", "e nula coaie si aia de configurare \n\n")
             }
-
-
 
             //cale oribila de a obtine time and date, ty kotlin
 
@@ -148,7 +135,6 @@ class BeurerOximeter(device: BluetoothDevice) {
             )                               // 131 e 83 in hex
             //sugi pula android, cu tot respectul
 
-
             val aiDoileaBytesTrimisi = byteArrayOf(
                 153.toByte(),
                 0x00,
@@ -157,7 +143,6 @@ class BeurerOximeter(device: BluetoothDevice) {
 
             val aiTreileaBytesTrimisi = byteArrayOf(153.toByte(), 0x01, 0x1a)
 
-
             //gatt?.setCharacteristicNotification(caracteristicaTemp, true)
 
             val cccdUuid =
@@ -165,13 +150,13 @@ class BeurerOximeter(device: BluetoothDevice) {
             val desc = caracteristicaTemp?.getDescriptor(cccdUuid)
 
             gatt?.setCharacteristicNotification(caracteristicaTemp, true)
-            desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+            desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             var boolean = gatt?.writeDescriptor(desc)
 
 
 
 
-            if (boolean == true){
+            if (boolean == true) {
 
                 var date = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy MM dd HH mm ss SSS")
@@ -190,11 +175,10 @@ class BeurerOximeter(device: BluetoothDevice) {
                 primiiBytesTrimisi[5] = minute
                 primiiBytesTrimisi[9] = ultimul_numar.toByte()
                 caracteristicaConfigurare?.value = primiiBytesTrimisi
-                boolean = this@BeurerOximeter.referintaGatt?.writeCharacteristic(caracteristicaConfigurare)
+                boolean =
+                    this@BeurerOximeter.referintaGatt?.writeCharacteristic(caracteristicaConfigurare)
                 Log.i("dupaScriereristica", "${boolean}")
             }
-
-
 
 //
 ////            Log.i("dupa sx", "${caracteristicaTemp?.value}")
@@ -208,7 +192,7 @@ class BeurerOximeter(device: BluetoothDevice) {
         }
     }
 
-    fun authenticate(){
+    fun authenticate() {
         dev.connectGatt(null, false, gattCallBack) //fa tru falseul sa se faca automatt
         Log.i("din auth", "conectat la pulsoximetru")
     }

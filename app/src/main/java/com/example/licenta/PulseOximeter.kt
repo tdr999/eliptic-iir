@@ -1,20 +1,20 @@
 package com.example.licenta
+
 import android.bluetooth.*
-import android.os.Parcel
-import android.os.Parcelable
+import android.bluetooth.BluetoothDevice.TRANSPORT_LE
+import android.os.Build
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PulseOximeter(device: BluetoothDevice)  {
+class PulseOximeter(device: BluetoothDevice) {
 
     var dev = device
-    var gatt : BluetoothGatt? = null
+    var gatt: BluetoothGatt? = null
 
-    var spo2 : Int  = 0
-    var pi : Int    = 0
-    var BPM : Int   = 0 //default values
-
+    var spo2: Int = 0
+    var pi: Int = 0
+    var BPM: Int = 0 //default values
 
     val gattCallBack = object : BluetoothGattCallback() {
 
@@ -30,17 +30,19 @@ class PulseOximeter(device: BluetoothDevice)  {
 //                )
                 var valoare = value.toHexString().split(" ")
 
-                if (valoare[0] == "81"){
+                if (valoare[0] == "81") {
                     this@PulseOximeter.BPM = valoare[1].toInt(16)//from base 16
                     this@PulseOximeter.spo2 = valoare[2].toInt(16)
                     this@PulseOximeter.pi = valoare[3].toInt(16)
 
                     Log.i("din if", "val bpm ${BPM} ${spo2} ${pi}")
                     //insert into database
-                    globalDatabase.db.insertMeasurement(current_user.user_id, BPM, spo2, pi,
+                    globalDatabase.db.insertMeasurement(
+                        current_user.user_id, BPM, spo2, pi,
                         "no pressure on Oximeter", 0, 0.0f, 0.0f,
                         current_user.current_device_id,
-                        SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString())
+                        SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString()
+                    )
 
                 }
             }
@@ -74,28 +76,28 @@ class PulseOximeter(device: BluetoothDevice)  {
             this@PulseOximeter.gatt = gatt
             val serviciuDeConectare =
                 gatt?.getService(UUID.fromString("cdeacb80-5235-4c07-8846-93a37ee6b86d"))
-            val caracteristicaTemp = serviciuDeConectare?.getCharacteristic(UUID.fromString("CDEACB81-5235-4C07-8846-93A37EE6B86D"))
-            if (caracteristicaTemp == null){
+            val caracteristicaTemp =
+                serviciuDeConectare?.getCharacteristic(UUID.fromString("CDEACB81-5235-4C07-8846-93A37EE6B86D"))
+            if (caracteristicaTemp == null) {
                 Log.i("car temop", "e nula coaie \n\n")
             }
             Log.i("dupa sx", "${caracteristicaTemp?.value}")
             //gatt?.setCharacteristicNotification(caracteristicaTemp, true)
             gatt?.setCharacteristicNotification(caracteristicaTemp, true)
-            val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //tre sa scriem la descriptor ptr ca sa subscribe
+            val cccdUuid =
+                UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //tre sa scriem la descriptor ptr ca sa subscribe
             val desc = caracteristicaTemp?.getDescriptor(cccdUuid)
-            desc?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+            desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             gatt?.writeDescriptor(desc)
-
 
         }
     }
 
-    fun authenticate(){
-        dev.connectGatt(null, false, gattCallBack) //fa tru falseul sa se faca automatt
+    fun authenticate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            dev.connectGatt(null, false, gattCallBack, TRANSPORT_LE)
+        } //fa tru falseul sa se faca automatt
         Log.i("din auth", "conectat la pulsoximetru")
     }
-
-
-
 
 }

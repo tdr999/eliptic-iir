@@ -7,14 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.licenta.R
-import com.example.licenta.database
-import com.example.licenta.globalContext
 import com.example.licenta.globalDatabase
 
-
-
-class CustomAdapter(private val dataSet: List<ScanResult>,
-                    private val listener : OnItemClickListener
+class CustomAdapter(
+    private val dataSet: List<ScanResult>,
+    private val listener: OnItemClickListener
 ) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
@@ -23,14 +20,12 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
      * (custom ViewHolder).
      */
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view),
-        View.OnClickListener{
+        View.OnClickListener {
 
         val nume_device: TextView
-        val imagine_device : ImageView
-        val signal_strength : TextView
-        val statut_device : TextView
-
-
+        val imagine_device: ImageView
+        val signal_strength: TextView
+        val statut_device: TextView
 
         init {
             // Define click listener for the ViewHolder's View.
@@ -41,7 +36,6 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
             view.setOnClickListener(this)
         }
 
-
         override fun onClick(v: View?) {
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
@@ -50,8 +44,8 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
         }
     }
 
-    interface OnItemClickListener{
-        fun onItemClick(position : Int)
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
     }
 
     // Create new views (invoked by the layout manager)
@@ -74,33 +68,24 @@ class CustomAdapter(private val dataSet: List<ScanResult>,
         viewHolder.signal_strength.text = dataSet[position].rssi.toString() + "db"
         if (dataSet[position].device.name == "Mi Band 3") {
             viewHolder.imagine_device.setImageResource(R.drawable.miband3)
-        }
-
-        else if (dataSet[position].device.name == "B01H_M4") {
+        } else if (dataSet[position].device.name == "B01H_M4") {
             viewHolder.imagine_device.setImageResource(R.drawable.m4)
-        }
-        else{
+        } else {
             viewHolder.imagine_device.setImageResource(R.drawable.jumper)
         }
 
-        if (globalDatabase.db.checkIfUserHasDevice(dataSet[position].device.address) == false){
+        if (globalDatabase.db.checkIfUserHasDevice(dataSet[position].device.address) == false) {
             viewHolder.statut_device.text = "Unknown Device"
             viewHolder.statut_device.setTextColor(Color.RED)
-        }
-        else{
+        } else {
             viewHolder.statut_device.text = "Known device"
             viewHolder.statut_device.setTextColor(Color.GREEN)
         }
 
-
-
     }
-
-
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
-
 
 }
 

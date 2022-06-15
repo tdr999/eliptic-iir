@@ -4,37 +4,23 @@ import AlertAdapter
 import alerta
 import android.content.Intent
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.RequiresApi
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 
 class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListener {
 
     private val lista_alerte = mutableListOf<alerta>()
     var adaptorAlerte = AlertAdapter(lista_alerte, this)
 
-
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
-
-
-
-
 
         var cursor = globalDatabase.db.fetchAlerts()
         var result = cursor?.moveToFirst()
-        while (result != false){
+        while (result != false) {
             var index_alert_id = cursor?.getColumnIndex("alert_id")
             var index_user_id = cursor?.getColumnIndex("user_id")
             var index_date_time = cursor?.getColumnIndex("timp")
@@ -55,8 +41,12 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 
 //        lista_alerte.sortWith(compareBy{it.calendar})
 
-        lista_alerte.sortBy {"1" + it.calendar?.chunked(2)?.get(0).toString()  } //cand ia primele 2, la alea care
+        lista_alerte.sortBy {
+            "1" + it.calendar?.chunked(2)?.get(0).toString()
+        } //cand ia primele 2, la alea care
         //au o singura cifra le ia pe urmatoarele si merge
+        globalSortedAlerts.updateList(lista_alerte)
+        globalSortedAlerts.getNextAlert() //noi
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.alert_view_layout)
@@ -65,11 +55,7 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
         rec_view.layoutManager = LinearLayoutManager(this)
         rec_view.adapter = adaptorAlerte
 
-
-
     }
-
-
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onResume() {
@@ -90,8 +76,7 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 
             lista_alerte.add(temp)
         }
-        globalSortedAlerts.updateList(lista_alerte)
-        if ( cursor?.moveToFirst() != false) {
+        if (cursor?.moveToFirst() != false) {
             lista_alerte.sortBy {
                 (it.calendar?.split(":")?.get(1)?.let { it1 ->
                     it.calendar.split(":").get(0).toInt().times(100).plus(
@@ -103,32 +88,27 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
 //            if (cursor?.moveToFirst() != true) {
             globalSortedAlerts.getNextAlert()
             var next_alert_idx = globalSortedAlerts.next_alert_index
-            var next_time = globalSortedAlerts.alerte_sortate?.get(next_alert_idx!!)?.calendar
-            setAlarm(next_time.toString())
+            if (next_alert_idx != null) {
+
+                var next_time = globalSortedAlerts.alerte_sortate?.get(next_alert_idx!!)?.calendar
+                setAlarm(next_time.toString())
+            }
 //            }
         }
     }
-
-
-
-    override fun onStop() {
-        super.onStop()
-
-    }
-
 
     override fun onItemClick(position: Int) { //functia asta e rulata cand dai click pe un item din lista
 //        Toast.makeText(this@alerts_view_activity, "Item $position click", Toast.LENGTH_SHORT).show()
         val clickedItem = lista_alerte[position]
         adaptorAlerte.notifyItemChanged(position)
 
+
 //        adaptorAlerte.notifyItemRemoved(position)
         //https://www.youtube.com/watch?v=wKFJsrdiGS8/
 
     }
 
-    fun newAlert(view : View){
-
+    fun newAlert(view: View) {
 
         intent = Intent(
             this,
@@ -137,6 +117,5 @@ class alerts_view_activity : AppCompatActivity(), AlertAdapter.OnItemClickListen
         startActivity(intent)
 
     }
-
 
 }
