@@ -15,6 +15,7 @@ import android.os.CountDownTimer
 import android.support.v4.content.ContextCompat.getSystemService
 import android.util.Log
 import androidx.annotation.RequiresApi
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.min
@@ -369,11 +370,7 @@ object globalSortedAlerts{
 fun setAlarm(time : String){
     val temp = time.split(":")
     var time_milis = 0
-    if (temp[1].length == 2) {
-        time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000
-    }else{
-        time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000 / 10
-    }
+    time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000
     val sdf = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss")
     val date = sdf.format(Date())
     val timp_cur = date.split(":")[3].toInt() * 3600 * 1000 + date.split(":")[4].toInt() * 60 * 1000
@@ -399,6 +396,7 @@ fun setAlarm(time : String){
 
 
 class AlarmReceiver : BroadcastReceiver(){ //fa notificari si noptificari la miband
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.i("received_alarm", "yes received alarm")
         if (current_user.device_type == "Mi Band 3" && globalSortedAlerts.next_alert_id != "No next"){
@@ -413,7 +411,42 @@ class AlarmReceiver : BroadcastReceiver(){ //fa notificari si noptificari la mib
             }
 
 
+        }else if (globalSortedAlerts.next_alert_id != "No next"){
+            globalSortedAlerts.next_alert_index?.let { globalSortedAlerts.alerte_sortate?.get(it)?.let { it.descriere?.let { it1 ->
+                globalAlertManager.sendNotif(
+                    it1
+                )
+            } } }
         }
+
+    }
+
+}
+
+
+object globalAlertManager{
+    val notificationManager: NotificationManager =
+        globalContext.context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun sendNotif(descriere: String){
+
+        var channel = NotificationChannel("1", "mihai", NotificationManager.IMPORTANCE_DEFAULT ).apply { description = descriere }
+
+        notificationManager.createNotificationChannel(channel)
+        var notificatudor = Notification.Builder(globalContext.context, "1" )
+            .setContentTitle("Take medication")
+            .setContentText(descriere)
+            .setSmallIcon(R.drawable.etti)
+            .setAutoCancel(true)
+
+
+        try{ notificationManager.notify(1, notificatudor.build())}
+        catch (e : Exception){
+            Log.i("primit", "exception ${e}")
+        }
+
 
     }
 
