@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.SET_ALARM"/>
     <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
 
     <application
@@ -28,7 +31,15 @@
         <activity android:name=".alerts_view_activity" />
         <activity android:name=".newalertactivty" />
         <activity android:name=".new_user_activity" />
-        <receiver android:name=".AlarmReceiver" />
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="true"
+            android:enabled="true" >
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+        </intent-filter>
+        </receiver>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -244,7 +244,7 @@ class MiBand (device: BluetoothDevice) {
 
 
 
-        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) { //de la punchthourhg https://punchthrough.com/android-ble-guide/
             val deviceAddress = gatt.device.address
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -256,6 +256,11 @@ class MiBand (device: BluetoothDevice) {
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     Log.i("BluetoothGattCallback", "Successfully disconnected from $deviceAddress")
                     gatt.close()
+                }else if(status == BluetoothGatt.GATT_FAILURE){ //speram ca asta rezolva
+                    if (newState == BluetoothProfile.STATE_DISCONNECTED){
+                        connect()
+                    }
+
                 }
             } else {
                 Log.w(
@@ -1165,6 +1170,7 @@ class MiBand (device: BluetoothDevice) {
 
     fun connect(){
         dev.connectGatt(null, false, gattCallback) //schimba la true sa se conecteze automat
+
     }
     fun disconnect(){
         gatt?.disconnect()

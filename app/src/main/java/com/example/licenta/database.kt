@@ -10,11 +10,14 @@ import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Build
 import android.os.CountDownTimer
 import android.support.v4.content.ContextCompat.getSystemService
 import android.util.Log
+import androidx.annotation.RequiresApi
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.min
 
 
 data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, var mac: String){
@@ -307,15 +310,28 @@ object globalSortedAlerts{
     fun getNextAlert(){
         var hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY).toString()
         var minute = Calendar.getInstance().get(Calendar.MINUTE).toString()
+        if (minute.length == 1)
+        {
+           minute = "0$minute"
+        }
         var time_for_sort = "1" + hour + minute
         var intrat_in_for = 0
+        Log.i("current_time", "for sorting ${time_for_sort}")
 
 //        Log.i("time", "${time_for_sort}")
         if (alerte_sortate?.size!! > 0) {
             var sz = alerte_sortate?.size!! - 1
             for (i  in 0..sz!!) {
-                var timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
-                    ?.get(0) + alerte_sortate!![i].calendar?.split(":")?.get(1)
+                var timp_din_alerta = "nothing"
+                if (alerte_sortate!![i].calendar?.split(":")?.get(1)?.length  == 1){
+
+                    timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
+                        ?.get(0) +"0" + alerte_sortate!![i].calendar?.split(":")?.get(1)
+                }
+                else {
+                    timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
+                        ?.get(0) + alerte_sortate!![i].calendar?.split(":")?.get(1)
+                }
 //                Log.i("timp din alerta", "${timp_din_alerta}")
                 if (timp_din_alerta.toInt() > time_for_sort.toInt()) {
                     next_alert_id = alerte_sortate!![i].alert_id.toString()
@@ -349,23 +365,36 @@ object globalSortedAlerts{
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun setAlarm(time : String){
     val temp = time.split(":")
-    val time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000
+    var time_milis = 0
+    if (temp[1].length == 2) {
+        time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000
+    }else{
+        time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000 / 10
+    }
     val sdf = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss")
     val date = sdf.format(Date())
     val timp_cur = date.split(":")[3].toInt() * 3600 * 1000 + date.split(":")[4].toInt() * 60 * 1000
     val timp = (time_milis - timp_cur).toLong()
+
+//    val timp = time_milis.toLong()
     Log.i("set_alarm", "at ${timp} timp cur timp milis ${timp_cur}, ${time_milis}")
+    Log.i("will fire at", "${System.currentTimeMillis() + timp}")
     val alarm_manager = globalContext.context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-
     val inten = Intent(globalContext.context, AlarmReceiver::class.java)
-    val pendingInt = PendingIntent.getBroadcast(globalContext.context, 0, inten, 0 )
+    val pendingInt = PendingIntent.getBroadcast(globalContext.context, 0, inten, PendingIntent.FLAG_CANCEL_CURRENT )
+
+//    alarm_manager.cancel(pendingInt) //cancel last alarm
 //    alarm_manager.setRepeating(AlarmManager.RTC,
 //        timp.toLong(), AlarmManager.INTERVAL_DAY, pendingInt)
+    android.support.v4.app.AlarmManagerCompat.setExact(alarm_manager, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +  timp, pendingInt)
 //    alarm_manager.setExact(AlarmManager.RTC_WAKEUP, timp, pendingInt)
-    alarm_manager.setAlarmClock(AlarmManager.AlarmClockInfo(timp, pendingInt), pendingInt)
+
+//    alarm_manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timp, pendingInt)
+//    alarm_manager.setAlarmClock(AlarmManager.AlarmClockInfo(timp, pendingInt), pendingInt)
 }
 
 
