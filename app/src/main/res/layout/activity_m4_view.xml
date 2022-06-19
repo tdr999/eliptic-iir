@@ -1,244 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".m4_view_activity">
 
-    <LinearLayout
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom|left"
+        android:contentDescription="alerts"
+        android:layout_margin="24dp"
+        android:src="@drawable/ic_baseline_alarm_on_24"
+        android:id="@+id/toAlerts_M4"
+        android:onClick="goToAlert"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingConstraints" />
+
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_heart"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:cardMaxElevation="12dp"
-            android:onClick="getHeart"
-            app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="3dp">
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/img_heart"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:layout_gravity="left"
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_heart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/ic_baseline_favorite_24" />
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                app:cardMaxElevation="12dp"
+                android:onClick="getHeart"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="3dp">
 
-            <TextView
-                android:id="@+id/text_heart_rate"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/img_heart"
+                    android:layout_width="100dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="left"
+                    android:layout_margin="10dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_baseline_favorite_24" />
+
+                <TextView
+                    android:id="@+id/text_heart_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="HeartRate"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_blood"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="110dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="HeartRate"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-
-        </android.support.v7.widget.CardView>
-
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_blood"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            android:onClick="getBlood"
-            app:cardMaxElevation="12dp"
-            app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toTopOf="@id/card_heart"
-            tools:layout_editor_absoluteX="3dp">
-
-            <ImageView
-                android:id="@+id/img_blood"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:layout_gravity="left"
                 android:layout_margin="10dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/blood_pressure" />
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                android:onClick="getBlood"
+                app:cardMaxElevation="12dp"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toTopOf="@id/card_heart"
+                tools:layout_editor_absoluteX="3dp">
 
-            <TextView
-                android:id="@+id/text_blood"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/img_blood"
+                    android:layout_width="100dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="left"
+                    android:layout_margin="10dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/blood_pressure" />
+
+                <TextView
+                    android:id="@+id/text_blood"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="Blood Pressure"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_saturation"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="110dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="Blood Pressure"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_saturation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:cardMaxElevation="12dp"
-            android:onClick="getSaturation"
-            app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toTopOf="@id/card_blood"
-            tools:layout_editor_absoluteX="3dp">
-
-            <ImageView
-                android:id="@+id/img_saturation"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:layout_gravity="left"
                 android:layout_margin="10dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/blood_saturation" />
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                app:cardMaxElevation="12dp"
+                android:onClick="getSaturation"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toTopOf="@id/card_blood"
+                tools:layout_editor_absoluteX="3dp">
 
-            <TextView
-                android:id="@+id/text_saturation"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/img_saturation"
+                    android:layout_width="100dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="left"
+                    android:layout_margin="10dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/blood_saturation" />
+
+                <TextView
+                    android:id="@+id/text_saturation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="Saturation"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_steps"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="110dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="Saturation"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_steps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:cardMaxElevation="12dp"
-            app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="true"
-            tools:layout_editor_absoluteX="10dp"
-            android:onClick="getSteps"
-            app:layout_constraintTop_toBottomOf="@id/card_saturation"
-            tools:layout_editor_absoluteY="41dp">
-
-
-            <ImageView
-                android:id="@+id/img"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:layout_gravity="left"
                 android:layout_margin="10dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/ic_baseline_directions_walk_24" />
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                app:cardMaxElevation="12dp"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                tools:layout_editor_absoluteX="10dp"
+                android:onClick="getSteps"
+                app:layout_constraintTop_toBottomOf="@id/card_saturation"
+                tools:layout_editor_absoluteY="41dp">
 
-            <TextView
-                android:id="@+id/text_steps"
-                android:layout_width="wrap_content"
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="100dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="left"
+                    android:layout_margin="10dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_baseline_directions_walk_24" />
+
+                <TextView
+                    android:id="@+id/text_steps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="-20dp"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="Steps"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:id="@+id/text_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="Distance"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+
+
+                <TextView
+                    android:id="@+id/text_calories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginLeft="110dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="Calories"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/card_baterie"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="-20dp"
-                android:layout_marginLeft="110dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="Steps"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-
-            <TextView
-                android:id="@+id/text_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="110dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="Distance"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-
-
-            <TextView
-                android:id="@+id/text_calories"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="60dp"
-                android:layout_marginLeft="110dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="Calories"
-                android:textSize="25sp"
-                android:textStyle="bold" />
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_baterie"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:cardMaxElevation="12dp"
-            app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toBottomOf="@id/card_steps"
-            tools:layout_editor_absoluteX="3dp">
-
-            <ImageView
-                android:layout_width="180dp"
-                android:layout_height="150dp"
-                android:layout_gravity="left"
                 android:layout_margin="10dp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/ic_baseline_battery_full_24" />
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                app:cardMaxElevation="12dp"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintTop_toBottomOf="@id/card_steps"
+                tools:layout_editor_absoluteX="3dp">
 
-            <TextView
-                android:id="@+id/text_baterie"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center|center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="170dp"
-                android:layout_marginBottom="20dp"
-                android:paddingLeft="20dp"
-                android:text="Battery"
-                android:textSize="25sp"
-                android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="180dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="left"
+                    android:layout_margin="10dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_baseline_battery_full_24" />
+
+                <TextView
+                    android:id="@+id/text_baterie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center|center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="170dp"
+                    android:layout_marginBottom="20dp"
+                    android:paddingLeft="20dp"
+                    android:text="Battery"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
 
 
-        </android.support.v7.widget.CardView>
+            </android.support.v7.widget.CardView>
 
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

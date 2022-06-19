@@ -1,6 +1,7 @@
 package com.example.licenta
 
 import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -14,6 +15,13 @@ class m4_view_activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_m4_view)
+
+        val received_device =
+            intent.extras.getParcelable<BluetoothDevice>("bt_device") //primeste device
+        val m4 = M4(received_device)
+        m4_global = m4
+        m4.authenticate()
+
     }
 
     fun updateLoop() {
@@ -45,11 +53,7 @@ class m4_view_activity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val received_device =
-            intent.extras.getParcelable<BluetoothDevice>("bt_device") //primeste device
-        val m4 = M4(received_device)
-        m4_global = m4
-        m4.authenticate()
+
         updateLoop()
     }
 
@@ -74,5 +78,15 @@ class m4_view_activity : AppCompatActivity() {
         m4_global?.getHeart()
 //        findViewById<TextView>(R.id.text_heart_rate).text = m4_global?.bpm.toString() + " BPM"
     }
+
+
+    fun goToAlert(view: View) {
+        intent = Intent(
+            this,
+            alerts_view_activity::class.java
+        )//nu inteleg exact ce face scope res operatorul aici dar whatever
+        startActivity(intent)
+    }
+
 
 }

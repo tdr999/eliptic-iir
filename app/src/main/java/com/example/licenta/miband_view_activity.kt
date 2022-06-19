@@ -1,6 +1,7 @@
 package com.example.licenta
 
 import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,13 @@ class miband_view_activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_miband_view)
+        val received_device =
+            intent.extras.getParcelable<BluetoothDevice>("bt_device") //primeste device
+        val miband = MiBand(received_device)
+        miband.connect() //asta dureaza cam 2 secunde
+        miband_global = miband
+
+
     }
 
     fun updateLoop() {
@@ -41,12 +49,8 @@ class miband_view_activity : AppCompatActivity() {
     override fun onResume() {
 
         super.onResume()
-        val received_device =
-            intent.extras.getParcelable<BluetoothDevice>("bt_device") //primeste device
-        val miband = MiBand(received_device)
-        miband.connect() //asta dureaza cam 2 secunde
-        miband_global = miband
-        current_user.setMiband(miband)
+
+        miband_global?.let { current_user.setMiband(it) }
 //        corou  {
 //            while (true){
 //                if (miband_global?.ESTE_AUTHENTICAT == 1){
@@ -74,6 +78,16 @@ class miband_view_activity : AppCompatActivity() {
     fun getHeart(view: View) {
         miband_global?.subscribeHeartRate()
     }
+
+
+    fun goToAlert(view: View) {
+        intent = Intent(
+            this,
+            alerts_view_activity::class.java
+        )//nu inteleg exact ce face scope res operatorul aici dar whatever
+        startActivity(intent)
+    }
+
 
 }
 

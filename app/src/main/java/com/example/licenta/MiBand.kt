@@ -437,7 +437,7 @@ class MiBand(device: BluetoothDevice) {
     }
 
     fun setCaloriesDistanceMetric() {
-
+        //sets the band to display calories and distance, and sets them in metric
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
         val miband_config_char_uuid = UUID.fromString("00000003-0000-3512-2118-0009AF100700")
         val cccdUuid =
