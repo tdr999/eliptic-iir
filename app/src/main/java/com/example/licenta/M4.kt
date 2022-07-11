@@ -285,11 +285,11 @@ class M4(device: BluetoothDevice) {
                 gatt?.writeCharacteristic(caracteristicaComenzi)
             }, 3125)
 
-            Handler(Looper.getMainLooper()).postDelayed({
-                caracteristicaComenzi?.value =
-                    byteArrayOf(223.toByte(), 0x00, 0x05, 0x07, 0x0f, 0x10, 0x04, 0x00, 0x00)
-                gatt?.writeCharacteristic(caracteristicaComenzi)
-            }, 3250) //toate comenzile astea sunt standarde de configuratie
+//            Handler(Looper.getMainLooper()).postDelayed({
+//                caracteristicaComenzi?.value =
+//                    byteArrayOf(223.toByte(), 0x00, 0x05, 0x07, 0x0f, 0x10, 0x04, 0x00, 0x00)
+//                gatt?.writeCharacteristic(caracteristicaComenzi)
+//            }, 3250) //toate comenzile astea sunt standarde de configuratie
 
 //            sendMessage()
 
