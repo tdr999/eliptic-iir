@@ -89,7 +89,7 @@ class MiBand(device: BluetoothDevice) {
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "01") {
                     Log.i(
                         "din on chcarac changesd",
-                        "Da dom'le, ne am legat si acuma trimetem ENCRYPTEDKEYACUMA number"
+                        "primit cheia de la nratara acum criptam"
                     )
                     var tempKey = valoareHex.takeLast(16) // keia primita
                     Log.i("ult16", "$tempKey\n")

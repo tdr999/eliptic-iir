@@ -189,10 +189,10 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                     clickedItem.device.address
                 )
             } else {
-                globalIsKnownDevice.isKnown = true //doar ptr miband
+                //globalIsKnownDevice.isKnown = true //doar ptr miband // COMENTAT PENTRU DEBUGGING
+
             }
 
-//            var state= findViewById<TextView>(R.id.textView_statut).text.toString().trim() //asta nu crek merge ca nu se specifica pozitia in viewholder
 
 //            globalIsKnownDevice.checkIsKnown(state) //folosim asta pentru a tine minte daca mibandul e conectat ptr prima data
 
