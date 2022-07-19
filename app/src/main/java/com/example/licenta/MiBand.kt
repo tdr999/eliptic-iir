@@ -84,7 +84,9 @@ class MiBand(device: BluetoothDevice) {
                     val authNumber =
                         byteArrayOf(0x02, 0x00, 0x02) //schimbat de la 0x02 0x08 la 0x02 0x00
                     characteristic.value = authNumber
-                    gatt.writeCharacteristic(authChar)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        gatt.writeCharacteristic(authChar)
+                    }, 100)
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "01") {
                     Log.i(
@@ -106,7 +108,10 @@ class MiBand(device: BluetoothDevice) {
                         0x03,
                         0x00
                     ) + finalKey //schimbat de la 0308 la 0300 ptr miband 4/miband 3 postupdate
-                    gatt.writeCharacteristic(authChar)
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        gatt.writeCharacteristic(authChar)
+                    }, 100)
 
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "03" && valoareHex[2] == "01") {
@@ -149,7 +154,36 @@ class MiBand(device: BluetoothDevice) {
                         ) + SECRET_KEY //uncomment this for first time pairing
                     }
 
-                    gatt.writeCharacteristic(authChar)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        gatt.writeCharacteristic(authChar)
+                    }, 100)
+                }
+
+
+
+                if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "04") { //acest caz e ptr bratarile din china china
+                    Log.i("primit 10 02 04", " bomba")
+//                    if (globalIsKnownDevice.isKnown == true) {
+//                        authChar?.value =
+//                            byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+//                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
+//                    } else {
+//
+//                        authChar?.value = byteArrayOf(
+//                            0x01,
+//                            0x00
+//                        ) + SECRET_KEY //uncomment this for first time pairing
+//                    }
+//
+//                    Handler(Looper.getMainLooper()).postDelayed({
+//                        gatt.writeCharacteristic(authChar)
+//                    }, 100)
+
+                    authChar?.value = byteArrayOf(0x02, 0x00)
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        gatt.writeCharacteristic(authChar)
+                    }, 100)
                 }
 
             }
