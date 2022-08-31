@@ -163,21 +163,21 @@ class MiBand(device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "04") { //acest caz e ptr bratarile din china china
                     Log.i("primit 10 02 04", " bomba")
-//                    if (globalIsKnownDevice.isKnown == true) {
-//                        authChar?.value =
-//                            byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-//                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
-//                    } else {
-//
-//                        authChar?.value = byteArrayOf(
-//                            0x01,
-//                            0x00
-//                        ) + SECRET_KEY //uncomment this for first time pairing
-//                    }
-//
-//                    Handler(Looper.getMainLooper()).postDelayed({
-//                        gatt.writeCharacteristic(authChar)
-//                    }, 100)
+                    if (globalIsKnownDevice.isKnown == true) { //cod care verifica daca ne-am mai imperecheat cu bratara
+                        authChar?.value =
+                            byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
+                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
+                    } else {
+
+                        authChar?.value = byteArrayOf(
+                            0x01,
+                            0x00
+                        ) + SECRET_KEY //uncomment this for first time pairing
+                    }
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        gatt.writeCharacteristic(authChar)
+                    }, 100)
 
                     authChar?.value = byteArrayOf(0x02, 0x00)
 

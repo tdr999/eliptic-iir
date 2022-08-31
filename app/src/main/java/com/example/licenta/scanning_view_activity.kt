@@ -189,8 +189,8 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                     clickedItem.device.address
                 )
             } else {
-                //globalIsKnownDevice.isKnown = true //doar ptr miband // COMENTAT PENTRU DEBUGGING
-
+                globalIsKnownDevice.isKnown = true //doar ptr miband // COMENTAT PENTRU DEBUGGING
+                                                    //refactor dar momentan merge
             }
 
 
