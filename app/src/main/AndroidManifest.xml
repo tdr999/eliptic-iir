@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.licenta">
+    package="MiBand">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
@@ -27,13 +27,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
-        <activity android:name=".miband_view_activity"></activity>
+        <activity android:name="com.example.MiBand.miband_view_activity"></activity>
         <activity android:name=".m4_view_activity"></activity>
         <activity android:name=".oximeter_view_activity" /> <!-- scoate actionabarul tema asta -->
-        <activity android:name=".scanning_view_activity" />
+        <activity android:name="com.example.MiBand.scanning_view_activity" />
         <activity android:name=".alerts_view_activity" />
         <activity android:name=".newalertactivty" />
-        <activity android:name=".new_user_activity" />
+        <activity android:name="com.example.MiBand.new_user_activity" />
         <receiver
             android:name=".AlarmReceiver"
             android:exported="true"
@@ -43,7 +43,7 @@
         </intent-filter>
         </receiver>
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.example.MiBand.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,5 +1,6 @@
-package com.example.licenta
+package com.example.MiBand
 
+import MiBand.R
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Build

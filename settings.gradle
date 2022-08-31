@@ -1,2 +1,2 @@
-rootProject.name = "Licenta"
+rootProject.name = "MiBand"
 include ':app'

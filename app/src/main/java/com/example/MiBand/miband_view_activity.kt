@@ -1,7 +1,7 @@
-package com.example.licenta
+package com.example.MiBand
 
+import MiBand.R
 import android.bluetooth.BluetoothDevice
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -80,13 +80,7 @@ class miband_view_activity : AppCompatActivity() {
     }
 
 
-    fun goToAlert(view: View) {
-        intent = Intent(
-            this,
-            alerts_view_activity::class.java
-        )//nu inteleg exact ce face scope res operatorul aici dar whatever
-        startActivity(intent)
-    }
+
 
 
 }

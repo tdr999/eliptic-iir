@@ -1,3 +1,4 @@
+import MiBand.R
 import android.bluetooth.le.ScanResult
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
@@ -6,8 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.licenta.R
-import com.example.licenta.globalDatabase
+import com.example.MiBand.globalDatabase
 
 class CustomAdapter(
     private val dataSet: List<ScanResult>,

@@ -1,4 +1,4 @@
-package com.example.licenta
+package com.example.MiBand
 
 import android.bluetooth.*
 import android.bluetooth.BluetoothDevice.TRANSPORT_LE

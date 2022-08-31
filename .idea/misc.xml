@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/tudor_ytmdyrk/Desktop/licenta/app/src/main/res/layout/activity_main.xml" value="0.3375" />
+        <entry key="..\:/Users/tudor_ytmdyrk/Desktop/licenta/app/src/main/res/layout/activity_miband_view.xml" value="0.3375" />
+        <entry key="..\:/Users/tudor_ytmdyrk/Desktop/licenta/app/src/main/res/layout/dev_card_view.xml" value="0.3375" />
+        <entry key="..\:/Users/tudor_ytmdyrk/Desktop/licenta/app/src/main/res/layout/new_user_activity.xml" value="0.12864583333333332" />
+        <entry key="..\:/Users/tudor_ytmdyrk/Desktop/licenta/app/src/main/res/layout/scanning_activity_layout.xml" value="0.3375" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

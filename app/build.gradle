@@ -7,7 +7,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        applicationId "com.example.licenta"
+        applicationId "com.example.MiBand"
         minSdkVersion 21
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28

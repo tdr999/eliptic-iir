@@ -1,7 +1,7 @@
-package com.example.licenta
+package com.example.MiBand
 
 import CustomAdapter
-import alerta
+import MiBand.R
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -20,7 +20,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import java.util.*
 
@@ -38,48 +37,8 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         var rec_view = findViewById<RecyclerView>(R.id.recycler_view_scan)
         rec_view.layoutManager = LinearLayoutManager(this)
         rec_view.adapter = adaptorRezultate
-//        var db = database(this, "Date.db", null, 1)
-//        db.insertUser("adrian", "sexfut")
 
-        var lista_alerte = mutableListOf<alerta>()
-        lista_alerte.clear()
-        var cursor = globalDatabase.db.fetchAlerts()
-        while (cursor?.moveToNext() == true) {
-            var index_alert_id = cursor.getColumnIndex("alert_id")
-            var index_user_id = cursor.getColumnIndex("user_id")
-            var index_date_time = cursor.getColumnIndex("timp")
-            var index_descriere = cursor.getColumnIndex("descriere")
-            var temp = alerta(
-                alert_id = cursor.getInt(index_alert_id),
-                user_id = cursor.getInt(index_user_id),
-                descriere = cursor.getString(index_descriere),
-                calendar = cursor.getString(index_date_time)
-            )
 
-            lista_alerte.add(temp)
-        }
-        if (cursor?.moveToFirst() != false) {
-            lista_alerte.sortBy {
-                (it.calendar?.split(":")?.get(1)?.let { it1 ->
-                    it.calendar.split(":").get(0).toInt().times(100).plus(
-                        it1.toInt()
-                    ) //puteam sa fi facut o functie
-                })
-            } //sunt un zeu printre muritori
-            globalSortedAlerts.updateList(lista_alerte)
-//            if(cursor?.moveToFirst() != true) {
-            globalSortedAlerts.getNextAlert()
-//            }
-        }
-        Log.i(
-            "next alert", "${
-                globalSortedAlerts.next_alert_index?.let {
-                    globalSortedAlerts.alerte_sortate?.get(
-                        it
-                    )?.calendar
-                }
-            }"
-        )
 
     }
 
@@ -141,13 +100,6 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
 
     }
 
-    fun goToAlert(view: View) {
-        intent = Intent(
-            this,
-            alerts_view_activity::class.java
-        )//nu inteleg exact ce face scope res operatorul aici dar whatever
-        startActivity(intent)
-    }
 
     fun insert_test_alert(view: View) {
         globalDatabase.db.insertAlert("2023-05-20 20:00:00", "viagra")
@@ -208,70 +160,6 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
             intent.putExtra("bt_device", clickedItem.device)
             startActivity(intent)
 
-        } else if (clickedItem.device.name == "B01H_M4") {
-            stopBleScan()
-
-            var state = findViewById<TextView>(R.id.textView_statut).text.toString()
-            globalIsKnownDevice.checkIsKnown(state)
-
-            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false) {
-                globalDatabase.db.insertDevice(
-                    "M4SmartBand",
-                    current_user.user_id,
-                    clickedItem.device.address
-                )
-                Log.i("intrat in device know", "Inserteed dev")
-            }
-
-            current_user.setDeviceType("M4SmartBand")
-            current_user.setDevice(
-                globalDatabase.db.getDeviceId(clickedItem.device.address),
-                clickedItem.device.address
-            )
-
-            intent = Intent(
-                this,
-                m4_view_activity::class.java
-            )//nu inteleg exact ce face scope res operatorul aici dar whatever
-            intent.putExtra("bt_device", clickedItem.device)
-            startActivity(intent)
-
-        } else {
-            //cod ximetr
-            //cel mai simplu e de passuit bluetooth deviceul la alt activity si instantiat obiectul acolo
-            stopBleScan()
-
-            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false) {
-                globalDatabase.db.insertDevice(
-                    "JPD 500",
-                    current_user.user_id,
-                    clickedItem.device.address
-                )
-                Log.i("intrat in device know", "Inserteed dev")
-            }
-
-            current_user.setDeviceType("JPD 500")
-            current_user.setDevice(
-                globalDatabase.db.getDeviceId(clickedItem.device.address),
-                clickedItem.device.address
-            )
-            var state = findViewById<TextView>(R.id.textView_statut).text.toString()
-            globalIsKnownDevice.checkIsKnown(state)
-
-            if (globalDatabase.db.checkIfUserHasDevice(clickedItem.device.address) == false) {
-                globalDatabase.db.insertDevice(
-                    "Jumper Pulseoximeter",
-                    current_user.user_id,
-                    clickedItem.device.address
-                )
-            }
-
-            intent = Intent(
-                this,
-                oximeter_view_activity::class.java
-            )//nu inteleg exact ce face scope res operatorul aici dar whatever
-            intent.putExtra("bt_device", clickedItem.device)
-            startActivity(intent)
         }
     }
 }

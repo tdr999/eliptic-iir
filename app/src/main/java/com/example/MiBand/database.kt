@@ -1,20 +1,12 @@
-package com.example.licenta
+package com.example.MiBand
 
-import alerta
 import android.annotation.SuppressLint
-import android.app.*
-import android.content.BroadcastReceiver
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import java.text.SimpleDateFormat
-import java.util.*
 
 data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, var mac: String) {
     var device_id = dev_id
@@ -293,178 +285,10 @@ object globalDatabase { //instanta globala a helperului de baza de date ca sa nu
     var db = database(globalContext.context, "Date.db", null, 1)
 }
 
-object globalSortedAlerts {
-    var alerte_sortate: MutableList<alerta>? = null
-    var next_alert_id: String? = "No next"
-    var next_alert_index: Int? = 0
-    fun updateList(mutableList: MutableList<alerta>) {
-        alerte_sortate = mutableList
-
-    }
-
-    fun getList(): MutableList<alerta>? {
-        return alerte_sortate
-    }
-
-    fun getNextAlert() {
-        var hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY).toString()
-        var minute = Calendar.getInstance().get(Calendar.MINUTE).toString()
-        if (minute.length == 1) {
-            minute = "0$minute"
-        }
-        var time_for_sort = "1" + hour + minute
-        var intrat_in_for = 0
-        Log.i("current_time", "for sorting ${time_for_sort}")
-
-//        Log.i("time", "${time_for_sort}")
-        if (alerte_sortate?.size!! > 0) {
-            var sz = alerte_sortate?.size!! - 1
-            for (i in 0..sz) {
-                var timp_din_alerta = "nothing"
-                if (alerte_sortate!![i].calendar?.split(":")?.get(1)?.length == 1) {
-
-                    timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
-                        ?.get(0) + "0" + alerte_sortate!![i].calendar?.split(":")?.get(1)
-                } else {
-                    timp_din_alerta = "1" + alerte_sortate!![i].calendar?.split(":")
-                        ?.get(0) + alerte_sortate!![i].calendar?.split(":")?.get(1)
-                }
-//                Log.i("timp din alerta", "${timp_din_alerta}")
-                if (timp_din_alerta.toInt() > time_for_sort.toInt()) {
-                    next_alert_id = alerte_sortate!![i].alert_id.toString()
-                    next_alert_index = i
-                    intrat_in_for = 1
-                    break
-
-                }
-
-            }
-            if (intrat_in_for == 1) {
-                Log.i(
-                    "Next alert ID",
-                    " ${alerte_sortate!![next_alert_index!!].calendar}"
-                )
-
-            } else {
-
-                next_alert_id = "No next"
-                next_alert_index = null
-            }
-        } else {
-            Log.i("no", "no next alert")
-        }
-    }
-
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun setAlarm(time: String) {
-    val temp = time.split(":")
-    var time_milis = 0
-    time_milis = temp[0].toInt() * 3600 * 1000 + temp[1].toInt() * 60 * 1000
-    val sdf = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss")
-    val date = sdf.format(Date())
-    val timp_cur = date.split(":")[3].toInt() * 3600 * 1000 + date.split(":")[4].toInt() * 60 * 1000
-    val timp = (time_milis - timp_cur).toLong()
-
-//    val timp = time_milis.toLong()
-    Log.i("set_alarm", "at ${timp} timp cur timp milis ${timp_cur}, ${time_milis}")
-    Log.i("will fire at", "${System.currentTimeMillis() + timp}")
-    val alarm_manager =
-        globalContext.context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-    val inten = Intent(globalContext.context, AlarmReceiver::class.java)
-    val pendingInt = PendingIntent.getBroadcast(
-        globalContext.context,
-        0,
-        inten,
-        PendingIntent.FLAG_CANCEL_CURRENT
-    )
-
-//    alarm_manager.cancel(pendingInt) //cancel last alarm
-//    alarm_manager.setRepeating(AlarmManager.RTC,
-//        timp.toLong(), AlarmManager.INTERVAL_DAY, pendingInt)
-    android.support.v4.app.AlarmManagerCompat.setExact(
-        alarm_manager,
-        AlarmManager.RTC_WAKEUP,
-        System.currentTimeMillis() + timp,
-        pendingInt
-    )
-//    alarm_manager.setExact(AlarmManager.RTC_WAKEUP, timp, pendingInt)
-
-//    alarm_manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timp, pendingInt)
-//    alarm_manager.setAlarmClock(AlarmManager.AlarmClockInfo(timp, pendingInt), pendingInt)
-}
-
-class AlarmReceiver : BroadcastReceiver() { //fa notificari si noptificari la miband
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onReceive(context: Context?, intent: Intent?) {
-        Log.i("received_alarm", "yes received alarm")
-        if (current_user.device_type == "Mi Band 3" && globalSortedAlerts.next_alert_id != "No next") {
-            globalSortedAlerts.next_alert_index?.let {
-                globalSortedAlerts.alerte_sortate?.get(it)?.let {
-                    it.descriere?.let { it1 ->
-                        current_user.mb?.sendCustomMessage(
-                            it1
-                        )
-                    }
-                }
-            }
 
 
-            globalSortedAlerts.next_alert_index?.let {
-                globalSortedAlerts.alerte_sortate?.get(it)?.let {
-                    it.descriere?.let { it1 ->
-                        globalAlertManager.sendNotif(
-                            it1
-                        )
-                    }
-                }
-            }
-
-        } else if (globalSortedAlerts.next_alert_id != "No next") {
-            globalSortedAlerts.next_alert_index?.let {
-                globalSortedAlerts.alerte_sortate?.get(it)?.let {
-                    it.descriere?.let { it1 ->
-                        globalAlertManager.sendNotif(
-                            it1
-                        )
-                    }
-                }
-            }
-        }
-
-    }
-
-}
-
-object globalAlertManager {
-    val notificationManager: NotificationManager =
-        globalContext.context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun sendNotif(descriere: String) {
-
-        var channel = NotificationChannel(
-            "1",
-            "mihai",
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply { description = descriere }
-
-        notificationManager.createNotificationChannel(channel)
-        var notificatudor = Notification.Builder(globalContext.context, "1")
-            .setContentTitle("Take medication")
-            .setContentText(descriere)
-            .setSmallIcon(R.drawable.etti)
-            .setAutoCancel(true)
 
 
-        try {
-            notificationManager.notify(1, notificatudor.build())
-        } catch (e: Exception) {
-            Log.i("primit", "exception ${e}")
-        }
 
-    }
 
-}
+
