@@ -92,7 +92,7 @@ class database(
                     "spo2 INT DEFAULT 0,  " +
                     "pen_index INT DEFAULT 0," +
                     "press TEXT DEFAULT \"nimic\",  " +
-                    "pasi INT DEFAULT 0, " +
+                    "pasi FLOAT DEFAULT 0, " +
                     "distance FLOAT DEFAULT 0, " +
                     "calories FLOAT DEFAULT 0, " +
                     "device_id INT,  " +
@@ -149,7 +149,7 @@ class database(
 
     fun insertMeasurement(
         user_Id: Int?, bpm: Int?, spo2: Int?, pen_index: Int?,
-        press: String, pasi: Int?, distance: Float?,
+        press: String, pasi: Float?, distance: Float?,
         calories: Float?, dev_id: Int?, time_of_measurement: String
     ) {
 

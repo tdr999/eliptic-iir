@@ -21,7 +21,6 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import java.util.*
 
 class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickListener {
 
@@ -37,8 +36,6 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
         var rec_view = findViewById<RecyclerView>(R.id.recycler_view_scan)
         rec_view.layoutManager = LinearLayoutManager(this)
         rec_view.adapter = adaptorRezultate
-
-
 
     }
 
@@ -100,7 +97,6 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
 
     }
 
-
     fun insert_test_alert(view: View) {
         globalDatabase.db.insertAlert("2023-05-20 20:00:00", "viagra")
     }
@@ -142,9 +138,8 @@ class scanning_view_activity : AppCompatActivity(), CustomAdapter.OnItemClickLis
                 )
             } else {
                 globalIsKnownDevice.isKnown = true //doar ptr miband // COMENTAT PENTRU DEBUGGING
-                                                    //refactor dar momentan merge
+                //refactor dar momentan merge
             }
-
 
 //            globalIsKnownDevice.checkIsKnown(state) //folosim asta pentru a tine minte daca mibandul e conectat ptr prima data
 

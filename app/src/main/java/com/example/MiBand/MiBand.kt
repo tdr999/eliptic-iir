@@ -2,6 +2,7 @@ package com.example.MiBand
 
 import android.bluetooth.*
 import android.bluetooth.BluetoothDevice.TRANSPORT_LE
+import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -23,7 +24,7 @@ class MiBand(device: BluetoothDevice) {
 
     var authChar: BluetoothGattCharacteristic? = null
     var heart_rate: Int? = 0
-    var steps: Int? = 0
+    var steps: Float? = 0.0f
     var distance: Float? = 0.0f
     var calories: Float? = 0.0f
     var baterie: Int? = null
@@ -263,7 +264,7 @@ class MiBand(device: BluetoothDevice) {
                     var steps_value = bitul_2?.let { bitul_1?.plus(it) }
                     var distance_value = bitul_6?.let { bitul_5?.plus(it) }
                     var calories = bitul_9?.let { bitul_10?.plus(it) }
-                    this@MiBand.steps = steps_value
+                    this@MiBand.steps = steps_value?.toFloat()
                     this@MiBand.calories = calories?.toFloat()
                     this@MiBand.distance = distance_value?.toFloat()?.div(100)
 
@@ -414,16 +415,6 @@ class MiBand(device: BluetoothDevice) {
             byteArrayOf(0x01) //mesaj type 0x01, tipul 0x02 e apel, merge pe alert sv uuid si alert lvl char uuid //mergea cu tipurile 1 si 5 bine
         val nr_alerts = byteArrayOf(0x01)    //alerta 250 e custom
 
-//        var mesaj = "Fut bine si apasat la cioc".toByteArray()
-//        val mesaj = //prima linie titlul, in rest, lasa absolut totul asa, vezi care e faza cu 0a
-//            """
-//               Received Muie:
-//                       /\)
-//                      / /
-//                     / /
-//                  (  Y  )
-//
-//            """.trimIndent()
         var mesaj = msg
         var titlu = "New Alert"
         var icon = 0.toByte()
@@ -1336,6 +1327,7 @@ class MiBand(device: BluetoothDevice) {
 
     }
 
+
     fun setDateTime() {
 
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
@@ -1589,7 +1581,7 @@ class MiBand(device: BluetoothDevice) {
             var steps_value = bitul_2?.let { bitul_1?.plus(it) }
             var distance_value = bitul_6?.let { bitul_5?.plus(it) }
             var calories = bitul_9?.let { bitul_10?.plus(it) }
-            this@MiBand.steps = steps_value
+            this@MiBand.steps = steps_value?.toFloat()
             this@MiBand.calories = calories?.toFloat()
             this@MiBand.distance = distance_value?.toFloat()?.div(100)
 
@@ -1613,7 +1605,7 @@ class MiBand(device: BluetoothDevice) {
 
     fun connect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dev.connectGatt(null, false, gattCallback,TRANSPORT_LE )
+            dev.connectGatt(null, false, gattCallback, TRANSPORT_LE)
         } //schimba la true sa se conecteze automat
 
     }
