@@ -29,25 +29,6 @@ class MiBand(device: BluetoothDevice) {
     var calories: Float? = 0.0f
     var baterie: Int? = null
 
-//    var SECRET_KEY = byteArrayOf(
-//        9.toByte(),
-//        29.toByte(),
-//        223.toByte(),
-//        23.toByte(),
-//        189.toByte(),
-//        98.toByte(),
-//        65.toByte(),
-//        195.toByte(),
-//        165.toByte(),
-//        110.toByte(),
-//        125.toByte(),
-//        202.toByte(),
-//        43.toByte(),
-//        117.toByte(),
-//        28.toByte(),
-//        137.toByte(),
-//    )
-
     var SECRET_KEY = byteArrayOf(
         1.toByte(),
         2.toByte(),
@@ -392,6 +373,12 @@ class MiBand(device: BluetoothDevice) {
             current_user.current_device_id,
             SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString()
         )
+        globalDatabase.db.sendMeasurementToRemoteDb(current_user.username,
+            steps,
+            distance,
+            calories,
+            current_user.current_device_id,
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }
 
     fun sendCustomMessage(msg: String) {

@@ -7,6 +7,11 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import org.json.JSONObject
+import java.io.DataOutput
+import java.io.DataOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 data class user_device(var dev_id: Int, var user_Id: Int, var dev_type: String, var mac: String) {
     var device_id = dev_id
@@ -256,6 +261,47 @@ class database(
 
     }
 
+
+
+
+
+    fun sendMeasurementToRemoteDb(
+        user_name: String?,
+        pasi: Float?, distance: Float?,
+        calories: Float?, dev_id: Int?, time_of_measurement: String
+    ) {
+        val urlString = "https://dev-perheart.eu/health/mi_band/";
+        val url = URL(urlString);
+
+        val conn = url.openConnection() as HttpURLConnection
+        conn.setDoOutput(true)
+        conn.setRequestMethod("POST")
+        conn.setRequestProperty("Content-Type", "application/json; utf-8");
+        conn.setRequestProperty(
+            "X-Api-Key",
+            "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
+        )
+
+        var values = JSONObject()
+        values.put("username", user_name)
+        values.put("pasi", pasi)
+        values.put("distance", distance)
+        values.put("calories", calories)
+        values.put("device_id", current_user.current_device_id)
+        values.put("time_of_measurement", time_of_measurement)
+
+        val os = DataOutputStream(conn.outputStream)
+        os.writeBytes(values.toString())
+
+        os.flush()
+        os.close()
+
+        var responseCode = conn.responseCode
+        Log.i("Response DB", responseCode.toString())
+        conn.disconnect()
+
+    }
+
 }
 
 @SuppressLint("StaticFieldLeak")
@@ -284,7 +330,6 @@ object globalIsKnownDevice { //obiect global sa salvam stdiul unui device la imp
 object globalDatabase { //instanta globala a helperului de baza de date ca sa nu mai instantiem peste tot alte instante
     var db = database(globalContext.context, "Date.db", null, 1)
 }
-
 
 
 
