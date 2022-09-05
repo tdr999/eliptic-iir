@@ -6,11 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.TextView
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class miband_view_activity : AppCompatActivity() {
 
@@ -24,20 +20,15 @@ class miband_view_activity : AppCompatActivity() {
         miband_global = miband
         miband.connect() //conectam
 
-
-        if (globalIsKnownDevice.isKnown == false){
-            Handler(Looper.getMainLooper()).postDelayed ({
+        if (globalIsKnownDevice.isKnown == false) {
+            Handler(Looper.getMainLooper()).postDelayed({
                 setContentView(R.layout.activity_miband_view)
             }, 15000) //asteptam dupa caz pana sa incarcam uiul
-        }else{
+        } else {
             Handler(Looper.getMainLooper()).postDelayed({
                 setContentView(R.layout.activity_miband_view)
             }, 8000)
         }
-
-
-
-
 
     }
 
@@ -66,18 +57,8 @@ class miband_view_activity : AppCompatActivity() {
 
         super.onResume()
 
-        miband_global?.let { current_user.setMiband(it) }
-//        corou  {
-//            while (true){
-//                if (miband_global?.ESTE_AUTHENTICAT == 1){
-//                    Toast.makeText(this, "Connection success", Toast.LENGTH_LONG)
-//                }
-//                Log.i("din thread", "thread oprit cand nu mai e mesahu asta")
-//            }
-//        }.start() //add log to confirm connection
 
-
-        if (globalIsKnownDevice.isKnown == false){
+        if (globalIsKnownDevice.isKnown == false) {
             Handler(Looper.getMainLooper()).postDelayed({
 
                 updateLoop()
@@ -90,7 +71,7 @@ class miband_view_activity : AppCompatActivity() {
 
                 getSteps()
             }, 15750)
-        }else{
+        } else {
             Handler(Looper.getMainLooper()).postDelayed({
 
                 updateLoop()
@@ -104,7 +85,6 @@ class miband_view_activity : AppCompatActivity() {
                 getSteps()
             }, 8750)
         }
-
 
     }
 

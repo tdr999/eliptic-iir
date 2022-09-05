@@ -99,20 +99,14 @@ class MiBand(device: BluetoothDevice) {
                 if (valoareHex[0] == "10" && valoareHex[1] == "03" && valoareHex[2] == "01") {
                     Log.i("if4", "imperecheat succes\n")
                     ESTE_AUTHENTICAT = 1
-//                    writeUserSettings() //NU UITA CA E ASTA AICI
-                    //subscribeHeartRate()
-//                    getSteps()
-//                    getBattery()
-//                    setDateTime()
-//                    getActivityCharacteristic()
+
                     if (globalIsKnownDevice.isKnown == false) { //initial setup
 
                         setCaloriesDistanceMetric()
                     } else {
                         ESTE_AUTHENTICAT = 1
                     }
-//                    sendShortVibration()
-//                    sendCustomMessage()
+
 
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
@@ -124,10 +118,10 @@ class MiBand(device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
                     Log.i("primit 10 01 04", " bomba")
-                    if (globalIsKnownDevice.isKnown == true) {
+                    if (devicePairStatus.paired == true) {
                         authChar?.value =
                             byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
+                        Log.i("valoarea ", "${devicePairStatus.paired == true}")
                     } else {
 
                         authChar?.value = byteArrayOf(
@@ -184,21 +178,9 @@ class MiBand(device: BluetoothDevice) {
                     "wrote characteristic $uuid  value: ${value.toHexString()}"
                 )
             }
+            Log.i("status", "$status" )
         }
 
-//        override fun onCharacteristicRead(
-//            gatt: BluetoothGatt,
-//            characteristic: BluetoothGattCharacteristic,
-//            status: Int
-//        ) {
-//            super.onCharacteristicRead(gatt, characteristic, status)
-//            with(characteristic) {
-//                Log.i(
-//                    "bg call",
-//                    "read characteristic $uuid  value: ${value.toHexString()}"
-//                )
-//            }
-//        }
 
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt,
@@ -333,7 +315,6 @@ class MiBand(device: BluetoothDevice) {
             this@MiBand.authChar = caracteristicaAuth
             //enable our stuff
 
-//            val SEND_KEY =  byteArrayOf(0x01, 0x00) + this@MiBand.SECRET_KEY
             referintaGatt.setCharacteristicNotification(
                 caracteristicaAuth,
                 true
@@ -341,10 +322,7 @@ class MiBand(device: BluetoothDevice) {
 ////
             descAuth.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             referintaGatt.writeDescriptor(descAuth) //configure characteristic on device to send notificaitons
-//
-//
-//            caracteristicaAuth?.setValue(SEND_KEY)
-//            caracteristicaAuth?.setValue(byteArrayOf(0x02, 0x00, 0x02))
+
 
             for (i in 1..2) {
 
@@ -360,92 +338,13 @@ class MiBand(device: BluetoothDevice) {
 
     }
 
-    fun saveMeasurements() {
-        globalDatabase.db.insertMeasurement(
-            current_user.user_id,
-            heart_rate,
-            0,
-            0,
-            "No pressure on Miband",
-            steps,
-            distance,
-            calories,
-            current_user.current_device_id,
-            SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(Date()).toString()
-        )
-        globalDatabase.db.sendMeasurementToRemoteDb(current_user.username,
-            steps,
-            distance,
-            calories,
-            current_user.current_device_id,
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
-    }
-
-    fun sendCustomMessage(msg: String) {
-
-        //vom incerca o alerta de tipul 5
-
-        val alert_sv_uuid =
-            UUID.fromString("00001802-0000-1000-8000-00805f9b34fb")  // Immediate Alert on Mi Band 3
-        val notif_sv_uuid = UUID.fromString("00001811-0000-1000-8000-00805F9B34FB")
-        val alert_lv_char_uuid = UUID.fromString("00002a06-0000-1000-8000-00805f9b34fb")
-        val send_alert_char_uuid =
-            UUID.fromString("00002a46-0000-1000-8000-00805f9b34fb")  // New Alert on Mi Band 3
-        val miband_sv_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
-        val config_char_uuid = UUID.fromString("00000003-0000-3512-2118-0009af100700")
-        val special_uuid = UUID.fromString("00000002-0000-3512-2118-0009af100700")
-
-        val alert_sv = gatt?.getService(notif_sv_uuid)
-        val alert_char = alert_sv?.getCharacteristic(send_alert_char_uuid)
-
-        val type =
-            byteArrayOf(0x01) //mesaj type 0x01, tipul 0x02 e apel, merge pe alert sv uuid si alert lvl char uuid //mergea cu tipurile 1 si 5 bine
-        val nr_alerts = byteArrayOf(0x01)    //alerta 250 e custom
-
-        var mesaj = msg
-        var titlu = "New Alert"
-        var icon = 0.toByte()
-
-        val command =
-            type + nr_alerts + byteArrayOf(0x00) + mesaj.toByteArray() + byteArrayOf(0x00) + titlu.toByteArray() + byteArrayOf(
-                0x00
-            )
-//        val command = type + nr_alerts + byteArrayOf(0x00) +   mesaj.toByteArray() + byteArrayOf(0x00)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            alert_char?.value = command
-            gatt?.writeCharacteristic(alert_char)
-        }, 2000)
-
-    }
-
-    fun sendShortVibration() {
-        val alert_sv_uuid =
-            UUID.fromString("00001802-0000-1000-8000-00805f9b34fb")  // Immediate Alert on Mi Band 3
-        val notif_sv_uuid = UUID.fromString("00001811-0000-1000-8000-00805F9B34FB")
-        val alert_lv_char_uuid = UUID.fromString("00002a06-0000-1000-8000-00805f9b34fb")
-        val send_alert_char_uuid =
-            UUID.fromString("00002a46-0000-1000-8000-00805f9b34fb")  // New Alert on Mi Band 3
-        val miband_sv_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
-        val config_char_uuid = UUID.fromString("00000003-0000-3512-2118-0009af100700")
-
-        val alert_sv = gatt?.getService(alert_sv_uuid)
-        val alert_char = alert_sv?.getCharacteristic(alert_lv_char_uuid)
-
-        val short_vibration = intArrayOf(200, 200)
-        val vibration = short_vibration[0]
-        val pause = short_vibration[1]
-        val repeat = 0x02.toByte()
-        //val command =  -1.toByte()  + vibration.toByte() and 255 + vibration.toByte() shr 8 and 255 + pause.toByte() and 255 + pause.toByte() shr 8 and 255 + repeat
-        var command = byteArrayOf(-1)
-        command =
-            command + (vibration and 255).toByte() + ((vibration shr 8) and 255).toByte() + (pause and 255).toByte() + ((pause shr 8) and 255).toByte() + repeat
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            alert_char?.value = command
-            gatt?.writeCharacteristic(alert_char)
-        }, 1000)
-
+    fun saveMeasurements() { //decomenteaza asta cand vrei sa faci chestii
+//        globalDatabase.db.sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
+//            steps,
+//            distance,
+//            calories,
+//            1, //hardcodat valoarea, schimba la adresa mac
+//            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }
 
     fun setCaloriesDistanceMetric() {
@@ -480,48 +379,7 @@ class MiBand(device: BluetoothDevice) {
         desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
         gatt?.writeDescriptor(desc)
 
-        //set 24 h format
-//        var format = byteArrayOf(0x10, 0x41, 0, 0, 1, 2, 3, 4, 5) //41 in loc de 1 dupa for //orcum o scrie doar prima valoare
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            miband_config_char?.value = byteArrayOf(0x0c)
-//            gatt?.writeCharacteristic(miband_config_char)
-//        }, 2000)
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            miband_config_char?.value = byteArrayOf(0x11)
-//            gatt?.writeCharacteristic(miband_config_char)
-//        }, 4000)
-//
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            miband_config_char?.value = byteArrayOf(0x13)
-//            gatt?.writeCharacteristic(miband_config_char)
 
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            //aici practic o sa setam tot ce e nevoie pentru itemele de la more
-//            //vezi linkul de mai jos si orice log de wireshark unde se scrie la care
-//            //cteristica 03, o valoare care incepe cu 0a
-////            miband_config_char?.value = byteArrayOf(0x0a, 255.toByte(), 0x30, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
-////            gatt?.writeCharacteristic(miband_config_char)
-//            //https://github.com/NightscoutFoundation/xDrip/blob/master/app/src/main/java/com/eveningoutpost/dexdrip/watch/miband/message/DisplayControllMessageMiband3_4.java
-//            //si vezi si locul mesaj
-//
-////            miband_config_char?.value = byteArrayOf(0x0a, 255.toByte(), 0x30, 0x00, 0x05, 0x03, 0x04, 0x07, 0x01, 0x02, 0x06)
-////            gatt?.writeCharacteristic(miband_config_char) //gasit in wireshark
-//
-//
-//
-//            miband_config_char?.value = byteArrayOf(0x0a, 255.toByte(), 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05)
-//            gatt?.writeCharacteristic(miband_config_char) // comanda ptr miband 2
-//
-//
-//        }, 2000)
 
         /*========================DE AICI INCEPE CODUL GENERAT DE GENERATUDOR=================*/
         Handler(Looper.getMainLooper()).postDelayed({

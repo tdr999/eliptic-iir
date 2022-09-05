@@ -1,15 +1,22 @@
 package com.example.MiBand
 
 import MiBand.R
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
+import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.CheckedTextView
+import android.widget.TextView
 
 //the punch through ultimate guide to bluetooth was immensely helpful
 
@@ -17,7 +24,6 @@ import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
-    var global_db: database? = null
     var globalDevice: BluetoothDevice? = null
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -27,53 +33,88 @@ class MainActivity : AppCompatActivity() {
 
         requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 200)
 
-        var gloabal_database = database(this, "Date.db", null, 1)
-        global_db = gloabal_database
 //        gloabal_database.insertUser("mihai", "parola_de_test") // test
         globalContext.setGlobalContext(this.applicationContext)
         // initializam tot ce avem nevoie pentru alerte
 
+        //temp hardcoded user
+
+        current_user.username = "tudor"
+        current_user.device_mac = "FC:71:A2:68:2D:CB"
+
+        findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onResume() {
         super.onResume()
 
+        promptEnableBluetooth()
+        promptEnableLocation()
+        startBleScan()
     }
 
-    fun login(view: View) {
+    override fun onStop() {
+        super.onStop()
+        stopBleScan()
+    }
 
-        if (global_db?.checkIfUserExists(
-                findViewById<EditText>(R.id.username_in).text.toString(),
-                findViewById<EditText>(R.id.pass_in).text.toString()
-            ) == true
-        ) {
-            var temp_id = global_db?.getUserId(
-                findViewById<EditText>(R.id.username_in).text.toString(),
-                findViewById<EditText>(R.id.pass_in).text.toString()
-            )
-            current_user.setUserPass(
-                temp_id, findViewById<EditText>(R.id.username_in).text.toString(),
-                findViewById<EditText>(R.id.pass_in).text.toString()
-            )
+    private val bluetoothAdapter: BluetoothAdapter by lazy { //defining bt adapter
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothManager.adapter
+    }
 
-            intent = Intent(
-                this,
-                scanning_view_activity::class.java
-            )//nu inteleg exact ce face scope res operatorul aici dar whatever
-            startActivity(intent)
-        } else {
-            Toast.makeText(this, "User doesn't exist", Toast.LENGTH_LONG).show()
+    private val bleScanner by lazy { //defining BLE scanner
+        bluetoothAdapter.bluetoothLeScanner
+    }
+
+    private val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+        .build()  //scan settings, which are necessaryva
+
+    val scanCallBack = object : ScanCallback() {
+
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+
+            if (result.device.address == current_user.device_mac) {
+                stopBleScan() //adauga cod care verifica daca a mai fost conectat
+                intent = Intent(
+                    globalContext.context, //mizerie de context
+                    miband_view_activity::class.java
+                )//nu inteleg exact ce face scope res operatorul aici dar whatever
+                intent.putExtra("bt_device", result.device)
+                startActivity(intent)
+            }
         }
     }
 
-    fun newUser(view: View) {
-        intent = Intent(
-            this,
-            new_user_activity::class.java
-        )//nu inteleg exact ce face scope res operatorul aici dar whatever
-        startActivity(intent)
+    fun stopBleScan() {
+        bleScanner.stopScan(scanCallBack)
+    }
 
+    fun startBleScan() {
+        findViewById<TextView>(R.id.loginId).text = "Scanning for..."
+        findViewById<CheckedTextView>(R.id.usernameID).text = current_user.device_mac
+        bleScanner.startScan(null, settings, scanCallBack)
+        //call the bleScanner startScan function
+    }
+
+    private fun promptEnableBluetooth() { //prompt for enabling bluetooth
+        if (!bluetoothAdapter.isEnabled) {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            startActivity(enableBtIntent)
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun promptEnableLocation() {
+
+        val locManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!locManager.isLocationEnabled) {
+            val enableLocationIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(enableLocationIntent)
+        }
     }
 
 }
