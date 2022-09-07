@@ -39,8 +39,14 @@ class MainActivity : AppCompatActivity() {
 
         //temp hardcoded user
 
-        current_user.username = "tudor"
-        current_user.device_mac = "FC:71:A2:68:2D:CB"
+
+        val intent = intent
+        // AICI SA TE UITI ANDREI
+        current_user.username = intent.getStringExtra("username")
+        current_user.device_mac = intent.getStringExtra("mac")
+
+//        current_user.username = "tudor"
+//        current_user.device_mac = "FC:71:A2:68:2D:CB"
 
         findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username
     }
