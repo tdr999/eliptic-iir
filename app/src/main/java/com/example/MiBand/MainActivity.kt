@@ -12,6 +12,8 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
@@ -44,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         // AICI SA TE UITI ANDREI
         current_user.username = intent.getStringExtra("username")
         current_user.device_mac = intent.getStringExtra("mac")
-
+        globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
 //        current_user.username = "tudor"
 //        current_user.device_mac = "FC:71:A2:68:2D:CB"
 
@@ -57,7 +59,12 @@ class MainActivity : AppCompatActivity() {
 
         promptEnableBluetooth()
         promptEnableLocation()
-        startBleScan()
+
+
+        //for debug
+        Handler(Looper.getMainLooper()).postDelayed({
+            startBleScan()
+        }, 2000)
     }
 
     override fun onStop() {

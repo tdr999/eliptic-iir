@@ -7,6 +7,9 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import java.io.DataOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.crypto.Cipher
@@ -1167,6 +1170,30 @@ class MiBand(device: BluetoothDevice) {
 
             setDateTime()
         }, 11250)
+
+
+        Handler(Looper.getMainLooper()).postDelayed({
+
+            val urlString = "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
+            Log.i("url", "${urlString}")
+            val url = URL(urlString)
+
+            val conn = url.openConnection() as HttpURLConnection
+            conn.doOutput = true
+            conn.requestMethod = "POST"
+
+            conn.setRequestProperty("Content-Type", "application/json; utf-8")
+            conn.setRequestProperty(
+                "X-Api-Key",
+                "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
+            )
+
+
+
+            var responseCode = conn.responseCode
+            Log.i("Response prevConn", responseCode.toString())
+            conn.disconnect()
+        }, 11750)
 
         /*===============Aici Se Termina==========================*/
 
