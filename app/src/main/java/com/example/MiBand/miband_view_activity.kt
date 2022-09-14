@@ -70,7 +70,7 @@ class miband_view_activity : AppCompatActivity() {
             Handler(Looper.getMainLooper()).postDelayed({
 
                 getSteps()
-            }, 15750)
+            }, 16000)
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
 
@@ -83,7 +83,7 @@ class miband_view_activity : AppCompatActivity() {
             Handler(Looper.getMainLooper()).postDelayed({
 
                 getSteps()
-            }, 8750)
+            }, 9000)
         }
 
     }

@@ -17,6 +17,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.CheckedTextView
 import android.widget.TextView
 
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         globalContext.setGlobalContext(this.applicationContext)
         // initializam tot ce avem nevoie pentru alerte
 
-        //temp hardcoded user
 
 
         val intent = intent
@@ -47,8 +47,13 @@ class MainActivity : AppCompatActivity() {
         current_user.username = intent.getStringExtra("username")
         current_user.device_mac = intent.getStringExtra("mac")
         globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
+
+
+
+        //teste
 //        current_user.username = "tudor"
 //        current_user.device_mac = "FC:71:A2:68:2D:CB"
+//        globalIsKnownDevice.isKnown = true
 
         findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username
     }

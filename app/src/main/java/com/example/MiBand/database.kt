@@ -69,11 +69,5 @@ object globalIsKnownDevice { //obiect global sa salvam stdiul unui device la imp
     var isKnown: Boolean = false
 }
 
-object devicePairStatus {
-    var paired = false
-}
-
-
-
 
 

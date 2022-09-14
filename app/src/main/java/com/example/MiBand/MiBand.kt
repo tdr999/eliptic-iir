@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.MiBand
 
 import android.bluetooth.*
@@ -14,6 +16,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import kotlin.concurrent.thread
+import kotlinx.coroutines.delay as delay1
 
 //add user info configuration using nightscout code as inspiration
 
@@ -106,8 +110,6 @@ class MiBand(device: BluetoothDevice) {
                     if (globalIsKnownDevice.isKnown == false) { //initial setup
 
                         setCaloriesDistanceMetric()
-                    } else {
-                        ESTE_AUTHENTICAT = 1
                     }
 
 
@@ -121,10 +123,9 @@ class MiBand(device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
                     Log.i("primit 10 01 04", " bomba")
-                    if (devicePairStatus.paired == true) {
+                    if (globalIsKnownDevice.isKnown == true) {
                         authChar?.value =
                             byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-                        Log.i("valoarea ", "${devicePairStatus.paired == true}")
                     } else {
 
                         authChar?.value = byteArrayOf(
@@ -139,13 +140,12 @@ class MiBand(device: BluetoothDevice) {
                 }
 
 
-
+                //aici cred ca era cazu ptr bratara din china
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "04") { //acest caz e ptr bratarile din china china
                     Log.i("primit 10 02 04", " bomba")
                     if (globalIsKnownDevice.isKnown == true) { //cod care verifica daca ne-am mai imperecheat cu bratara
                         authChar?.value =
                             byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
                     } else {
 
                         authChar?.value = byteArrayOf(
@@ -1171,10 +1171,10 @@ class MiBand(device: BluetoothDevice) {
             setDateTime()
         }, 11250)
 
-
-        Handler(Looper.getMainLooper()).postDelayed({
-
-            val urlString = "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
+/*-----------------------*/
+        thread (start = true, name = "confirm", block = {
+            val urlString =
+                "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
             Log.i("url", "${urlString}")
             val url = URL(urlString)
 
@@ -1188,12 +1188,14 @@ class MiBand(device: BluetoothDevice) {
                 "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
             )
 
-
-
             var responseCode = conn.responseCode
             Log.i("Response prevConn", responseCode.toString())
             conn.disconnect()
-        }, 11750)
+
+        }).run()
+
+
+
 
         /*===============Aici Se Termina==========================*/
 
