@@ -42,18 +42,19 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val intent = intent
-        // AICI SA TE UITI ANDREI
-        current_user.username = intent.getStringExtra("username")
-        current_user.device_mac = intent.getStringExtra("mac")
-        globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
-        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
+//        val intent = intent
+//        // AICI SA TE UITI ANDREI
+//        current_user.username = intent.getStringExtra("username")
+//        current_user.device_mac = intent.getStringExtra("mac")
+//        globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
+//        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
 
 
         //teste
-//        current_user.username = "tudor"
-//        current_user.device_mac = "FC:71:A2:68:2D:CB"
-//        globalIsKnownDevice.isKnown = true
+        current_user.username = "tudor"
+        //current_user.device_mac = "FC:71:A2:68:2D:CB"  bratara nechinezeasaca
+        current_user.device_mac = "DC:D9:40:49:26:EB"
+        globalIsKnownDevice.isKnown = false
 
         findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username
     }

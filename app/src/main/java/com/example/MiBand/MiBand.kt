@@ -382,7 +382,10 @@ class MiBand(device: BluetoothDevice) {
         desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
         gatt?.writeDescriptor(desc)
 
-
+        Handler(Looper.getMainLooper()).postDelayed({ //limba?
+            charac_3?.value = byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)
+            gatt?.writeCharacteristic(charac_3)
+        }, 1900)
 
         /*========================DE AICI INCEPE CODUL GENERAT DE GENERATUDOR=================*/
         Handler(Looper.getMainLooper()).postDelayed({
