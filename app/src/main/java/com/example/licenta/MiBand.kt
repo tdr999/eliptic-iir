@@ -28,24 +28,7 @@ class MiBand(device: BluetoothDevice) {
     var calories: Float? = 0.0f
     var baterie: Int? = null
 
-//    var SECRET_KEY = byteArrayOf(
-//        9.toByte(),
-//        29.toByte(),
-//        223.toByte(),
-//        23.toByte(),
-//        189.toByte(),
-//        98.toByte(),
-//        65.toByte(),
-//        195.toByte(),
-//        165.toByte(),
-//        110.toByte(),
-//        125.toByte(),
-//        202.toByte(),
-//        43.toByte(),
-//        117.toByte(),
-//        28.toByte(),
-//        137.toByte(),
-//    )
+
 
     var SECRET_KEY = byteArrayOf(
         1.toByte(),
@@ -163,21 +146,7 @@ class MiBand(device: BluetoothDevice) {
 
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "04") { //acest caz e ptr bratarile din china china
                     Log.i("primit 10 02 04", " bomba")
-//                    if (globalIsKnownDevice.isKnown == true) {
-//                        authChar?.value =
-//                            byteArrayOf(0x02, 0x00, 0x02) //comment this for first time pairing
-//                        Log.i("valoarea ", "${globalIsKnownDevice.isKnown}")
-//                    } else {
-//
-//                        authChar?.value = byteArrayOf(
-//                            0x01,
-//                            0x00
-//                        ) + SECRET_KEY //uncomment this for first time pairing
-//                    }
-//
-//                    Handler(Looper.getMainLooper()).postDelayed({
-//                        gatt.writeCharacteristic(authChar)
-//                    }, 100)
+
 
                     authChar?.value = byteArrayOf(0x02, 0x00)
 
@@ -204,19 +173,6 @@ class MiBand(device: BluetoothDevice) {
             }
         }
 
-//        override fun onCharacteristicRead(
-//            gatt: BluetoothGatt,
-//            characteristic: BluetoothGattCharacteristic,
-//            status: Int
-//        ) {
-//            super.onCharacteristicRead(gatt, characteristic, status)
-//            with(characteristic) {
-//                Log.i(
-//                    "bg call",
-//                    "read characteristic $uuid  value: ${value.toHexString()}"
-//                )
-//            }
-//        }
 
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt,
@@ -312,10 +268,7 @@ class MiBand(device: BluetoothDevice) {
 
             if (services.isEmpty()) {
                 Log.i("gattTable", "nu merge dom le, e gol tabelu")
-                //val mesaj =
-                //Toast.makeText(, "Eroare la servicii", Toast.LENGTH_SHORT)
-                //mesaj.show()
-                //daca tot avem eroarea, si deconectam
+
                 return
             } else {
                 var tempStr = "Servicii: \n"
@@ -414,16 +367,7 @@ class MiBand(device: BluetoothDevice) {
             byteArrayOf(0x01) //mesaj type 0x01, tipul 0x02 e apel, merge pe alert sv uuid si alert lvl char uuid //mergea cu tipurile 1 si 5 bine
         val nr_alerts = byteArrayOf(0x01)    //alerta 250 e custom
 
-//        var mesaj = "Fut bine si apasat la cioc".toByteArray()
-//        val mesaj = //prima linie titlul, in rest, lasa absolut totul asa, vezi care e faza cu 0a
-//            """
-//               Received Muie:
-//                       /\)
-//                      / /
-//                     / /
-//                  (  Y  )
-//
-//            """.trimIndent()
+
         var mesaj = msg
         var titlu = "New Alert"
         var icon = 0.toByte()
@@ -502,48 +446,7 @@ class MiBand(device: BluetoothDevice) {
         desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
         gatt?.writeDescriptor(desc)
 
-        //set 24 h format
-//        var format = byteArrayOf(0x10, 0x41, 0, 0, 1, 2, 3, 4, 5) //41 in loc de 1 dupa for //orcum o scrie doar prima valoare
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            miband_config_char?.value = byteArrayOf(0x0c)
-//            gatt?.writeCharacteristic(miband_config_char)
-//        }, 2000)
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            miband_config_char?.value = byteArrayOf(0x11)
-//            gatt?.writeCharacteristic(miband_config_char)
-//        }, 4000)
-//
-//
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//            miband_config_char?.value = byteArrayOf(0x13)
-//            gatt?.writeCharacteristic(miband_config_char)
 
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            //aici practic o sa setam tot ce e nevoie pentru itemele de la more
-//            //vezi linkul de mai jos si orice log de wireshark unde se scrie la care
-//            //cteristica 03, o valoare care incepe cu 0a
-////            miband_config_char?.value = byteArrayOf(0x0a, 255.toByte(), 0x30, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07)
-////            gatt?.writeCharacteristic(miband_config_char)
-//            //https://github.com/NightscoutFoundation/xDrip/blob/master/app/src/main/java/com/eveningoutpost/dexdrip/watch/miband/message/DisplayControllMessageMiband3_4.java
-//            //si vezi si locul mesaj
-//
-////            miband_config_char?.value = byteArrayOf(0x0a, 255.toByte(), 0x30, 0x00, 0x05, 0x03, 0x04, 0x07, 0x01, 0x02, 0x06)
-////            gatt?.writeCharacteristic(miband_config_char) //gasit in wireshark
-//
-//
-//
-//            miband_config_char?.value = byteArrayOf(0x0a, 255.toByte(), 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05)
-//            gatt?.writeCharacteristic(miband_config_char) // comanda ptr miband 2
-//
-//
-//        }, 2000)
 
         /*========================DE AICI INCEPE CODUL GENERAT DE GENERATUDOR=================*/
         Handler(Looper.getMainLooper()).postDelayed({
@@ -1613,7 +1516,7 @@ class MiBand(device: BluetoothDevice) {
 
     fun connect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dev.connectGatt(null, false, gattCallback,TRANSPORT_LE )
+            dev.connectGatt(null, false, gattCallback, TRANSPORT_LE)
         } //schimba la true sa se conecteze automat
 
     }
