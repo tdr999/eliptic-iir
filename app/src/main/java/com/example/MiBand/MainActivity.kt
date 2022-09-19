@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         current_user.username = intent.getStringExtra("username")
         current_user.device_mac = intent.getStringExtra("mac")
         globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
-
+        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
 
 
         //teste
