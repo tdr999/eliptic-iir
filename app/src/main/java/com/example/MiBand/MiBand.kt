@@ -68,9 +68,7 @@ class MiBand(device: BluetoothDevice) {
                         "Da dom'le, ne am legat si acuma trimetem auth number"
                     )
                     val authNumber = byteArrayOf(
-                        0x02,
-                        0x00,
-                        0x02
+                        0x02, 0x00, 0x02
                     ) //schimbat de la 0x02 0x08 la 0x02 0x00
                     characteristic.value = authNumber
                     Handler(Looper.getMainLooper()).postDelayed({
@@ -122,9 +120,7 @@ class MiBand(device: BluetoothDevice) {
                     Log.i("primit 10 01 04", " bomba")
                     if (globalIsKnownDevice.isKnown == true) {
                         authChar?.value = byteArrayOf(
-                            0x02,
-                            0x00,
-                            0x02
+                            0x02, 0x00, 0x02
                         ) //comment this for first time pairing
                     } else {
 
@@ -143,9 +139,7 @@ class MiBand(device: BluetoothDevice) {
                     Log.i("primit 10 02 04", " bomba")
                     if (globalIsKnownDevice.isKnown == true) { //cod care verifica daca ne-am mai imperecheat cu bratara
                         authChar?.value = byteArrayOf(
-                            0x02,
-                            0x00,
-                            0x02
+                            0x02, 0x00, 0x02
                         ) //comment this for first time pairing
                     } else {
 
@@ -373,15 +367,13 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x13)))
         listaComenzi.add(
             Comanda(
-                "charac_3",
-                byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)
+                "charac_3", byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)
             )
         )
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x11)))
         listaComenzi.add(
             Comanda(
-                "charac_6",
-                byteArrayOf(
+                "charac_6", byteArrayOf(
                     0x0f,
                     0x47,
                     0x00,
@@ -409,8 +401,7 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_6", byteArrayOf(0x01, 0x46, 0x00)))
         listaComenzi.add(
             Comanda(
-                "charac_6",
-                byteArrayOf(
+                "charac_6", byteArrayOf(
                     0x0f,
                     0x46,
                     0x00,
@@ -445,8 +436,7 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
         listaComenzi.add(
             Comanda(
-                "charac_8",
-                byteArrayOf(
+                "charac_8", byteArrayOf(
                     0x4f,
                     0x00,
                     0x00,
@@ -476,28 +466,15 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    0x08,
-                    0x4f,
-                    0x74,
-                    0x6f,
-                    0x70,
-                    0x65,
-                    0x6e,
-                    0x69,
-                    0x00
+                "charac_20", byteArrayOf(
+                    0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00
                 )
             )
         )
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x02, 0x00, 0x00)))
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     193.toByte(),
                     0x00,
@@ -521,8 +498,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     0x01,
                     0x00,
@@ -548,8 +524,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     0x41,
                     0x01,
@@ -577,8 +552,7 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     0x41,
                     0x02,
@@ -604,8 +578,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     129.toByte(),
                     0x03,
@@ -628,8 +601,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     193.toByte(),
                     0x00,
@@ -652,19 +624,8 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    128.toByte(),
-                    0x07,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x1f,
-                    0x03
+                "charac_20", byteArrayOf(
+                    0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03
                 )
             )
         )
@@ -679,8 +640,7 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)))
         listaComenzi.add(
             Comanda(
-                "charac_3",
-                byteArrayOf(
+                "charac_3", byteArrayOf(
                     0x06,
                     0x1e,
                     0x00,
@@ -700,27 +660,14 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    0x08,
-                    0x4f,
-                    0x74,
-                    0x6f,
-                    0x70,
-                    0x65,
-                    0x6e,
-                    0x69,
-                    0x00
+                "charac_20", byteArrayOf(
+                    0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00
                 )
             )
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     193.toByte(),
                     0x00,
@@ -738,8 +685,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     0x01,
                     0x00,
@@ -765,8 +711,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     0x41,
                     0x01,
@@ -792,8 +737,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     0x41,
                     0x02,
@@ -819,8 +763,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     129.toByte(),
                     0x03,
@@ -843,8 +786,7 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
+                "charac_20", byteArrayOf(
                     0x00,
                     193.toByte(),
                     0x00,
@@ -867,19 +809,8 @@ class MiBand(device: BluetoothDevice) {
         )
         listaComenzi.add(
             Comanda(
-                "charac_20",
-                byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    128.toByte(),
-                    0x07,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x1f,
-                    0x03
+                "charac_20", byteArrayOf(
+                    0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03
                 )
             )
         )
@@ -898,8 +829,7 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x01, 0x00, 0x00)))
         listaComenzi.add(
             Comanda(
-                "charac_8",
-                byteArrayOf(
+                "charac_8", byteArrayOf(
                     0x4f,
                     0x00,
                     0x00,
@@ -933,40 +863,26 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)))
         listaComenzi.add(
             Comanda(
-                "charac_3",
-                byteArrayOf(0x06, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+                "charac_3", byteArrayOf(0x06, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
             )
         )
         listaComenzi.add(
             Comanda(
-                "charac_3",
-                byteArrayOf(0x06, 0x07, 0x00, 155.toByte(), 0x2c, 0x00, 0x00)
+                "charac_3", byteArrayOf(0x06, 0x07, 0x00, 155.toByte(), 0x2c, 0x00, 0x00)
             )
         )
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x0d, 0x00, 0x00)))
         listaComenzi.add(
             Comanda(
-                "charac_3",
-                byteArrayOf(
-                    0x0a,
-                    255.toByte(),
-                    0x30,
-                    0x00,
-                    0x05,
-                    0x03,
-                    0x04,
-                    0x07,
-                    0x01,
-                    0x02,
-                    0x06
+                "charac_3", byteArrayOf(
+                    0x0a, 255.toByte(), 0x30, 0x00, 0x05, 0x03, 0x04, 0x07, 0x01, 0x02, 0x06
                 )
             )
         )
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x16, 0x00, 0x00)))
         listaComenzi.add(
             Comanda(
-                "charac_3",
-                byteArrayOf(
+                "charac_3", byteArrayOf(
                     0x06,
                     0x1e,
                     0x00,
@@ -990,21 +906,8 @@ class MiBand(device: BluetoothDevice) {
         listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x20, 0x00, 0x00)))
         listaComenzi.add(
             Comanda(
-                "charac_7",
-                byteArrayOf(
-                    0x0c,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00
+                "charac_7", byteArrayOf(
+                    0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 )
             )
         )
@@ -1065,8 +968,7 @@ class MiBand(device: BluetoothDevice) {
         var split_time = current_date_time.split(":")
         Log.i("timp split", "${split_time}")
         var year = byteArrayOf(
-            230.toByte(),
-            0x07
+            230.toByte(), 0x07
         ) //hardcodam anul pentru moment, nu merita eforturl
 //        //e7 written in int.
         var day = split_time[2].toInt().toByte()
@@ -1092,10 +994,7 @@ class MiBand(device: BluetoothDevice) {
         Handler(Looper.getMainLooper()).postDelayed({
 //            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
             var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + byteArrayOf(
-                0x00,
-                0x00,
-                0x00,
-                0x16
+                0x00, 0x00, 0x00, 0x16
             )
 //            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,     0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
 
