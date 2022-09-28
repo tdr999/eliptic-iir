@@ -52,8 +52,8 @@ class MainActivity : AppCompatActivity() {
 
         //teste
         current_user.username = "tudor"
-        //current_user.device_mac = "FC:71:A2:68:2D:CB"  bratara nechinezeasaca
-        current_user.device_mac = "DC:D9:40:49:26:EB"
+        current_user.device_mac = "FC:71:A2:68:2D:CB"  //bratara nechinezeasaca
+//        current_user.device_mac = "DC:D9:40:49:26:EB"
         globalIsKnownDevice.isKnown = false
 
         findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username

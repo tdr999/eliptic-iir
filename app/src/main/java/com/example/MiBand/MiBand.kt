@@ -5,13 +5,23 @@ package com.example.MiBand
 import android.bluetooth.*
 import android.bluetooth.BluetoothDevice.TRANSPORT_LE
 import android.os.Build
+import android.os.ConditionVariable
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import kotlinx.coroutines.handleCoroutineException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.sync.Mutex
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.locks.Condition
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import kotlin.concurrent.thread
@@ -20,9 +30,13 @@ import kotlin.concurrent.thread
 
 class MiBand(device: BluetoothDevice) {
 
-    val dev = device
+    var mut = Mutex()
 
+    val dev = device
+    var item : Comanda? = null
     var ESTE_AUTHENTICAT = 0
+
+    var operation_in_progress = 0
 
     var gatt: BluetoothGatt? = null
 
@@ -32,6 +46,8 @@ class MiBand(device: BluetoothDevice) {
     var distance: Float? = 0.0f
     var calories: Float? = 0.0f
     var baterie: Int? = null
+
+    var indice_lista_comenzi = 0
 
     var SECRET_KEY = byteArrayOf(
         1.toByte(),
@@ -55,30 +71,24 @@ class MiBand(device: BluetoothDevice) {
     val gattCallback = object : BluetoothGattCallback() { //public callback so we get our variables
         //this callback is the core of our program honestly
 
-        fun authenticateBand(
-            gatt: BluetoothGatt,
+        fun authenticateBand(gatt: BluetoothGatt,
             characteristic: BluetoothGattCharacteristic,
-            valoareHex: List<String>
-        ) { //pentru authenticare
+            valoareHex: List<String>) { //pentru authenticare
 
             with(characteristic) {
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "01") {
-                    Log.i(
-                        "din on chcarac changesd",
-                        "Da dom'le, ne am legat si acuma trimetem auth number"
-                    )
-                    val authNumber = byteArrayOf(
-                        0x02, 0x00, 0x02
-                    ) //schimbat de la 0x02 0x08 la 0x02 0x00
+                    Log.i("din on chcarac changesd",
+                        "Da dom'le, ne am legat si acuma trimetem auth number")
+                    val authNumber = byteArrayOf(0x02,
+                        0x00,
+                        0x02) //schimbat de la 0x02 0x08 la 0x02 0x00
                     characteristic.value = authNumber
                     Handler(Looper.getMainLooper()).postDelayed({
                         gatt.writeCharacteristic(authChar)
                     }, 100)
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "01") {
-                    Log.i(
-                        "din on chcarac changesd", "primit cheia de la nratara acum criptam"
-                    )
+                    Log.i("din on chcarac changesd", "primit cheia de la nratara acum criptam")
                     var tempKey = valoareHex.takeLast(16) // keia primita
                     Log.i("ult16", "$tempKey\n")
 
@@ -90,9 +100,8 @@ class MiBand(device: BluetoothDevice) {
                     var finalKey = crypto.doFinal(value.takeLast(16).toByteArray()) //amperecherea
 
 
-                    authChar?.value = byteArrayOf(
-                        0x03, 0x00
-                    ) + finalKey //schimbat de la 0308 la 0300 ptr miband 4/miband 3 postupdate
+                    authChar?.value = byteArrayOf(0x03,
+                        0x00) + finalKey //schimbat de la 0308 la 0300 ptr miband 4/miband 3 postupdate
 
                     Handler(Looper.getMainLooper()).postDelayed({
                         gatt.writeCharacteristic(authChar)
@@ -104,7 +113,6 @@ class MiBand(device: BluetoothDevice) {
                     ESTE_AUTHENTICAT = 1
 
                     if (globalIsKnownDevice.isKnown == false) { //initial setup
-
                         setCaloriesDistanceMetric()
                     }
 
@@ -119,14 +127,13 @@ class MiBand(device: BluetoothDevice) {
                 if (valoareHex[0] == "10" && valoareHex[1] == "01" && valoareHex[2] == "04") {
                     Log.i("primit 10 01 04", " bomba")
                     if (globalIsKnownDevice.isKnown == true) {
-                        authChar?.value = byteArrayOf(
-                            0x02, 0x00, 0x02
-                        ) //comment this for first time pairing
+                        authChar?.value = byteArrayOf(0x02,
+                            0x00,
+                            0x02) //comment this for first time pairing
                     } else {
 
-                        authChar?.value = byteArrayOf(
-                            0x01, 0x00
-                        ) + SECRET_KEY //uncomment this for first time pairing
+                        authChar?.value = byteArrayOf(0x01,
+                            0x00) + SECRET_KEY //uncomment this for first time pairing
                     }
 
                     Handler(Looper.getMainLooper()).postDelayed({
@@ -138,14 +145,13 @@ class MiBand(device: BluetoothDevice) {
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "04") { //acest caz e ptr bratarile din china china
                     Log.i("primit 10 02 04", " bomba")
                     if (globalIsKnownDevice.isKnown == true) { //cod care verifica daca ne-am mai imperecheat cu bratara
-                        authChar?.value = byteArrayOf(
-                            0x02, 0x00, 0x02
-                        ) //comment this for first time pairing
+                        authChar?.value = byteArrayOf(0x02,
+                            0x00,
+                            0x02) //comment this for first time pairing
                     } else {
 
-                        authChar?.value = byteArrayOf(
-                            0x01, 0x00
-                        ) + SECRET_KEY //uncomment this for first time pairing
+                        authChar?.value = byteArrayOf(0x01,
+                            0x00) + SECRET_KEY //uncomment this for first time pairing
                     }
 
                     Handler(Looper.getMainLooper()).postDelayed({
@@ -162,61 +168,66 @@ class MiBand(device: BluetoothDevice) {
             }
         }
 
-        override fun onCharacteristicWrite(
-            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int
-        ) {
+        override fun onCharacteristicWrite(gatt: BluetoothGatt,characteristic: BluetoothGattCharacteristic, status: Int) {
             super.onCharacteristicWrite(gatt, characteristic, status)
-
             with(characteristic) {
-                Log.i(
-                    "bg call", "wrote characteristic $uuid  value: ${value.toHexString()}"
-                )
+                Log.i("bg call", "wrote characteristic $uuid  value: ${value.toHexString()}")
+
             }
-            Log.i("status", "$status")
+
+
+
+
         }
 
-        override fun onCharacteristicChanged(
-            gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic
-        ) {
-            //this is what happens when the characteristic value is changed
+        override fun onCharacteristicChanged(gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic) { //this is what happens when the characteristic value is changed
 
             with(characteristic) {
-                Log.i(
-                    "BluetoothGattCallback",
-                    "Characteristic $uuid changed | value: ${value.toHexString()}"
-                )
+                Log.i("BluetoothGattCallback",
+                    "Characteristic $uuid changed | value: ${value.toHexString()}")
 
                 var valoareHex = (value.toHexString()).split(" ")
                 if (this@MiBand.ESTE_AUTHENTICAT == 0) { //daca nu e authenticat
                     authenticateBand(gatt, characteristic, valoareHex)
                 }
             }
+
+
+            if (item != null && characteristic.uuid == item?.charac?.uuid && flag_pregatit_date_time == 1) {
+                Log.i("onCharacteristicWrite", " aici suntem}")
+                if (listaComenzi.isNotEmpty()) {
+                    item = listaComenzi.poll()
+                    item?.charac?.value = item?.bytes
+                    gatt?.writeCharacteristic(item?.charac)
+                }else{
+                    flag_pregatit_date_time = 0
+                }
+            }
+
+
             if (characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700") || characteristic.uuid == UUID.fromString(
-                    "00002a37-0000-1000-8000-00805f9b34fb"
-                )
+                    "00002a37-0000-1000-8000-00805f9b34fb")
             ) {
                 if (characteristic.uuid == UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")) {
-                    Log.i(
-                        "din on char changed",
-                        "${characteristic.value.toHexString().split(" ")[1].toInt(16)}"
-                    )
+                    Log.i("din on char changed",
+                        "${characteristic.value.toHexString().split(" ")[1].toInt(16)}")
                     this@MiBand.heart_rate = characteristic.value.toHexString().split(" ")[1].toInt(
-                        16
-                    )
+                        16)
                 }
 
                 //mai jos e ptr steps characteristic
                 if (characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700")) {
                     var byte_arr = characteristic.value?.toHexString()?.split(" ")
                     var bitul_2 = byte_arr?.get(2)?.toInt(16)
-                        ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+                        ?.shl(8) //il shiftam asa si il adanum cu celalat si aia e
                     var bitul_1 = byte_arr?.get(1)?.toInt(16)
                     var bitul_5 = byte_arr?.get(5)?.toInt(16)
                     var bitul_6 = byte_arr?.get(6)?.toInt(16)
                     var bitul_9 = byte_arr?.get(9)?.toInt(16)
-                    var bitul_10 = byte_arr?.get(10)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+                    var bitul_10 = byte_arr?.get(10)
+                        ?.toInt(16) //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+                    //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
                     var steps_value = bitul_2?.let { bitul_1?.plus(it) }
                     var distance_value = bitul_6?.let { bitul_5?.plus(it) }
                     var calories = bitul_9?.let { bitul_10?.plus(it) }
@@ -234,9 +245,9 @@ class MiBand(device: BluetoothDevice) {
         fun ByteArray.toHexString(): String =
             joinToString(separator = " ", prefix = "") { String.format("%02X", it) }
 
-        override fun onConnectionStateChange(
-            gatt: BluetoothGatt, status: Int, newState: Int
-        ) { //de la punchthourhg https://punchthrough.com/android-ble-guide/
+        override fun onConnectionStateChange(gatt: BluetoothGatt,
+            status: Int,
+            newState: Int) { //de la punchthourhg https://punchthrough.com/android-ble-guide/
             val deviceAddress = gatt.device.address
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -254,10 +265,8 @@ class MiBand(device: BluetoothDevice) {
 
                 }
             } else {
-                Log.w(
-                    "BluetoothGattCallback",
-                    "Error $status encountered for $deviceAddress! Disconnecting..."
-                )
+                Log.w("BluetoothGattCallback",
+                    "Error $status encountered for $deviceAddress! Disconnecting...")
                 gatt.close()
             }
         }
@@ -266,8 +275,7 @@ class MiBand(device: BluetoothDevice) {
             //this prints gatt service numbers
 
             if (services.isEmpty()) {
-                Log.i("gattTable", "nu merge dom le, e gol tabelu")
-                //val mesaj =
+                Log.i("gattTable", "nu merge dom le, e gol tabelu") //val mesaj =
                 //Toast.makeText(, "Eroare la servicii", Toast.LENGTH_SHORT)
                 //mesaj.show()
                 //daca tot avem eroarea, si deconectam
@@ -275,9 +283,7 @@ class MiBand(device: BluetoothDevice) {
             } else {
                 var tempStr = "Servicii: \n"
                 services.forEach { service ->
-                    val table = service.characteristics.joinToString(
-                        "\n|--", "|--"
-                    ) {
+                    val table = service.characteristics.joinToString("\n|--", "|--") {
                         it.uuid.toString()
                     }
 
@@ -286,11 +292,10 @@ class MiBand(device: BluetoothDevice) {
             }
         }
 
-        override fun onServicesDiscovered(
-            gatt: BluetoothGatt, status: Int
-        ) { //aici gasim ce e important la logare
+        override fun onServicesDiscovered(gatt: BluetoothGatt,
+            status: Int) { //aici gasim ce e important la logare
 
-            gatt.printGattTable()//aici e clar conectat deja
+            gatt.printGattTable() //aici e clar conectat deja
             val referintaGatt = gatt
             val serviciuDeConectare = //fa clauza separata pentru authenticare
                 referintaGatt.getService(UUID.fromString("0000fee1-0000-1000-8000-00805f9b34fb"))
@@ -299,22 +304,19 @@ class MiBand(device: BluetoothDevice) {
 
 
             this@MiBand.gatt = referintaGatt
-            this@MiBand.authChar = caracteristicaAuth
-            //enable our stuff
+            this@MiBand.authChar = caracteristicaAuth //enable our stuff
 
-            referintaGatt.setCharacteristicNotification(
-                caracteristicaAuth, true
-            ) //enable phone to receive notifications
-////
+            referintaGatt.setCharacteristicNotification(caracteristicaAuth,
+                true) //enable phone to receive notifications
+            ////
             descAuth.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             referintaGatt.writeDescriptor(descAuth) //configure characteristic on device to send notificaitons
 
             for (i in 1..2) {
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    caracteristicaAuth?.value = byteArrayOf(
-                        1.toByte(), 0.toByte()
-                    ) //si comanda 01 face ceva
+                    caracteristicaAuth?.value = byteArrayOf(1.toByte(),
+                        0.toByte()) //si comanda 01 face ceva
                     referintaGatt.writeCharacteristic(caracteristicaAuth)
                 }, 1000)
             }
@@ -323,18 +325,22 @@ class MiBand(device: BluetoothDevice) {
     }
 
     fun saveMeasurements() { //decomenteaza asta cand vrei sa faci chestii
-//        globalDatabase.db.sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
-//            steps,
-//            distance,
-//            calories,
-//            1, //hardcodat valoarea, schimba la adresa mac
-//            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
+        //        globalDatabase.db.sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
+        //            steps,
+        //            distance,
+        //            calories,
+        //            1, //hardcodat valoarea, schimba la adresa mac
+        //            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }
 
-    data class Comanda(val charac: String, val bytes: ByteArray)
+    data class Comanda(val charac: BluetoothGattCharacteristic?, val bytes: ByteArray)
 
-    fun setCaloriesDistanceMetric() {
-        //sets the band to display calories and distance, and sets them in metric
+
+
+
+    val listaComenzi  = ConcurrentLinkedQueue<Comanda>()
+    var flag_pregatit_date_time = 0
+    fun setCaloriesDistanceMetric() { //sets the band to display calories and distance, and sets them in metric
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
         val miband_config_char_uuid = UUID.fromString("00000003-0000-3512-2118-0009AF100700")
         val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
@@ -352,608 +358,102 @@ class MiBand(device: BluetoothDevice) {
         val charac_8 = miband_service?.getCharacteristic(UUID.fromString("00000008-0000-3512-2118-0009AF100700"))
         val charac_20 = miband_service?.getCharacteristic(UUID.fromString("00000020-0000-3512-2118-0009AF100700"))
 
-        val char_map = mapOf(
-            "charac_3" to charac_3,
-            "charac_4" to charac_4,
-            "charac_5" to charac_5,
-            "charac_6" to charac_6,
-            "charac_7" to charac_7,
-            "charac_8" to charac_8,
-            "charac_20" to charac_20
-        )
-        val listaComenzi: MutableList<Comanda> = mutableListOf<Comanda>()
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x0c)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x11)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x13)))
-        listaComenzi.add(
-            Comanda(
-                "charac_3", byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x11)))
-        listaComenzi.add(
-            Comanda(
-                "charac_6", byteArrayOf(
-                    0x0f,
-                    0x47,
-                    0x00,
-                    178.toByte(),
-                    0x07,
-                    0x01,
-                    0x01,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    178.toByte(),
-                    0x07,
-                    0x01,
-                    0x01,
-                    0x00,
-                    0x2c,
-                    0x1d,
-                    128.toByte(),
-                    0x5c
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_7", byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_6", byteArrayOf(0x01, 0x46, 0x00)))
-        listaComenzi.add(
-            Comanda(
-                "charac_6", byteArrayOf(
-                    0x0f,
-                    0x46,
-                    0x00,
-                    178.toByte(),
-                    0x07,
-                    0x01,
-                    0x01,
-                    0x00,
-                    0x00,
-                    0x00,
-                    0x00,
-                    178.toByte(),
-                    0x07,
-                    0x01,
-                    0x01,
-                    0x00,
-                    0x2c,
-                    0x1d,
-                    128.toByte(),
-                    0x5c
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_7", byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x19, 0x00, 0x01)))
-        listaComenzi.add(
-            Comanda(
-                "charac_4",
-                byteArrayOf(0x01, 0x01, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x07, 0x08)
-            )
-        )
-        listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
-        listaComenzi.add(
-            Comanda(
-                "charac_8", byteArrayOf(
-                    0x4f,
-                    0x00,
-                    0x00,
-                    206.toByte(),
-                    0x07,
-                    0x07,
-                    0x01,
-                    0x01,
-                    170.toByte(),
-                    0x00,
-                    224.toByte(),
-                    0x2e,
-                    0x15,
-                    0x77,
-                    206.toByte(),
-                    164.toByte()
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_4",
-                byteArrayOf(0x01, 0x02, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x07, 0x08)
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x03, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x02, 0x00, 0x00)))
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    0x04,
-                    177.toByte(),
-                    0x0f,
-                    0x7c,
-                    0x62,
-                    0x0c,
-                    255.toByte(),
-                    255.toByte(),
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_4",
-                byteArrayOf(0x01, 0x02, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x22, 0x07, 0x08)
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    0x01,
-                    0x00,
-                    0x01,
-                    177.toByte(),
-                    0x0f,
-                    0x7c,
-                    0x62,
-                    0x0c,
-                    0x05,
-                    0x00,
-                    0x01,
-                    0x19,
-                    0x0b,
-                    0x43,
-                    0x6c,
-                    0x65,
-                    0x61,
-                    0x72,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    0x41,
-                    0x01,
-                    0x00,
-                    0x00,
-                    0x1c,
-                    0x0d,
-                    0x43,
-                    0x6c,
-                    0x65,
-                    0x61,
-                    0x72,
-                    0x00,
-                    0x00,
-                    0x03,
-                    0x1e,
-                    0x0e,
-                    0x43,
-                    0x6c,
-                    0x65
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x0a, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    0x41,
-                    0x02,
-                    0x61,
-                    0x72,
-                    0x00,
-                    0x03,
-                    0x01,
-                    0x1a,
-                    0x0f,
-                    0x53,
-                    0x68,
-                    0x6f,
-                    0x77,
-                    0x65,
-                    0x72,
-                    0x00,
-                    0x04,
-                    0x00,
-                    0x18
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    129.toByte(),
-                    0x03,
-                    0x0e,
-                    0x54,
-                    0x68,
-                    0x75,
-                    0x6e,
-                    0x64,
-                    0x65,
-                    0x72,
-                    0x73,
-                    0x74,
-                    0x6f,
-                    0x72,
-                    0x6d,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    0x02,
-                    177.toByte(),
-                    0x0f,
-                    0x7c,
-                    0x62,
-                    0x0c,
-                    0x00,
-                    0x18,
-                    0x43,
-                    0x6c,
-                    0x65,
-                    0x61,
-                    0x72,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)))
-        listaComenzi.add(
-            Comanda(
-                "charac_4",
-                byteArrayOf(0x01, 0x05, 230.toByte(), 0x07, 0x05, 0x0b, 0x16, 0x21, 0x1d, 0x0c)
-            )
-        )
-        listaComenzi.add(Comanda("charac_4", byteArrayOf(0x03)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)))
-        listaComenzi.add(
-            Comanda(
-                "charac_3", byteArrayOf(
-                    0x06,
-                    0x1e,
-                    0x00,
-                    0x4d,
-                    0x4d,
-                    0x2f,
-                    0x64,
-                    0x64,
-                    0x2f,
-                    0x79,
-                    0x79,
-                    0x79,
-                    0x79,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    0x04,
-                    177.toByte(),
-                    0x0f,
-                    0x7c,
-                    0x62,
-                    0x0c,
-                    255.toByte(),
-                    255.toByte(),
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    0x01,
-                    0x00,
-                    0x01,
-                    177.toByte(),
-                    0x0f,
-                    0x7c,
-                    0x62,
-                    0x0c,
-                    0x05,
-                    0x00,
-                    0x01,
-                    0x19,
-                    0x0b,
-                    0x43,
-                    0x6c,
-                    0x65,
-                    0x61,
-                    0x72,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    0x41,
-                    0x01,
-                    0x00,
-                    0x00,
-                    0x1c,
-                    0x0d,
-                    0x43,
-                    0x6c,
-                    0x65,
-                    0x61,
-                    0x72,
-                    0x00,
-                    0x00,
-                    0x03,
-                    0x1e,
-                    0x0e,
-                    0x43,
-                    0x6c,
-                    0x65
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    0x41,
-                    0x02,
-                    0x61,
-                    0x72,
-                    0x00,
-                    0x03,
-                    0x01,
-                    0x1a,
-                    0x0f,
-                    0x53,
-                    0x68,
-                    0x6f,
-                    0x77,
-                    0x65,
-                    0x72,
-                    0x00,
-                    0x04,
-                    0x00,
-                    0x18
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    129.toByte(),
-                    0x03,
-                    0x0e,
-                    0x54,
-                    0x68,
-                    0x75,
-                    0x6e,
-                    0x64,
-                    0x65,
-                    0x72,
-                    0x73,
-                    0x74,
-                    0x6f,
-                    0x72,
-                    0x6d,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00,
-                    193.toByte(),
-                    0x00,
-                    0x02,
-                    177.toByte(),
-                    0x0f,
-                    0x7c,
-                    0x62,
-                    0x0c,
-                    0x00,
-                    0x18,
-                    0x43,
-                    0x6c,
-                    0x65,
-                    0x61,
-                    0x72,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_20", byteArrayOf(
-                    0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x50)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x06, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x00, 0x07, 0x00, 0x1f)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x01, 0x07, 0x00, 0x7f)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x02, 0x07, 0x00, 128.toByte())))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x03, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x04, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x05, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x06, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x07, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x08, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x02, 0x09, 0x12, 0x2c, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x01, 0x00, 0x00)))
-        listaComenzi.add(
-            Comanda(
-                "charac_8", byteArrayOf(
-                    0x4f,
-                    0x00,
-                    0x00,
-                    206.toByte(),
-                    0x07,
-                    0x07,
-                    0x01,
-                    0x01,
-                    170.toByte(),
-                    0x00,
-                    224.toByte(),
-                    0x2e,
-                    0x15,
-                    0x77,
-                    206.toByte(),
-                    164.toByte()
-                )
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_3",
-                byteArrayOf(0x08, 0x00, 0x3c, 0x00, 0x08, 0x00, 0x15, 0x00, 0x00, 0x00, 0x00, 0x00)
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x09, 130.toByte())))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x03, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x02, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x0a, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)))
-        listaComenzi.add(
-            Comanda(
-                "charac_3", byteArrayOf(0x06, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
-            )
-        )
-        listaComenzi.add(
-            Comanda(
-                "charac_3", byteArrayOf(0x06, 0x07, 0x00, 155.toByte(), 0x2c, 0x00, 0x00)
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x0d, 0x00, 0x00)))
-        listaComenzi.add(
-            Comanda(
-                "charac_3", byteArrayOf(
-                    0x0a, 255.toByte(), 0x30, 0x00, 0x05, 0x03, 0x04, 0x07, 0x01, 0x02, 0x06
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x16, 0x00, 0x00)))
-        listaComenzi.add(
-            Comanda(
-                "charac_3", byteArrayOf(
-                    0x06,
-                    0x1e,
-                    0x00,
-                    0x4d,
-                    0x4d,
-                    0x2f,
-                    0x64,
-                    0x64,
-                    0x2f,
-                    0x79,
-                    0x79,
-                    0x79,
-                    0x79,
-                    0x00
-                )
-            )
-        )
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x1d, 0x00, 0x01)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x1a, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x1f, 0x00, 0x00)))
-        listaComenzi.add(Comanda("charac_3", byteArrayOf(0x06, 0x20, 0x00, 0x00)))
-        listaComenzi.add(
-            Comanda(
-                "charac_7", byteArrayOf(
-                    0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                )
-            )
-        )
-
-
         gatt?.setCharacteristicNotification(miband_config_char, true)
         desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
         gatt?.writeDescriptor(desc)
 
 
 
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x0c)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x11)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x13)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x17, 0x00, 0x65, 0x6e, 0x5f, 0x55, 0x53)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x11)))
+        listaComenzi.add(Comanda(charac_6,byteArrayOf(0x0f,0x47,0x00,178.toByte(),0x07,0x01,0x01,0x00,0x00,0x00,0x00,178.toByte(),0x07,0x01,0x01,0x00,0x2c,0x1d,128.toByte(),0x5c)))
+        listaComenzi.add(Comanda(charac_7,byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_6,byteArrayOf(0x01, 0x46, 0x00)))
+        listaComenzi.add(Comanda(charac_6,byteArrayOf(0x0f,0x46,0x00,178.toByte(),0x07,0x01,0x01,0x00,0x00,0x00,0x00,178.toByte(),0x07,0x01,0x01,0x00,0x2c,0x1d,128.toByte(),0x5c)))
+        listaComenzi.add(Comanda(charac_7,byteArrayOf(0x00, 0x00, 0x00, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x19, 0x00, 0x01)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x01,0x01,230.toByte(),0x07,0x05,0x0b,0x16,0x22,0x07,0x08)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x03)))
+        listaComenzi.add(Comanda(charac_8,byteArrayOf(0x4f,0x00,0x00,206.toByte(),0x07,0x07,0x01,0x01,170.toByte(),0x00,224.toByte(),0x2e,0x15,0x77,206.toByte(),164.toByte())))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x01,0x02,230.toByte(),0x07,0x05,0x0b,0x16,0x22,0x07,0x08)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x03, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x03)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x02, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,193.toByte(),0x00,0x04,177.toByte(),0x0f,0x7c,0x62,0x0c,255.toByte(),255.toByte(),0x00)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x01,0x02,230.toByte(),0x07,0x05,0x0b,0x16,0x22,0x07,0x08)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,0x01,0x00,0x01,177.toByte(),0x0f,0x7c,0x62,0x0c,0x05,0x00,0x01,0x19,0x0b,0x43,0x6c,0x65,0x61,0x72,0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,0x41,0x01,0x00,0x00,0x1c,0x0d,0x43,0x6c,0x65,0x61,0x72,0x00,0x00,0x03,0x1e,0x0e,0x43,0x6c,0x65)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x0a, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x03)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,0x41,0x02,0x61,0x72,0x00,0x03,0x01,0x1a,0x0f,0x53,0x68,0x6f,0x77,0x65,0x72,0x00,0x04,0x00,0x18)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,129.toByte(),0x03,0x0e,0x54,0x68,0x75,0x6e,0x64,0x65,0x72,0x73,0x74,0x6f,0x72,0x6d,0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,193.toByte(),0x00,0x02,177.toByte(),0x0f,0x7c,0x62,0x0c,0x00,0x18,0x43,0x6c,0x65,0x61,0x72,0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x01,0x05,230.toByte(),0x07,0x05,0x0b,0x16,0x21,0x1d,0x0c)))
+        listaComenzi.add(Comanda(charac_4,byteArrayOf(0x03)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x1e, 0x00, 0x4d, 0x4d, 0x2f, 0x64, 0x64, 0x2f, 0x79, 0x79, 0x79, 0x79, 0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00, 193.toByte(), 0x00, 0x08, 0x4f, 0x74, 0x6f, 0x70, 0x65, 0x6e, 0x69, 0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,193.toByte(),0x00,0x04,177.toByte(),0x0f,0x7c,0x62,0x0c,255.toByte(),255.toByte(),0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,0x01,0x00,0x01,177.toByte(),0x0f,0x7c,0x62,0x0c,0x05,0x00,0x01,0x19,0x0b,0x43,0x6c,0x65,0x61,0x72,0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,0x41,0x01,0x00,0x00,0x1c,0x0d,0x43,0x6c,0x65,0x61,0x72,0x00,0x00,0x03,0x1e,0x0e,0x43,0x6c,0x65)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,0x41,0x02,0x61,0x72,0x00,0x03,0x01,0x1a,0x0f,0x53,0x68,0x6f,0x77,0x65,0x72,0x00,0x04,0x00,0x18)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,129.toByte(),0x03,0x0e,0x54,0x68,0x75,0x6e,0x64,0x65,0x72,0x73,0x74,0x6f,0x72,0x6d,0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00,193.toByte(),0x00,0x02,177.toByte(),0x0f,0x7c,0x62,0x0c,0x00,0x18,0x43,0x6c,0x65,0x61,0x72,0x00)))
+        listaComenzi.add(Comanda(charac_20,byteArrayOf(0x00, 193.toByte(), 0x00, 128.toByte(), 0x07, 0x00, 0x00, 0x00, 0x00, 0x1f, 0x03)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x50)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x06, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x00, 0x07, 0x00, 0x1f)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x01, 0x07, 0x00, 0x7f)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x02, 0x07, 0x00, 128.toByte())))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x03, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x04, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x05, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x06, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x07, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x08, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x02, 0x09, 0x12, 0x2c, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x01, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_8,byteArrayOf(0x4f,0x00,0x00,206.toByte(),0x07,0x07,0x01,0x01,170.toByte(),0x00,224.toByte(),0x2e,0x15,0x77,206.toByte(),164.toByte())))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x08,0x00,0x3c,0x00,0x08,0x00,0x15,0x00,0x00,0x00,0x00,0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x09, 130.toByte())))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x03, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x02, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x0a, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x10, 0x00, 0x01, 0x01)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x10, 0x00, 0x00, 0x01)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x07, 0x00, 155.toByte(), 0x2c, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x0d, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x0a, 255.toByte(), 0x30, 0x00, 0x05, 0x03, 0x04, 0x07, 0x01, 0x02, 0x06)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x16, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x1e, 0x00, 0x4d, 0x4d, 0x2f, 0x64, 0x64, 0x2f, 0x79, 0x79, 0x79, 0x79, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x1d, 0x00, 0x01)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x1a, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x1f, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_3,byteArrayOf(0x06, 0x20, 0x00, 0x00)))
+        listaComenzi.add(Comanda(charac_7,byteArrayOf(0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)))
+        flag_pregatit_date_time = 1
+
+        //facem primu call
         Handler(Looper.getMainLooper()).postDelayed({
-
-            setDateTime()
-        }, 11250)
-
-/*-----------------------*/
-        thread(start = true, name = "confirm", block = {
-            val urlString = "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
-            Log.i("url", "${urlString}")
-            val url = URL(urlString)
-
-            val conn = url.openConnection() as HttpURLConnection
-            conn.doOutput = true
-            conn.requestMethod = "POST"
-
-            conn.setRequestProperty("Content-Type", "application/json; utf-8")
-            conn.setRequestProperty(
-                "X-Api-Key", "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
-            )
-
-            var responseCode = conn.responseCode
-            Log.i("Response prevConn", responseCode.toString())
-            conn.disconnect()
-
-        }).run()
-
-        /*===============Aici Se Termina==========================*/
-
+            item = listaComenzi.poll()
+            item?.charac?.value = item?.bytes
+            gatt?.writeCharacteristic(item?.charac)
+            Log.i("terminat", "de apelat set distance metric")
+        }, 250)
     }
+
 
     fun setDateTime() {
 
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
-        val time_characteristic_uuid = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb")
-//        val time_characteristic_uuid  = UUID.fromString("00000004-0000-3512-2118-0009AF100700")
+        val time_characteristic_uuid = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb") //        val time_characteristic_uuid  = UUID.fromString("00000004-0000-3512-2118-0009AF100700")
         val cccdUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
 
         val miband_service = gatt?.getService(miband_service_uuid)
@@ -967,36 +467,33 @@ class MiBand(device: BluetoothDevice) {
         var current_date_time = sdf.format(Date())
         var split_time = current_date_time.split(":")
         Log.i("timp split", "${split_time}")
-        var year = byteArrayOf(
-            230.toByte(), 0x07
-        ) //hardcodam anul pentru moment, nu merita eforturl
-//        //e7 written in int.
+        var year = byteArrayOf(230.toByte(),
+            0x07) //hardcodam anul pentru moment, nu merita eforturl //        //e7 written in int.
         var day = split_time[2].toInt().toByte()
         var month = split_time[1].toInt().toByte()
         var hours = split_time[3].toInt().toByte()
         var minutes = split_time[4].toInt().toByte()
-        var seconds = split_time[5].toInt().toByte()
-//        var fractions = 0x00.toByte()
-//        var adjust_reason = 0x08.toByte()
-//        var caracter_terminal = 0x0c.toByte()
+        var seconds = split_time[5].toInt().toByte() //        var fractions = 0x00.toByte()
+        //        var adjust_reason = 0x08.toByte()
+        //        var caracter_terminal = 0x0c.toByte()
 
-//        gatt?.setCharacteristicNotification(time_characteristic, true)
-//
-//       Handler(Looper.getMainLooper()).postDelayed({
-//           desc_time_char?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-//           gatt?.writeDescriptor(desc_time_char)
-//       }, 750)
+        //        gatt?.setCharacteristicNotification(time_characteristic, true)
+        //
+        //       Handler(Looper.getMainLooper()).postDelayed({
+        //           desc_time_char?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        //           gatt?.writeDescriptor(desc_time_char)
+        //       }, 750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             gatt?.readCharacteristic(time_characteristic)
         }, 500)
 
-        Handler(Looper.getMainLooper()).postDelayed({
-//            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
+        Handler(Looper.getMainLooper()).postDelayed({ //            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
             var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + byteArrayOf(
-                0x00, 0x00, 0x00, 0x16
-            )
-//            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,     0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
+                0x00,
+                0x00,
+                0x00,
+                0x16) //            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,     0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
 
             Log.i("curr time", "${numarul_care_trebe_scris.toHexString()}")
             time_characteristic?.value = numarul_care_trebe_scris
@@ -1029,25 +526,25 @@ class MiBand(device: BluetoothDevice) {
 
 
         gatt?.setCharacteristicNotification(measHeart, true) // enable recv notif
-        descMeasHeart?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE//config carac de mas sa trimita notif
+        descMeasHeart?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE //config carac de mas sa trimita notif
         gatt?.writeDescriptor(descMeasHeart) //1
 
         //comenzile pentru diverse feluri de citire
 
         //https://dzone.com/articles/miband-3-and-react-native-partnbsp1 inspirat de aici parca
 
-//        val manualCmd = byteArrayOf(0x15, 0x02, 0x00 ) //pentru oprit prima e cu 1 la final a doua cu 0
-//        controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00))
-//        gatt?.writeCharacteristic(controlHeart)
-//        val continuousCmd = byteArrayOf( 0x15, 0x01, 0x01) //2
-//        controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
-//        gatt?.writeCharacteristic(controlHeart)
+        //        val manualCmd = byteArrayOf(0x15, 0x02, 0x00 ) //pentru oprit prima e cu 1 la final a doua cu 0
+        //        controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00))
+        //        gatt?.writeCharacteristic(controlHeart)
+        //        val continuousCmd = byteArrayOf( 0x15, 0x01, 0x01) //2
+        //        controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
+        //        gatt?.writeCharacteristic(controlHeart)
 
-////de aici incepe cod de citire a pulsului remote
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00)) //stop manual
-//            gatt?.writeCharacteristic(controlHeart)
-//        }, 125)
+        ////de aici incepe cod de citire a pulsului remote
+        //        Handler(Looper.getMainLooper()).postDelayed({
+        //            controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00)) //stop manual
+        //            gatt?.writeCharacteristic(controlHeart)
+        //        }, 125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             controlHeart?.value = byteArrayOf(0x15, 0x01, 0x00) //stop continuous
@@ -1061,16 +558,16 @@ class MiBand(device: BluetoothDevice) {
             gatt?.writeCharacteristic(controlHeart)
         }, 500)
 
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
-//            gatt?.writeCharacteristic(controlHeart)
-//        }, 625)
+        //        Handler(Looper.getMainLooper()).postDelayed({
+        //            controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
+        //            gatt?.writeCharacteristic(controlHeart)
+        //        }, 625)
 
-//        Log.i("din heart rate", "valoare ${measHeart?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16)}")//bytes primit in int
+        //        Log.i("din heart rate", "valoare ${measHeart?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16)}")//bytes primit in int
 
-//
-//        controlHeart?.value = HEART_RATE_START_COMMAND
-//        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+        //
+        //        controlHeart?.value = HEART_RATE_START_COMMAND
+        //        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
 
     }
 
@@ -1080,19 +577,15 @@ class MiBand(device: BluetoothDevice) {
         val battery_info_characteristic_uuid = UUID.fromString("00000006-0000-3512-2118-0009af100700")
         val miband_service = gatt?.getService(miband_service_uuid)
         val battery_characteristic = miband_service?.getCharacteristic(
-            battery_info_characteristic_uuid
-        )
+            battery_info_characteristic_uuid)
 
         val descAuth = battery_characteristic?.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
 
         var valoare_citita = gatt?.readCharacteristic(battery_characteristic)
         Handler(Looper.getMainLooper()).postDelayed({
             Log.i("din get battery", "valoarea citita ${valoare_citita}")
-            Log.i(
-                "din get battery",
-                "valoarea battery ${battery_characteristic?.value?.toHexString()}"
-            )
-            //var byte_arr = battery_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
+            Log.i("din get battery",
+                "valoarea battery ${battery_characteristic?.value?.toHexString()}") //var byte_arr = battery_characteristic?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16) //asta chiar ia valaorea baterieie
             var byte_arr = battery_characteristic?.value?.toHexString()?.split(" ")
             var charge_value = byte_arr?.get(1)?.toInt(16)
             Log.i("valoare baterie", "${charge_value}")
@@ -1117,8 +610,7 @@ class MiBand(device: BluetoothDevice) {
         }, 3000)
     }
 
-    fun writeUserSettings() {
-        //cred ca trebuie sa scriem niste user settings pe o characteristica ca sa apara distanta si caloriile
+    fun writeUserSettings() { //cred ca trebuie sa scriem niste user settings pe o characteristica ca sa apara distanta si caloriile
 
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
         val user_settings_uuid = UUID.fromString("00000008-0000-3512-2118-0009af100700") //caracteristica de user settings
@@ -1137,8 +629,7 @@ class MiBand(device: BluetoothDevice) {
         var age = 22
         var height = 195 //centimetrii
         var weight = 90  //kg
-        var user_id = 1
-        //(set_user_info_command, 0, 0)
+        var user_id = 1 //(set_user_info_command, 0, 0)
         var data = byteArrayOf(0x79, 0x00, 0x00)
         data += (birth_year and 255).toByte()
         data += (birth_year.shr(8) and 255).toByte()
@@ -1176,21 +667,19 @@ class MiBand(device: BluetoothDevice) {
 
         gatt?.readCharacteristic(steps_characteristic)
 
-        Handler(Looper.getMainLooper()).postDelayed({//adding a delay of 1s
-            Log.i(
-                "din getSteps",
-                "valoarea charactertistici ${steps_characteristic?.value?.toHexString()}"
-            )
+        Handler(Looper.getMainLooper()).postDelayed({ //adding a delay of 1s
+            Log.i("din getSteps",
+                "valoarea charactertistici ${steps_characteristic?.value?.toHexString()}")
             var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
             var bitul_2 = byte_arr?.get(2)?.toInt(16)
-                ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+                ?.shl(8) //il shiftam asa si il adanum cu celalat si aia e
             var bitul_1 = byte_arr?.get(1)?.toInt(16)
             var bitul_5 = byte_arr?.get(5)?.toInt(16)
             var bitul_6 = byte_arr?.get(6)?.toInt(16)
             var bitul_9 = byte_arr?.get(9)?.toInt(16)
-            var bitul_10 = byte_arr?.get(10)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+            var bitul_10 = byte_arr?.get(10)
+                ?.toInt(16) //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+            //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
             var steps_value = bitul_2?.let { bitul_1?.plus(it) }
             var distance_value = bitul_6?.let { bitul_5?.plus(it) }
             var calories = bitul_9?.let { bitul_10?.plus(it) }
@@ -1202,14 +691,13 @@ class MiBand(device: BluetoothDevice) {
 
             Log.i("valoare steps", "${steps_value}")
             Log.i("valoare distance", "${distance_value}")
-            Log.i("valoare calories", "${calories}")
-            //aici luam pasii continuu
+            Log.i("valoare calories", "${calories}") //aici luam pasii continuu
             gatt?.setCharacteristicNotification(steps_characteristic, true)
             descAuth?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             gatt?.writeDescriptor(descAuth)
         }, 1000)
 
-//        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
+        //        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
 
     }
 
