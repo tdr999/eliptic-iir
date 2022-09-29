@@ -345,7 +345,7 @@ class MiBand(device: BluetoothDevice) {
         sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
             steps,
             distance,
-            calories,
+            calories,  //de scos caloriile din baza de date online
             1, //hardcodat valoarea, schimba la adresa mac
             SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }

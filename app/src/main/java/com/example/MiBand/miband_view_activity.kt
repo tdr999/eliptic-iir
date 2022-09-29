@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
+import android.widget.Button
 import android.widget.TextView
 
 class miband_view_activity : AppCompatActivity() {
@@ -39,8 +40,8 @@ class miband_view_activity : AppCompatActivity() {
 
                     findViewById<TextView>(R.id.text_steps).text =
                         miband_global?.steps.toString() + " Steps"
-                    findViewById<TextView>(R.id.text_calories).text =
-                        miband_global?.calories.toString() + " kCal"
+//                    findViewById<TextView>(R.id.text_calories).text =
+//                        miband_global?.calories.toString() + " kCal"
                     findViewById<TextView>(R.id.text_distance).text =
                         miband_global?.distance.toString() + " km"
 //                    findViewById<TextView>(R.id.text_heart_rate).text =
@@ -102,6 +103,15 @@ class miband_view_activity : AppCompatActivity() {
 
     fun getHeart() {
         miband_global?.subscribeHeartRate()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        miband_global?.gatt?.disconnect() //sa fie asta ce am nevoie ptr deconectare?
+    }
+
+    fun closeApp(view : Button){ //de testat
+        System.exit(0)
     }
 
 }
