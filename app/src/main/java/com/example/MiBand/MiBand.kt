@@ -342,12 +342,12 @@ class MiBand(device: BluetoothDevice) {
     }
 
     fun saveMeasurements() { //decomenteaza asta cand vrei sa faci chestii
-        sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
-            steps,
-            distance,
-            calories,  //de scos caloriile din baza de date online
-            1, //hardcodat valoarea, schimba la adresa mac
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
+//        sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
+//            steps,
+//            distance,
+//            calories,  //de scos caloriile din baza de date online
+//            1, //hardcodat valoarea, schimba la adresa mac
+//            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }
 
     fun setCaloriesDistanceMetric() {
@@ -1479,7 +1479,7 @@ class MiBand(device: BluetoothDevice) {
 
     fun connect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dev.connectGatt(null, false, gattCallback, TRANSPORT_LE)
+            dev.connectGatt(null, true, gattCallback, TRANSPORT_LE) //autoconnect true poate ancarca mai des
         } //schimba la true sa se conecteze automat
 
     }

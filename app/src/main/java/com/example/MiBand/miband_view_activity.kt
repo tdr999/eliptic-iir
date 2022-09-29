@@ -2,10 +2,12 @@ package com.example.MiBand
 
 import MiBand.R
 import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 
@@ -110,9 +112,17 @@ class miband_view_activity : AppCompatActivity() {
         miband_global?.gatt?.disconnect() //sa fie asta ce am nevoie ptr deconectare?
     }
 
-    fun closeApp(view : Button){ //de testat
-        System.exit(0)
+
+    //on back pressed si butonu de back fac acelasi lucru
+    fun closeApp(view: View) {
+        this.finishAffinity() //excelent aceasta functie
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.finishAffinity() //excelent aceasta functie
+    }
+
 
 }
 

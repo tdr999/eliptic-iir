@@ -30,20 +30,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
         <activity android:name="com.example.MiBand.miband_view_activity"></activity>
-        <activity android:name=".m4_view_activity"></activity>
-        <activity android:name=".oximeter_view_activity" /> <!-- scoate actionabarul tema asta -->
-        <activity android:name="com.example.MiBand.scanning_view_activity" />
-        <activity android:name=".alerts_view_activity" />
-        <activity android:name=".newalertactivty" />
-        <activity android:name="com.example.MiBand.new_user_activity" />
-        <receiver
-            android:name=".AlarmReceiver"
-            android:exported="true"
-            android:enabled="true" >
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED"></action>
-        </intent-filter>
-        </receiver>
+
+
 
         <activity android:name="com.example.MiBand.MainActivity">
             <intent-filter>

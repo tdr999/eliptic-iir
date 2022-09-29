@@ -32,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) { //MAIN FUNCTION DONT TOUCH
         super.onCreate(savedInstanceState)
+
+
+
         setContentView(R.layout.activity_main)
 
         requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 200)
@@ -53,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         //teste
         current_user.username = "tudor"
         current_user.device_mac = "FC:71:A2:68:2D:CB"
-        globalIsKnownDevice.isKnown = true
+        globalIsKnownDevice.isKnown = false
 
         findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username
     }
@@ -61,6 +64,8 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onResume() {
         super.onResume()
+
+        //rezolvam cu iesire
 
         promptEnableBluetooth()
         promptEnableLocation()
