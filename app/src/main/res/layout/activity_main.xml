@@ -9,13 +9,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.MiBand.MainActivity">
 
-    <CheckedTextView
+    <TextView
         android:id="@+id/usernameID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="400dp"
         android:alpha="0.88"
-        android:checkMark="@android:drawable/checkbox_on_background"
         android:text="username"
         android:textColor="#00BCD4"
         android:textSize="34sp"
@@ -23,20 +22,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginId"
-        app:layout_constraintVertical_bias="1.0" />
+        android:layout_marginTop="100dp"
+         />
 
     <TextView
         android:id="@+id/loginId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="160dp"
-        android:alpha="0.15"
+        android:alpha="1"
         android:text="Logging in as:"
         android:textColor="#00BCD4"
         android:textSize="48sp"
         android:typeface="sans"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

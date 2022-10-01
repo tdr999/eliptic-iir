@@ -9,17 +9,20 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.support.annotation.ColorInt
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.CheckedTextView
 import android.widget.TextView
+import android.widget.Toast
 
 //the punch through ultimate guide to bluetooth was immensely helpful
 
@@ -55,10 +58,12 @@ class MainActivity : AppCompatActivity() {
 
         //teste
         current_user.username = "tudor"
-        current_user.device_mac = "FC:71:A2:68:2D:CB"
+//        current_user.device_mac = "FC:71:A2:68:2D:CB"
+        current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
+//        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
         globalIsKnownDevice.isKnown = false
 
-        findViewById<CheckedTextView>(R.id.usernameID).text = current_user.username
+        findViewById<TextView>(R.id.usernameID).text = current_user.username
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -95,6 +100,7 @@ class MainActivity : AppCompatActivity() {
 
             if (result.device.address == current_user.device_mac) {
                 stopBleScan() //adauga cod care verifica daca a mai fost conectat
+                flagMondialTimeout.neamConectat = 1 //modificam flagul mondial ptr timeut
                 intent = Intent(
                     globalContext.context, //mizerie de context
                     miband_view_activity::class.java
@@ -111,8 +117,26 @@ class MainActivity : AppCompatActivity() {
 
     fun startBleScan() {
         findViewById<TextView>(R.id.loginId).text = "Scanning for..."
-        findViewById<CheckedTextView>(R.id.usernameID).text = current_user.device_mac
+        findViewById<TextView>(R.id.usernameID).text = current_user.device_mac
         bleScanner.startScan(null, settings, scanCallBack)
+        //facem mare inginerie pentru timeout
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                if (flagMondialTimeout.neamConectat == 0){
+                    stopBleScan() //oprim scanarea daca in 10 sec nu am gasit nimic
+
+                    findViewById<TextView>(R.id.loginId).text = "TRY AGAIN!"
+                    findViewById<TextView>(R.id.loginId).setTextColor(Color.RED)
+                    findViewById<TextView>(R.id.usernameID).text = "Device not found"
+                    findViewById<TextView>(R.id.usernameID).setTextColor(Color.RED)
+                    //                    Toast.makeText(this, "Failed to find device. Try Again!", Toast.LENGTH_LONG).show() //anuntam useru
+                    Handler(Looper.getMainLooper()).postDelayed({
+
+                        finishAffinity() //inchidem app dupa ce vede useru mesaju destul
+                    },4000)
+                }
+
+            }, 10000)
         //call the bleScanner startScan function
     }
 
@@ -134,6 +158,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(enableLocationIntent)
         }
     }
+
 
 }
 
