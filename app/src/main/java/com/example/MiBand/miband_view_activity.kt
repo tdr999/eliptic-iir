@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import kotlin.system.exitProcess
 
 class miband_view_activity : AppCompatActivity() {
 
@@ -37,11 +38,21 @@ class miband_view_activity : AppCompatActivity() {
                         miband_global?.distance.toString() + " km"
 //                    findViewById<TextView>(R.id.text_heart_rate).text =
 //                        miband_global?.heart_rate.toString() + " BPM"
+
                 }
 
                 Thread.sleep(125)
             }
 
+        }.start()
+
+
+
+        Thread{ //salveaza la fiecaerr 5 s
+            while (true) {
+                miband_global?.saveMeasurements()
+                Thread.sleep(5000)
+            }
         }.start()
     }
 
@@ -54,15 +65,15 @@ class miband_view_activity : AppCompatActivity() {
             Handler(Looper.getMainLooper()).postDelayed({
 
                 updateLoop()
-            }, 15250)
+            }, 10000)
             Handler(Looper.getMainLooper()).postDelayed({
 
                 getBattery() //get data
-            }, 15500)
+            }, 11000)
             Handler(Looper.getMainLooper()).postDelayed({
 
                 getSteps()
-            }, 16000)
+            }, 12000)
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
 
@@ -96,22 +107,44 @@ class miband_view_activity : AppCompatActivity() {
         miband_global?.subscribeHeartRate()
     }
 
+    //INNEBUNESC, mori
     override fun onStop() {
         super.onStop()
+
         miband_global?.gatt?.disconnect() //sa fie asta ce am nevoie ptr deconectare?
+        finishAffinity()
+        System.exit(0)
+
     }
+
 
 
     //on back pressed si butonu de back fac acelasi lucru
     fun closeApp(view: View) {
         this.finishAffinity() //excelent aceasta functie
+        System.exit(0)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
+
         this.finishAffinity() //excelent aceasta functie
+        System.exit(0)
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        this.finishAffinity() //excelent aceasta functie
+        System.exit(0)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        this.finishAffinity() //excelent aceasta functie
+        System.exit(0)
+    }
 
 }
 

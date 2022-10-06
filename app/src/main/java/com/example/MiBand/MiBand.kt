@@ -9,6 +9,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -235,9 +237,7 @@ class MiBand(device: BluetoothDevice) {
                     this@MiBand.distance = distance_value?.toFloat()?.div(100)
 
                 }
-                Handler(Looper.getMainLooper()).postDelayed({ //la fiecare 10 secunde
-                    saveMeasurements()   //la fiecare 5 s
-                }, 5000)
+
 
             }
 
@@ -1482,7 +1482,7 @@ class MiBand(device: BluetoothDevice) {
 
     fun connect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dev.connectGatt(null, true, gattCallback, TRANSPORT_LE) //autoconnect true poate ancarca mai des
+            dev.connectGatt(globalContext.context, true, gattCallback, TRANSPORT_LE) //autoconnect true poate ancarca mai des
         } //schimba la true sa se conecteze automat
 
     }

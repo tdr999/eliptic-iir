@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
-
         setContentView(R.layout.activity_main)
 
         requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 200)
