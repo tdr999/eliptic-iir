@@ -73,3 +73,4 @@ object flagMondialTimeout{
     var neamConectat = 0
 }
 
+var miband_global: MiBand? = null

@@ -13,25 +13,14 @@ import android.widget.TextView
 
 class miband_view_activity : AppCompatActivity() {
 
-    var miband_global: MiBand? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val received_device =
-            intent.extras.getParcelable<BluetoothDevice>("bt_device") //primeste device
-        val miband = MiBand(received_device)
-        miband_global = miband
-        miband.connect() //conectam
+        setContentView(R.layout.activity_miband_view)
 
-        if (globalIsKnownDevice.isKnown == false) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                setContentView(R.layout.activity_miband_view)
-            }, 15000) //asteptam dupa caz pana sa incarcam uiul
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                setContentView(R.layout.activity_miband_view)
-            }, 8000)
-        }
+
+
 
     }
 

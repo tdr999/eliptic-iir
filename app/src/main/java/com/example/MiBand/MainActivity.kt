@@ -101,12 +101,40 @@ class MainActivity : AppCompatActivity() {
             if (result.device.address == current_user.device_mac) {
                 stopBleScan() //adauga cod care verifica daca a mai fost conectat
                 flagMondialTimeout.neamConectat = 1 //modificam flagul mondial ptr timeut
+
+                miband_global = MiBand(result.device) //mutat conectarea naine de launch
+                miband_global?.connect()
+
+                //acum aratam ca connecting
+
+                findViewById<TextView>(R.id.loginId).text = "Connecting to..."
+                findViewById<TextView>(R.id.loginId).setTextColor(Color.GREEN)
+                findViewById<TextView>(R.id.usernameID).setTextColor(Color.GREEN)
+
+                //
+
+
                 intent = Intent(
                     globalContext.context, //mizerie de context
                     miband_view_activity::class.java
                 )//nu inteleg exact ce face scope res operatorul aici dar whatever
-                intent.putExtra("bt_device", result.device)
-                startActivity(intent)
+
+
+
+                if (globalIsKnownDevice.isKnown == false) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+
+                        startActivity(intent)
+
+                    }, 15000) //asteptam dupa caz pana sa incarcam uiul
+                } else {
+                    Handler(Looper.getMainLooper()).postDelayed({
+
+                        startActivity(intent)
+                    }, 8000)
+                }
+
+
             }
         }
     }
