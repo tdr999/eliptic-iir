@@ -235,7 +235,9 @@ class MiBand(device: BluetoothDevice) {
                     this@MiBand.distance = distance_value?.toFloat()?.div(100)
 
                 }
-                saveMeasurements()
+                Handler(Looper.getMainLooper()).postDelayed({ //la fiecare 10 secunde
+                    saveMeasurements()   //la fiecare 5 s
+                }, 5000)
 
             }
 
@@ -322,7 +324,7 @@ class MiBand(device: BluetoothDevice) {
                 caracteristicaAuth,
                 true
             ) //enable phone to receive notifications
-////
+            ////
             descAuth.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             referintaGatt.writeDescriptor(descAuth) //configure characteristic on device to send notificaitons
 
@@ -342,12 +344,13 @@ class MiBand(device: BluetoothDevice) {
     }
 
     fun saveMeasurements() { //decomenteaza asta cand vrei sa faci chestii
-//        sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
-//            steps,
-//            distance,
-//            calories,  //de scos caloriile din baza de date online
-//            1, //hardcodat valoarea, schimba la adresa mac
-//            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
+        Log.i("din saveM", "ajuns aici dupa timp")
+                sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
+                    steps,
+                    distance,
+                    calories,  //de scos caloriile din baza de date online
+                    1, //hardcodat valoarea, schimba la adresa mac
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }
 
     fun setCaloriesDistanceMetric() {
@@ -1171,7 +1174,7 @@ class MiBand(device: BluetoothDevice) {
             setDateTime()
         }, 11250)
 
-/*-----------------------*/
+        /*-----------------------*/
         thread (start = true, name = "confirm", block = {
             val urlString =
                 "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
@@ -1206,7 +1209,7 @@ class MiBand(device: BluetoothDevice) {
 
         val miband_service_uuid = UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb")
         val time_characteristic_uuid = UUID.fromString("00002a2b-0000-1000-8000-00805f9b34fb")
-//        val time_characteristic_uuid  = UUID.fromString("00000004-0000-3512-2118-0009AF100700")
+        //        val time_characteristic_uuid  = UUID.fromString("00000004-0000-3512-2118-0009AF100700")
         val cccdUuid =
             UUID.fromString("00002902-0000-1000-8000-00805f9b34fb") //we already know what this is
 
@@ -1223,32 +1226,32 @@ class MiBand(device: BluetoothDevice) {
         Log.i("timp split", "${split_time}")
         var year =
             byteArrayOf(230.toByte(), 0x07) //hardcodam anul pentru moment, nu merita eforturl
-//        //e7 written in int.
+        //        //e7 written in int.
         var day = split_time[2].toInt().toByte()
         var month = split_time[1].toInt().toByte()
         var hours = split_time[3].toInt().toByte()
         var minutes = split_time[4].toInt().toByte()
         var seconds = split_time[5].toInt().toByte()
-//        var fractions = 0x00.toByte()
-//        var adjust_reason = 0x08.toByte()
-//        var caracter_terminal = 0x0c.toByte()
+        //        var fractions = 0x00.toByte()
+        //        var adjust_reason = 0x08.toByte()
+        //        var caracter_terminal = 0x0c.toByte()
 
-//        gatt?.setCharacteristicNotification(time_characteristic, true)
-//
-//       Handler(Looper.getMainLooper()).postDelayed({
-//           desc_time_char?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-//           gatt?.writeDescriptor(desc_time_char)
-//       }, 750)
+        //        gatt?.setCharacteristicNotification(time_characteristic, true)
+        //
+        //       Handler(Looper.getMainLooper()).postDelayed({
+        //           desc_time_char?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+        //           gatt?.writeDescriptor(desc_time_char)
+        //       }, 750)
 
         Handler(Looper.getMainLooper()).postDelayed({
             gatt?.readCharacteristic(time_characteristic)
         }, 500)
 
         Handler(Looper.getMainLooper()).postDelayed({
-//            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
+            //            var numarul_care_trebe_scris = year + month + day + hours + minutes + seconds + fractions + adjust_reason  //+ caracter_terminal
             var numarul_care_trebe_scris =
                 year + month + day + hours + minutes + seconds + byteArrayOf(0x00, 0x00, 0x00, 0x16)
-//            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,     0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
+            //            var numarul_care_trebe_scris = byteArrayOf(226.toByte(), 0x07,0x01,0x1e,0x00,0x00,0x00,     0x00,0x00,0x00,0x16)//mergeeeeeeeeee sa mi bag toata pula merge in sfarsit
 
             Log.i("curr time", "${numarul_care_trebe_scris.toHexString()}")
             time_characteristic?.value = numarul_care_trebe_scris
@@ -1293,18 +1296,18 @@ class MiBand(device: BluetoothDevice) {
 
         //https://dzone.com/articles/miband-3-and-react-native-partnbsp1 inspirat de aici parca
 
-//        val manualCmd = byteArrayOf(0x15, 0x02, 0x00 ) //pentru oprit prima e cu 1 la final a doua cu 0
-//        controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00))
-//        gatt?.writeCharacteristic(controlHeart)
-//        val continuousCmd = byteArrayOf( 0x15, 0x01, 0x01) //2
-//        controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
-//        gatt?.writeCharacteristic(controlHeart)
+        //        val manualCmd = byteArrayOf(0x15, 0x02, 0x00 ) //pentru oprit prima e cu 1 la final a doua cu 0
+        //        controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00))
+        //        gatt?.writeCharacteristic(controlHeart)
+        //        val continuousCmd = byteArrayOf( 0x15, 0x01, 0x01) //2
+        //        controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x01))
+        //        gatt?.writeCharacteristic(controlHeart)
 
-////de aici incepe cod de citire a pulsului remote
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00)) //stop manual
-//            gatt?.writeCharacteristic(controlHeart)
-//        }, 125)
+        ////de aici incepe cod de citire a pulsului remote
+        //        Handler(Looper.getMainLooper()).postDelayed({
+        //            controlHeart?.setValue(byteArrayOf(0x15, 0x02, 0x00)) //stop manual
+        //            gatt?.writeCharacteristic(controlHeart)
+        //        }, 125)
 
         Handler(Looper.getMainLooper()).postDelayed({
             controlHeart?.value = byteArrayOf(0x15, 0x01, 0x00) //stop continuous
@@ -1318,16 +1321,16 @@ class MiBand(device: BluetoothDevice) {
             gatt?.writeCharacteristic(controlHeart)
         }, 500)
 
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
-//            gatt?.writeCharacteristic(controlHeart)
-//        }, 625)
+        //        Handler(Looper.getMainLooper()).postDelayed({
+        //            controlHeart?.setValue(byteArrayOf(0x15, 0x01, 0x00)) //stop continuous
+        //            gatt?.writeCharacteristic(controlHeart)
+        //        }, 625)
 
-//        Log.i("din heart rate", "valoare ${measHeart?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16)}")//bytes primit in int
+        //        Log.i("din heart rate", "valoare ${measHeart?.value?.toHexString()?.split(" ")?.get(1)?.toInt(16)}")//bytes primit in int
 
-//
-//        controlHeart?.value = HEART_RATE_START_COMMAND
-//        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
+        //
+        //        controlHeart?.value = HEART_RATE_START_COMMAND
+        //        gatt?.writeCharacteristic(controlHeart) //folosit sa anuntam ca incepem masuratorile
 
     }
 
@@ -1450,8 +1453,8 @@ class MiBand(device: BluetoothDevice) {
             var bitul_6 = byte_arr?.get(6)?.toInt(16)
             var bitul_9 = byte_arr?.get(9)?.toInt(16)
             var bitul_10 = byte_arr?.get(10)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+            //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+            //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
             var steps_value = bitul_2?.let { bitul_1?.plus(it) }
             var distance_value = bitul_6?.let { bitul_5?.plus(it) }
             var calories = bitul_9?.let { bitul_10?.plus(it) }
@@ -1470,7 +1473,7 @@ class MiBand(device: BluetoothDevice) {
             gatt?.writeDescriptor(descAuth)
         }, 1000)
 
-//        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
+        //        Log.i("din get steps", "valoarea steps ${steps_characteristic?.value}")
 
     }
 
