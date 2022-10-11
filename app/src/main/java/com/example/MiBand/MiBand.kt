@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -28,6 +29,8 @@ class MiBand(device: BluetoothDevice) {
     val dev = device
 
     var ESTE_AUTHENTICAT = 0
+
+    var intent = Intent()
 
     var gatt: BluetoothGatt? = null
 
@@ -114,7 +117,8 @@ class MiBand(device: BluetoothDevice) {
                         setCaloriesDistanceMetric()
                     }
 
-
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    globalContext.context?.startActivity(intent)
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
 
@@ -227,8 +231,8 @@ class MiBand(device: BluetoothDevice) {
                     var bitul_6 = byte_arr?.get(6)?.toInt(16)
                     var bitul_9 = byte_arr?.get(9)?.toInt(16)
                     var bitul_10 = byte_arr?.get(10)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-//            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+                    //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
+                    //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
                     var steps_value = bitul_2?.let { bitul_1?.plus(it) }
                     var distance_value = bitul_6?.let { bitul_5?.plus(it) }
                     var calories = bitul_9?.let { bitul_10?.plus(it) }
@@ -345,12 +349,12 @@ class MiBand(device: BluetoothDevice) {
 
     fun saveMeasurements() { //decomenteaza asta cand vrei sa faci chestii
         Log.i("din saveM", "ajuns aici dupa timp")
-                sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
-                    steps,
-                    distance,
-                    calories,  //de scos caloriile din baza de date online
-                    1, //hardcodat valoarea, schimba la adresa mac
-                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
+                        sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
+                            steps,
+                            distance,
+                            calories,  //de scos caloriile din baza de date online
+                            1, //hardcodat valoarea, schimba la adresa mac
+                            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
     }
 
     fun setCaloriesDistanceMetric() {
@@ -1172,30 +1176,35 @@ class MiBand(device: BluetoothDevice) {
         Handler(Looper.getMainLooper()).postDelayed({
 
             setDateTime()
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            globalContext.context?.startActivity(intent)
+
         }, 11250)
 
         /*-----------------------*/
-        thread (start = true, name = "confirm", block = {
-            val urlString =
-                "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
-            Log.i("url", "${urlString}")
-            val url = URL(urlString)
+                thread (start = true, name = "confirm", block = {
+                    val urlString =
+                        "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
+                    Log.i("url", "${urlString}")
+                    val url = URL(urlString)
 
-            val conn = url.openConnection() as HttpURLConnection
-            conn.doOutput = true
-            conn.requestMethod = "POST"
+                    val conn = url.openConnection() as HttpURLConnection
+                    conn.doOutput = true
+                    conn.requestMethod = "POST"
 
-            conn.setRequestProperty("Content-Type", "application/json; utf-8")
-            conn.setRequestProperty(
-                "X-Api-Key",
-                "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
-            )
+                    conn.setRequestProperty("Content-Type", "application/json; utf-8")
+                    conn.setRequestProperty(
+                        "X-Api-Key",
+                        "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
+                    )
 
-            var responseCode = conn.responseCode
-            Log.i("Response prevConn", responseCode.toString())
-            conn.disconnect()
+                    var responseCode = conn.responseCode
+                    Log.i("Response prevConn", responseCode.toString())
+                    conn.disconnect()
 
-        }).run()
+                }).run()
 
 
 

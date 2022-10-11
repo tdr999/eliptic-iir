@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 //        current_user.device_mac = "FC:71:A2:68:2D:CB"
 //        current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
 //        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
-//        globalIsKnownDevice.isKnown = false
+//        globalIsKnownDevice.isKnown = true
 
         findViewById<TextView>(R.id.usernameID).text = current_user.username
     }
@@ -102,6 +102,16 @@ class MainActivity : AppCompatActivity() {
                 flagMondialTimeout.neamConectat = 1 //modificam flagul mondial ptr timeut
 
                 miband_global = MiBand(result.device) //mutat conectarea naine de launch
+
+
+                intent = Intent(
+                    globalContext.context, //mizerie de context
+                    miband_view_activity::class.java
+                )//nu inteleg exact ce face scope res operatorul aici dar whatever
+
+                miband_global?.intent = intent
+
+
                 miband_global?.connect()
 
                 //acum aratam ca connecting
@@ -113,25 +123,20 @@ class MainActivity : AppCompatActivity() {
                 //
 
 
-                intent = Intent(
-                    globalContext.context, //mizerie de context
-                    miband_view_activity::class.java
-                )//nu inteleg exact ce face scope res operatorul aici dar whatever
 
 
-
-                if (globalIsKnownDevice.isKnown == false) {
-                    Handler(Looper.getMainLooper()).postDelayed({
-
-                        startActivity(intent)
-
-                    }, 15000) //asteptam dupa caz pana sa incarcam uiul
-                } else {
-                    Handler(Looper.getMainLooper()).postDelayed({
-
-                        startActivity(intent)
-                    }, 8000)
-                }
+//                if (globalIsKnownDevice.isKnown == false) {
+//                    Handler(Looper.getMainLooper()).postDelayed({
+//
+////                        startActivity(intent)
+//
+//                    }, 15000) //asteptam dupa caz pana sa incarcam uiul
+//                } else {
+//                    Handler(Looper.getMainLooper()).postDelayed({
+//
+//                        startActivity(intent)
+//                    }, 8000)
+//                }
 
 
             }
