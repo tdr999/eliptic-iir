@@ -115,10 +115,11 @@ class MiBand(device: BluetoothDevice) {
                     if (globalIsKnownDevice.isKnown == false) { //initial setup
 
                         setCaloriesDistanceMetric()
-                    }
+                    }else {
 
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    globalContext.context?.startActivity(intent)
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        globalContext.context?.startActivity(intent)
+                    }
                 }
                 Log.i("carac post", "${valoareHex.take(3)}")
 

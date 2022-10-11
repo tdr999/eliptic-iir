@@ -57,10 +57,10 @@ class MainActivity : AppCompatActivity() {
 
         //teste
 //        current_user.username = "tudor"
-//        current_user.device_mac = "FC:71:A2:68:2D:CB"
+//        current_user.device_mac = "E5:4C:5D:74:BE:7B"
 //        current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
 //        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
-//        globalIsKnownDevice.isKnown = true
+//        globalIsKnownDevice.isKnown = false
 
         findViewById<TextView>(R.id.usernameID).text = current_user.username
     }
@@ -119,25 +119,6 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.loginId).text = "Connecting to..."
                 findViewById<TextView>(R.id.loginId).setTextColor(Color.GREEN)
                 findViewById<TextView>(R.id.usernameID).setTextColor(Color.GREEN)
-
-                //
-
-
-
-
-//                if (globalIsKnownDevice.isKnown == false) {
-//                    Handler(Looper.getMainLooper()).postDelayed({
-//
-////                        startActivity(intent)
-//
-//                    }, 15000) //asteptam dupa caz pana sa incarcam uiul
-//                } else {
-//                    Handler(Looper.getMainLooper()).postDelayed({
-//
-//                        startActivity(intent)
-//                    }, 8000)
-//                }
-
 
             }
         }

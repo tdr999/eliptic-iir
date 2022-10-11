@@ -61,33 +61,18 @@ class miband_view_activity : AppCompatActivity() {
         super.onResume()
 
 
-        if (globalIsKnownDevice.isKnown == false) {
-            Handler(Looper.getMainLooper()).postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
 
-                updateLoop()
-            }, 10000)
-            Handler(Looper.getMainLooper()).postDelayed({
+            updateLoop()
+        }, 1250)
+        Handler(Looper.getMainLooper()).postDelayed({
 
-                getBattery() //get data
-            }, 11000)
-            Handler(Looper.getMainLooper()).postDelayed({
+            getBattery() //get data
+        }, 1500)
+        Handler(Looper.getMainLooper()).postDelayed({
 
-                getSteps()
-            }, 12000)
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-
-                updateLoop()
-            }, 8250)
-            Handler(Looper.getMainLooper()).postDelayed({
-
-                getBattery() //get data
-            }, 8500)
-            Handler(Looper.getMainLooper()).postDelayed({
-
-                getSteps()
-            }, 9000)
-        }
+            getSteps()
+        }, 2000)
 
     }
 
