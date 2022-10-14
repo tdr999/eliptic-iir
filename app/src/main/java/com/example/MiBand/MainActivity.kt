@@ -61,6 +61,8 @@ class MainActivity : AppCompatActivity() {
 //        current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
 //        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
 //        globalIsKnownDevice.isKnown = false
+//        current_user.device_mac = "DB:D3:99:69:1A:EC" //bratara oana
+//        current_user.device_mac = "F0:CA:3F:4E:7B:79"
 
         findViewById<TextView>(R.id.usernameID).text = current_user.username
     }
@@ -90,13 +92,14 @@ class MainActivity : AppCompatActivity() {
         bluetoothAdapter.bluetoothLeScanner
     }
 
-    private val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED)
+    private val settings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
         .build()  //scan settings, which are necessaryva
 
     val scanCallBack = object : ScanCallback() {
 
         override fun onScanResult(callbackType: Int, result: ScanResult) {
 
+            Log.i("mac ", "${result.device.address}")
             if (result.device.address == current_user.device_mac) {
                 stopBleScan() //adauga cod care verifica daca a mai fost conectat
                 flagMondialTimeout.neamConectat = 1 //modificam flagul mondial ptr timeut
@@ -146,10 +149,11 @@ class MainActivity : AppCompatActivity() {
                     Handler(Looper.getMainLooper()).postDelayed({
 
                         finishAffinity() //inchidem app dupa ce vede useru mesaju destul
+                        System.exit(0)
                     },4000)
                 }
 
-            }, 10000)
+            }, 40000)
         //call the bleScanner startScan function
     }
 

@@ -1492,7 +1492,7 @@ class MiBand(device: BluetoothDevice) {
 
     fun connect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dev.connectGatt(globalContext.context, true, gattCallback, TRANSPORT_LE) //autoconnect true poate ancarca mai des
+            dev.connectGatt(globalContext.context, false, gattCallback) //autoconnect true poate ancarca mai des
         } //schimba la true sa se conecteze automat
 
     }

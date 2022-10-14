@@ -29,11 +29,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
-        <activity android:name="com.example.MiBand.miband_view_activity"></activity>
+        <activity android:name="com.example.MiBand.miband_view_activity"
+            android:screenOrientation="landscape"
+            >
+        </activity>
 
 
-
-        <activity android:name="com.example.MiBand.MainActivity">
+        <activity android:name="com.example.MiBand.MainActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
