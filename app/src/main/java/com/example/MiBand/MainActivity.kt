@@ -10,6 +10,7 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.AnimationDrawable
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +21,9 @@ import android.support.annotation.ColorInt
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.widget.CheckedTextView
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 
@@ -28,6 +31,8 @@ import android.widget.Toast
 
 //end of scan result
 
+lateinit var anim : AnimationDrawable
+lateinit var animatie : ImageView
 class MainActivity : AppCompatActivity() {
 
     var globalDevice: BluetoothDevice? = null
@@ -38,10 +43,11 @@ class MainActivity : AppCompatActivity() {
 
 
         setContentView(R.layout.activity_main)
+        window.decorView.setBackgroundColor(Color.WHITE)
 
         requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 200)
 
-//        gloabal_database.insertUser("mihai", "parola_de_test") // test
+        //        gloabal_database.insertUser("mihai", "parola_de_test") // test
         globalContext.setGlobalContext(this.applicationContext)
         // initializam tot ce avem nevoie pentru alerte
 
@@ -56,15 +62,24 @@ class MainActivity : AppCompatActivity() {
 
 
         //teste
-//        current_user.username = "tudor"
-//        current_user.device_mac = "E5:4C:5D:74:BE:7B"
-//        current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
-//        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
-//        globalIsKnownDevice.isKnown = false
-//        current_user.device_mac = "DB:D3:99:69:1A:EC" //bratara oana
-//        current_user.device_mac = "F0:CA:3F:4E:7B:79"
+//                current_user.username = "tudor"
+        //        current_user.device_mac = "E5:4C:5D:74:BE:7B"
+//                current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
+        //        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
+//                globalIsKnownDevice.isKnown = false
+        //        current_user.device_mac = "DB:D3:99:69:1A:EC" //bratara oana
+        //        current_user.device_mac = "F0:CA:3F:4E:7B:79"
 
         findViewById<TextView>(R.id.usernameID).text = current_user.username
+
+
+        animatie = findViewById<ImageView>(R.id.anim).apply {
+            setBackgroundResource(R.drawable.minge)
+            anim = background as AnimationDrawable
+        }
+        animatie.visibility = View.INVISIBLE //facem invis
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -119,9 +134,13 @@ class MainActivity : AppCompatActivity() {
 
                 //acum aratam ca connecting
 
+
                 findViewById<TextView>(R.id.loginId).text = "Connecting to..."
                 findViewById<TextView>(R.id.loginId).setTextColor(Color.GREEN)
                 findViewById<TextView>(R.id.usernameID).setTextColor(Color.GREEN)
+                //anim e animatia iar animatie e imageviewul corespunzator
+                animatie.visibility = View.VISIBLE //vizibila
+                anim.start()
 
             }
         }
