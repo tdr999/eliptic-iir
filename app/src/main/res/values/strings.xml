@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">Xiaomi_CITST</string>
+    <string name="connecting">Connecting to...</string>
+    <string name="scanning">Scanning for</string>
+    <string name="logging_in">Logging in as:</string>
+    <string name="username">Username</string>
+    <string name="device_not_found">Device not found</string>
+    <string name="try_again">Try Again</string>
+    <string name="exit_miband">Exit</string>
+    <string name="steps_miband">Steps</string>
+    <string name="distance_miband">Distance</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

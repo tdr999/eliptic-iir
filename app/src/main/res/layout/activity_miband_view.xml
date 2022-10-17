@@ -40,7 +40,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="EXIT"
+                    android:text="@string/exit_miband"
                     android:gravity="center"
                     android:textSize="40sp"
                     android:textStyle="bold"
@@ -82,7 +82,7 @@
                     android:layout_marginTop="-20dp"
                     android:layout_marginBottom="20dp"
                     android:paddingLeft="20dp"
-                    android:text="Steps"
+                    android:text="@string/steps_miband"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -95,7 +95,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:paddingLeft="20dp"
-                    android:text="Distance"
+                    android:text="@string/distance_miband"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 

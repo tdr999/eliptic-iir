@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                 //acum aratam ca connecting
 
 
-                findViewById<TextView>(R.id.loginId).text = "Connecting to..."
+                findViewById<TextView>(R.id.loginId).text =getString( R.string.connecting)
                 findViewById<TextView>(R.id.loginId).setTextColor(Color.GREEN)
                 findViewById<TextView>(R.id.usernameID).setTextColor(Color.GREEN)
                 //anim e animatia iar animatie e imageviewul corespunzator
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startBleScan() {
-        findViewById<TextView>(R.id.loginId).text = "Scanning for..."
+        findViewById<TextView>(R.id.loginId).text = getString(R.string.scanning)
         findViewById<TextView>(R.id.usernameID).text = current_user.device_mac
         bleScanner.startScan(null, settings, scanCallBack)
         //facem mare inginerie pentru timeout
@@ -160,9 +160,9 @@ class MainActivity : AppCompatActivity() {
                 if (flagMondialTimeout.neamConectat == 0){
                     stopBleScan() //oprim scanarea daca in 10 sec nu am gasit nimic
 
-                    findViewById<TextView>(R.id.loginId).text = "TRY AGAIN!"
+                    findViewById<TextView>(R.id.loginId).text = getString(R.string.try_again)
                     findViewById<TextView>(R.id.loginId).setTextColor(Color.RED)
-                    findViewById<TextView>(R.id.usernameID).text = "Device not found"
+                    findViewById<TextView>(R.id.usernameID).text = getString(R.string.device_not_found)
                     findViewById<TextView>(R.id.usernameID).setTextColor(Color.RED)
                     //                    Toast.makeText(this, "Failed to find device. Try Again!", Toast.LENGTH_LONG).show() //anuntam useru
                     Handler(Looper.getMainLooper()).postDelayed({

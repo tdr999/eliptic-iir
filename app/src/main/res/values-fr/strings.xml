@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xiaomi_CITST</string>
+    <string name="connecting">Connexion a</string>
+    <string name="scanning">Recherche de</string>
+    <string name="logging_in">Se connecter</string>
+    <string name="username">Utilisateur</string>
+    <string name="device_not_found">Appareil n\'ete pas trouve</string>
+    <string name="try_again">Reesayer</string>
+    <string name="exit_miband">Sortir</string>
+    <string name="steps_miband">Pas</string>
+    <string name="distance_miband">Distance</string>
+</resources>
