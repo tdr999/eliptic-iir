@@ -10,21 +10,7 @@
     tools:context="com.example.MiBand.MainActivity">
 
 
-    <TextView
-        android:id="@+id/usernameID"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="400dp"
-        android:alpha="0.88"
-        android:text="@string/username"
-        android:textColor="#00BCD4"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toTopOf="@id/anim"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginId"
-        android:layout_marginTop="100dp"
-         />
+
 
     <TextView
         android:id="@+id/loginId"
@@ -40,14 +26,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <ImageView
         android:id="@+id/anim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/usernameID"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/usernameID"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginId" />
+
+    <TextView
+        android:id="@+id/usernameID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.9"
+        android:gravity="center"
+        android:text="@string/username"
+        android:textColor="#00BCD4"
+        android:textSize="33sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_editor_absoluteY="10dp"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/anim" />
 
 </android.support.constraint.ConstraintLayout>

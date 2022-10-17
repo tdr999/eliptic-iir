@@ -1,0 +1,20 @@
+from PIL import Image
+import os
+
+if os.getcwd() != 'C:\\Users\\tudor_ytmdyrk\\Desktop\\licenta\\app\\src\\main\\res\\drawable':
+	os.chdir('C:\\Users\\tudor_ytmdyrk\\Desktop\\licenta\\app\\src\\main\\res\\drawable')
+
+#pentru fiecare pixel din poza care nu e alb, fa-l culoarea
+
+color = (0, 153, 51) #rgb
+
+for i in os.listdir():
+	if i.startswith("p")  == True:
+		raw_im = Image.open(i)
+		im = raw_im.convert('RGB')
+		for j in range(im.width):
+			for z in range(im.height):
+				if im.getpixel((j, z)) != (255, 255, 255):
+					im.putpixel((j, z), color)
+		im.save(i)
+		im.close()

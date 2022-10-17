@@ -1,0 +1,12 @@
+import os
+
+if os.getcwd() != 'C:\\Users\\tudor_ytmdyrk\\Desktop\\licenta\\app\\src\\main\\res\\drawable':
+	os.chdir('C:\\Users\\tudor_ytmdyrk\\Desktop\\licenta\\app\\src\\main\\res\\drawable')
+
+
+counter = 1
+for i in os.listdir():
+	if i.startswith("f") == True:
+		os.rename(i, "p" + str(counter) + ".png")
+		counter = counter + 1
+	

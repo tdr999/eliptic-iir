@@ -136,8 +136,8 @@ class MainActivity : AppCompatActivity() {
 
 
                 findViewById<TextView>(R.id.loginId).text =getString( R.string.connecting)
-                findViewById<TextView>(R.id.loginId).setTextColor(Color.GREEN)
-                findViewById<TextView>(R.id.usernameID).setTextColor(Color.GREEN)
+                findViewById<TextView>(R.id.loginId).setTextColor(Color.rgb(0, 153, 51))
+                findViewById<TextView>(R.id.usernameID).setTextColor(Color.rgb(0, 153, 51))
                 //anim e animatia iar animatie e imageviewul corespunzator
                 animatie.visibility = View.VISIBLE //vizibila
                 anim.start()
