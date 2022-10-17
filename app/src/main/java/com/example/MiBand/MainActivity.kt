@@ -26,6 +26,7 @@ import android.widget.CheckedTextView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import java.util.*
 
 //the punch through ultimate guide to bluetooth was immensely helpful
 
@@ -41,6 +42,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) { //MAIN FUNCTION DONT TOUCH
         super.onCreate(savedInstanceState)
 
+        ////
+
+
+        val intent = intent
+        // AICI SA TE UITI ANDREI
+        current_user.username = intent.getStringExtra("username")
+        current_user.device_mac = intent.getStringExtra("mac")
+        globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
+        //        val i = Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
+//        current_user.username = "tudor_en"
+        var lang = current_user.username
+        lang = lang!!.split("_")[1]
+
+        val config = resources.configuration //ty stack overflow
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+            config.setLocale(locale)
+        else
+            config.locale = locale
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
+
+
+
+
+        ///
 
         setContentView(R.layout.activity_main)
         window.decorView.setBackgroundColor(Color.WHITE)
@@ -52,13 +82,6 @@ class MainActivity : AppCompatActivity() {
         // initializam tot ce avem nevoie pentru alerte
 
 
-
-        val intent = intent
-        // AICI SA TE UITI ANDREI
-        current_user.username = intent.getStringExtra("username")
-        current_user.device_mac = intent.getStringExtra("mac")
-        globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
-        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
 
 
         //teste

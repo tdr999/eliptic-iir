@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Xiaomi_CITST</string>
+    <string name="device_not_found">Dispozitivul nu a fost gasit</string>
+    <string name="connecting">In proces de conectare</string>
+    <string name="distance_miband">Distanta</string>
+    <string name="steps_miband">Pasi</string>
+    <string name="scanning">Caut dispozitiv</string>
+    <string name="try_again">Reincercati</string>
+    <string name="logging_in">Ma conectez ca</string>
+    <string name="exit_miband">Iesire</string>
+    <string name="username">Utilizator</string>
+</resources>
