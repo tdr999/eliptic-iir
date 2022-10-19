@@ -10,4 +10,5 @@
     <string name="logging_in">Ma conectez ca</string>
     <string name="exit_miband">Iesire</string>
     <string name="username">Utilizator</string>
+    <string name="bat">Baterie</string>
 </resources>

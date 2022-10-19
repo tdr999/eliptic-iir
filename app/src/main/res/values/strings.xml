@@ -9,6 +9,7 @@
     <string name="exit_miband">Exit</string>
     <string name="steps_miband">Steps</string>
     <string name="distance_miband">Distance</string>
+    <string name="bat">Battery</string>
     <!-- Strings used for fragments for navigation -->
 
 </resources>

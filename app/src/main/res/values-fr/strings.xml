@@ -10,4 +10,5 @@
     <string name="exit_miband">Sortir</string>
     <string name="steps_miband">Pas</string>
     <string name="distance_miband">Distance</string>
+    <string name="bat">La batterie</string>
 </resources>
