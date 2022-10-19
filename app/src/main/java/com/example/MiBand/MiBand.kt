@@ -225,18 +225,18 @@ class MiBand(device: BluetoothDevice) {
                 //mai jos e ptr steps characteristic
                 if (characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700")) {
                     var byte_arr = characteristic.value?.toHexString()?.split(" ")
-                    var bitul_2 = byte_arr?.get(2)?.toInt(16)
+                    var byteul_2 = byte_arr?.get(2)?.toInt(16)
                         ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
-                    var bitul_1 = byte_arr?.get(1)?.toInt(16)
-                    var bitul_5 = byte_arr?.get(5)?.toInt(16)
-                    var bitul_6 = byte_arr?.get(6)?.toInt(16)
-                    var bitul_9 = byte_arr?.get(9)?.toInt(16)
-                    var bitul_10 = byte_arr?.get(10)?.toInt(16)
-                    //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-                    //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-                    var steps_value = bitul_2?.let { bitul_1?.plus(it) }
-                    var distance_value = bitul_6?.let { bitul_5?.plus(it) }
-                    var calories = bitul_9?.let { bitul_10?.plus(it) }
+                    var byteul_1 = byte_arr?.get(1)?.toInt(16)
+                    var byteul_5 = byte_arr?.get(5)?.toInt(16)
+                    var byteul_6 = byte_arr?.get(6)?.toInt(16)?.shl(8)
+                    var byteul_9 = byte_arr?.get(9)?.toInt(16)
+                    var byteul_10 = byte_arr?.get(10)?.toInt(16)
+                    //            var byteul_3 = byte_arr?.get(3)?.toInt(16)
+                    //            var byteul_3 = byte_arr?.get(3)?.toInt(16)
+                    var steps_value = byteul_2?.let { byteul_1?.plus(it) }
+                    var distance_value = byteul_6?.let { byteul_5?.plus(it) }
+                    var calories = byteul_9?.let { byteul_10?.plus(it) }
                     this@MiBand.steps = steps_value?.toFloat()
                     this@MiBand.calories = calories?.toFloat()
                     this@MiBand.distance = distance_value?.toFloat()?.div(100)
@@ -1456,18 +1456,18 @@ class MiBand(device: BluetoothDevice) {
                 "valoarea charactertistici ${steps_characteristic?.value?.toHexString()}"
             )
             var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
-            var bitul_2 = byte_arr?.get(2)?.toInt(16)
+            var byteul_2 = byte_arr?.get(2)?.toInt(16)
                 ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
-            var bitul_1 = byte_arr?.get(1)?.toInt(16)
-            var bitul_5 = byte_arr?.get(5)?.toInt(16)
-            var bitul_6 = byte_arr?.get(6)?.toInt(16)
-            var bitul_9 = byte_arr?.get(9)?.toInt(16)
-            var bitul_10 = byte_arr?.get(10)?.toInt(16)
-            //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-            //            var bitul_3 = byte_arr?.get(3)?.toInt(16)
-            var steps_value = bitul_2?.let { bitul_1?.plus(it) }
-            var distance_value = bitul_6?.let { bitul_5?.plus(it) }
-            var calories = bitul_9?.let { bitul_10?.plus(it) }
+            var byteul_1 = byte_arr?.get(1)?.toInt(16)
+            var byteul_5 = byte_arr?.get(5)?.toInt(16)
+            var byteul_6 = byte_arr?.get(6)?.toInt(16)?.shl(8)
+            var byteul_9 = byte_arr?.get(9)?.toInt(16)
+            var byteul_10 = byte_arr?.get(10)?.toInt(16)
+            //            var byteul_3 = byte_arr?.get(3)?.toInt(16)
+            //            var byteul_3 = byte_arr?.get(3)?.toInt(16)
+            var steps_value = byteul_2?.let { byteul_1?.plus(it) }
+            var distance_value = byteul_6?.let { byteul_5?.plus(it) }
+            var calories = byteul_9?.let { byteul_10?.plus(it) }
             this@MiBand.steps = steps_value?.toFloat()
             this@MiBand.calories = calories?.toFloat()
             this@MiBand.distance = distance_value?.toFloat()?.div(100)
