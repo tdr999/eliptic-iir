@@ -50,8 +50,8 @@ class MainActivity : AppCompatActivity() {
         current_user.username = intent.getStringExtra("username")
         current_user.device_mac = intent.getStringExtra("mac")
         globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
-        //        val i = Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
-//        current_user.username = "tudor_en"
+        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
+        //        current_user.username = "tudor_en"
         var lang = current_user.username
         lang = lang!!.split("_")[1]
 
@@ -85,11 +85,11 @@ class MainActivity : AppCompatActivity() {
 
 
         //teste
-//                current_user.username = "tudor"
+        //                current_user.username = "tudor"
         //        current_user.device_mac = "E5:4C:5D:74:BE:7B"
-//                current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
+        //                current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
         //        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
-//                globalIsKnownDevice.isKnown = false
+        //                globalIsKnownDevice.isKnown = false
         //        current_user.device_mac = "DB:D3:99:69:1A:EC" //bratara oana
         //        current_user.device_mac = "F0:CA:3F:4E:7B:79"
 
@@ -158,12 +158,35 @@ class MainActivity : AppCompatActivity() {
                 //acum aratam ca connecting
 
 
+
                 findViewById<TextView>(R.id.loginId).text =getString( R.string.connecting)
                 findViewById<TextView>(R.id.loginId).setTextColor(Color.rgb(0, 153, 51))
                 findViewById<TextView>(R.id.usernameID).setTextColor(Color.rgb(0, 153, 51))
                 //anim e animatia iar animatie e imageviewul corespunzator
                 animatie.visibility = View.VISIBLE //vizibila
                 anim.start()
+
+
+
+                //timeout la conexiune in caz de eroarea 133
+                Handler(Looper.getMainLooper()).postDelayed(
+                    {
+                        if (flagMondialTimeout.neamConectat == 0){
+                            stopBleScan() //oprim scanarea daca in 10 sec nu am gasit nimic
+
+                            findViewById<TextView>(R.id.loginId).text = getString(R.string.try_again)
+                            findViewById<TextView>(R.id.loginId).setTextColor(Color.RED)
+                            findViewById<TextView>(R.id.usernameID).text = getString(R.string.device_not_found)
+                            findViewById<TextView>(R.id.usernameID).setTextColor(Color.RED)
+                            //                    Toast.makeText(this, "Failed to find device. Try Again!", Toast.LENGTH_LONG).show() //anuntam useru
+                            Handler(Looper.getMainLooper()).postDelayed({
+
+                                finishAffinity() //inchidem app dupa ce vede useru mesaju destul
+                                System.exit(0)
+                            },4000)
+                        }
+
+                    }, 20000)
 
             }
         }
@@ -195,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                     },4000)
                 }
 
-            }, 40000)
+            }, 20000)
         //call the bleScanner startScan function
     }
 

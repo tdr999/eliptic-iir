@@ -31,7 +31,7 @@ class miband_view_activity : AppCompatActivity() {
             while (true) {
                 runOnUiThread {
                     findViewById<TextView>(R.id.text_steps).text =
-                        miband_global?.steps.toString() + R.string.steps_miband
+                        miband_global?.steps.toString()+" " + getString(R.string.steps_miband)
                     //                    findViewById<TextView>(R.id.text_calories).text =
                     //                        miband_global?.calories.toString() + " kCal"
                     findViewById<TextView>(R.id.text_distance).text =

@@ -110,6 +110,7 @@ class MiBand(device: BluetoothDevice) {
                 }
                 if (valoareHex[0] == "10" && valoareHex[1] == "03" && valoareHex[2] == "01") {
                     Log.i("if4", "imperecheat succes\n")
+                    flagMondialTimeout.neamConectat = 1
                     ESTE_AUTHENTICAT = 1
 
                     if (globalIsKnownDevice.isKnown == false) { //initial setup
@@ -239,7 +240,7 @@ class MiBand(device: BluetoothDevice) {
                     var calories = byteul_9?.let { byteul_10?.plus(it) }
                     this@MiBand.steps = steps_value?.toFloat()
                     this@MiBand.calories = calories?.toFloat()
-                    this@MiBand.distance = distance_value?.toFloat()?.div(100)
+                    this@MiBand.distance = distance_value?.toFloat()?.div(1000)
 
                 }
 
@@ -1470,7 +1471,7 @@ class MiBand(device: BluetoothDevice) {
             var calories = byteul_9?.let { byteul_10?.plus(it) }
             this@MiBand.steps = steps_value?.toFloat()
             this@MiBand.calories = calories?.toFloat()
-            this@MiBand.distance = distance_value?.toFloat()?.div(100)
+            this@MiBand.distance = distance_value?.toFloat()?.div(1000)
 
             //practic hexii nu bitii
 
