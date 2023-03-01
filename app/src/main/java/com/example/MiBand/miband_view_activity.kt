@@ -25,7 +25,6 @@ class miband_view_activity : AppCompatActivity() {
 
 
     }
-
     fun updateLoop() {
         Thread {
             while (true) {
