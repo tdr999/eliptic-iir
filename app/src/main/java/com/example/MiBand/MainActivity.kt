@@ -17,23 +17,21 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.support.annotation.ColorInt
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.CheckedTextView
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import java.util.*
 
 //the punch through ultimate guide to bluetooth was immensely helpful
 
 //end of scan result
 
-lateinit var anim : AnimationDrawable
-lateinit var animatie : ImageView
+lateinit var anim: AnimationDrawable
+lateinit var animatie: ImageView
+
 class MainActivity : AppCompatActivity() {
 
     var globalDevice: BluetoothDevice? = null
@@ -44,13 +42,12 @@ class MainActivity : AppCompatActivity() {
 
         ////
 
-
         val intent = intent
         // AICI SA TE UITI ANDREI
         current_user.username = intent.getStringExtra("username")
         current_user.device_mac = intent.getStringExtra("mac")
         globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
-        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown.toString()}")
+        Log.i("primit prevConn", "${globalIsKnownDevice.isKnown}")
         //        current_user.username = "tudor_en"
         var lang = current_user.username
         lang = lang!!.split("_")[1]
@@ -67,8 +64,6 @@ class MainActivity : AppCompatActivity() {
             createConfigurationContext(config)
         resources.updateConfiguration(config, resources.displayMetrics)
 
-
-
         ///
 
         setContentView(R.layout.activity_main)
@@ -79,9 +74,6 @@ class MainActivity : AppCompatActivity() {
         //        gloabal_database.insertUser("mihai", "parola_de_test") // test
         globalContext.setGlobalContext(this.applicationContext)
         // initializam tot ce avem nevoie pentru alerte
-
-
-
 
         //teste
         //                current_user.username = "tudor"
@@ -100,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             anim = background as AnimationDrawable
         }
         animatie.visibility = View.INVISIBLE //facem invis
-
 
     }
 
@@ -143,11 +134,10 @@ class MainActivity : AppCompatActivity() {
 
                 miband_global = MiBand(result.device) //mutat conectarea naine de launch
 
-
                 intent = Intent(
                     globalContext.context, //mizerie de context
                     miband_view_activity::class.java
-                )//nu inteleg exact ce face scope res operatorul aici dar whatever
+                ) //nu inteleg exact ce face scope res operatorul aici dar whatever
 
                 miband_global?.intent = intent
 
@@ -156,21 +146,17 @@ class MainActivity : AppCompatActivity() {
 
                 //acum aratam ca connecting
 
-
-
-                findViewById<TextView>(R.id.loginId).text =getString( R.string.connecting)
+                findViewById<TextView>(R.id.loginId).text = getString(R.string.connecting)
                 findViewById<TextView>(R.id.loginId).setTextColor(Color.rgb(0, 153, 51))
                 findViewById<TextView>(R.id.usernameID).setTextColor(Color.rgb(0, 153, 51))
                 //anim e animatia iar animatie e imageviewul corespunzator
                 animatie.visibility = View.VISIBLE //vizibila
                 anim.start()
 
-
-
                 //timeout la conexiune in caz de eroarea 133
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
-                        if (flagMondialTimeout.neamConectat == 0){
+                        if (flagMondialTimeout.neamConectat == 0) {
                             stopBleScan() //oprim scanarea daca in 10 sec nu am gasit nimic
 
                             findViewById<TextView>(R.id.loginId).text = getString(R.string.try_again)
@@ -182,10 +168,11 @@ class MainActivity : AppCompatActivity() {
 
                                 finishAffinity() //inchidem app dupa ce vede useru mesaju destul
                                 System.exit(0)
-                            },4000)
+                            }, 4000)
                         }
 
-                    }, 20000)
+                    }, 20000
+                )
 
             }
         }
@@ -202,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         //facem mare inginerie pentru timeout
         Handler(Looper.getMainLooper()).postDelayed(
             {
-                if (flagMondialTimeout.neamConectat == 0){
+                if (flagMondialTimeout.neamConectat == 0) {
                     stopBleScan() //oprim scanarea daca in 10 sec nu am gasit nimic
 
                     findViewById<TextView>(R.id.loginId).text = getString(R.string.try_again)
@@ -214,10 +201,11 @@ class MainActivity : AppCompatActivity() {
 
                         finishAffinity() //inchidem app dupa ce vede useru mesaju destul
                         System.exit(0)
-                    },4000)
+                    }, 4000)
                 }
 
-            }, 20000)
+            }, 20000
+        )
         //call the bleScanner startScan function
     }
 
@@ -239,7 +227,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(enableLocationIntent)
         }
     }
-
 
 }
 

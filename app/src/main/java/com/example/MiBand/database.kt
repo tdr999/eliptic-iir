@@ -54,7 +54,6 @@ fun sendMeasurementToRemoteDb(
 
 }
 
-
 @SuppressLint("StaticFieldLeak")
 object globalContext {
     var context: Context? = null
@@ -69,7 +68,7 @@ object globalIsKnownDevice { //obiect global sa salvam stdiul unui device la imp
     var isKnown: Boolean = false
 }
 
-object flagMondialTimeout{
+object flagMondialTimeout {
     var neamConectat = 0
 }
 

@@ -1,6 +1,7 @@
 package com.example.MiBand
-import org.junit.Test
+
 import org.junit.Assert.*
+import org.junit.Test
 
 internal class MiBandTest {
     @Test

@@ -3,16 +3,11 @@
 package com.example.MiBand
 
 import android.bluetooth.*
-import android.bluetooth.BluetoothDevice.TRANSPORT_LE
 import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -20,7 +15,6 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import kotlin.concurrent.thread
-import kotlinx.coroutines.delay as delay1
 
 //add user info configuration using nightscout code as inspiration
 
@@ -116,9 +110,9 @@ class MiBand(device: BluetoothDevice) {
                     if (globalIsKnownDevice.isKnown == false) { //initial setup
 
                         setCaloriesDistanceMetric()
-                    }else {
+                    } else {
 
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         globalContext.context?.startActivity(intent)
                     }
                 }
@@ -146,7 +140,6 @@ class MiBand(device: BluetoothDevice) {
                         gatt.writeCharacteristic(authChar)
                     }, 100)
                 }
-
 
                 //aici cred ca era cazu ptr bratara din china
                 if (valoareHex[0] == "10" && valoareHex[1] == "02" && valoareHex[2] == "04") { //acest caz e ptr bratarile din china china
@@ -189,9 +182,8 @@ class MiBand(device: BluetoothDevice) {
                     "wrote characteristic $uuid  value: ${value.toHexString()}"
                 )
             }
-            Log.i("status", "$status" )
+            Log.i("status", "$status")
         }
-
 
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt,
@@ -227,7 +219,7 @@ class MiBand(device: BluetoothDevice) {
                 if (characteristic.uuid == UUID.fromString("00000007-0000-3512-2118-0009af100700")) {
                     var byte_arr = characteristic.value?.toHexString()?.split(" ")
                     var byteul_2 = byte_arr?.get(2)?.toInt(16)
-                        ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+                        ?.shl(8) //il shiftam asa si il adanum cu celalat si aia e
                     var byteul_1 = byte_arr?.get(1)?.toInt(16)
                     var byteul_5 = byte_arr?.get(5)?.toInt(16)
                     var byteul_6 = byte_arr?.get(6)?.toInt(16)?.shl(8)
@@ -243,7 +235,6 @@ class MiBand(device: BluetoothDevice) {
                     this@MiBand.distance = distance_value?.toFloat()?.div(1000)
 
                 }
-
 
             }
 
@@ -312,7 +303,7 @@ class MiBand(device: BluetoothDevice) {
             status: Int
         ) { //aici gasim ce e important la logare
 
-            gatt.printGattTable()//aici e clar conectat deja
+            gatt.printGattTable() //aici e clar conectat deja
             val referintaGatt = gatt
             val serviciuDeConectare = //fa clauza separata pentru authenticare
                 referintaGatt.getService(UUID.fromString("0000fee1-0000-1000-8000-00805f9b34fb"))
@@ -334,7 +325,6 @@ class MiBand(device: BluetoothDevice) {
             descAuth.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             referintaGatt.writeDescriptor(descAuth) //configure characteristic on device to send notificaitons
 
-
             for (i in 1..2) {
 
                 Handler(Looper.getMainLooper()).postDelayed({
@@ -351,12 +341,14 @@ class MiBand(device: BluetoothDevice) {
 
     fun saveMeasurements() { //decomenteaza asta cand vrei sa faci chestii
         Log.i("din saveM", "ajuns aici dupa timp")
-                        sendMeasurementToRemoteDb(current_user.username, //aici se trimit masuratorile la baaz de date citst
-                            steps,
-                            distance,
-                            calories,  //de scos caloriile din baza de date online
-                            1, //hardcodat valoarea, schimba la adresa mac
-                            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString())
+        sendMeasurementToRemoteDb(
+            current_user.username, //aici se trimit masuratorile la baaz de date citst
+            steps,
+            distance,
+            calories,  //de scos caloriile din baza de date online
+            1, //hardcodat valoarea, schimba la adresa mac
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()).toString()
+        )
     }
 
     fun setCaloriesDistanceMetric() {
@@ -390,8 +382,6 @@ class MiBand(device: BluetoothDevice) {
         gatt?.setCharacteristicNotification(miband_config_char, true)
         desc?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
         gatt?.writeDescriptor(desc)
-
-
 
         /*========================DE AICI INCEPE CODUL GENERAT DE GENERATUDOR=================*/
         Handler(Looper.getMainLooper()).postDelayed({
@@ -1179,42 +1169,38 @@ class MiBand(device: BluetoothDevice) {
 
             setDateTime()
 
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
             globalContext.context?.startActivity(intent)
 
         }, 11250)
 
         /*-----------------------*/
-                thread (start = true, name = "confirm", block = {
-                    val urlString =
-                        "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
-                    Log.i("url", "${urlString}")
-                    val url = URL(urlString)
+        thread(start = true, name = "confirm", block = {
+            val urlString =
+                "https://dev-perheart.eu/health/update_mi_band_connected_status/" + current_user.device_mac
+            Log.i("url", "${urlString}")
+            val url = URL(urlString)
 
-                    val conn = url.openConnection() as HttpURLConnection
-                    conn.doOutput = true
-                    conn.requestMethod = "POST"
+            val conn = url.openConnection() as HttpURLConnection
+            conn.doOutput = true
+            conn.requestMethod = "POST"
 
-                    conn.setRequestProperty("Content-Type", "application/json; utf-8")
-                    conn.setRequestProperty(
-                        "X-Api-Key",
-                        "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
-                    )
+            conn.setRequestProperty("Content-Type", "application/json; utf-8")
+            conn.setRequestProperty(
+                "X-Api-Key",
+                "d20b21f0-5f63-11ec-96b3-0242ac1c0002"
+            )
 
-                    var responseCode = conn.responseCode
-                    Log.i("Response prevConn", responseCode.toString())
-                    conn.disconnect()
+            var responseCode = conn.responseCode
+            Log.i("Response prevConn", responseCode.toString())
+            conn.disconnect()
 
-                }).run()
-
-
-
+        }).run()
 
         /*===============Aici Se Termina==========================*/
 
     }
-
 
     fun setDateTime() {
 
@@ -1300,7 +1286,7 @@ class MiBand(device: BluetoothDevice) {
 
         gatt?.setCharacteristicNotification(measHeart, true) // enable recv notif
         descMeasHeart?.value =
-            BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE//config carac de mas sa trimita notif
+            BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE //config carac de mas sa trimita notif
         gatt?.writeDescriptor(descMeasHeart) //1
 
         //comenzile pentru diverse feluri de citire
@@ -1451,14 +1437,14 @@ class MiBand(device: BluetoothDevice) {
 
         gatt?.readCharacteristic(steps_characteristic)
 
-        Handler(Looper.getMainLooper()).postDelayed({//adding a delay of 1s
+        Handler(Looper.getMainLooper()).postDelayed({ //adding a delay of 1s
             Log.i(
                 "din getSteps",
                 "valoarea charactertistici ${steps_characteristic?.value?.toHexString()}"
             )
             var byte_arr = steps_characteristic?.value?.toHexString()?.split(" ")
             var byteul_2 = byte_arr?.get(2)?.toInt(16)
-                ?.shl(8)//il shiftam asa si il adanum cu celalat si aia e
+                ?.shl(8) //il shiftam asa si il adanum cu celalat si aia e
             var byteul_1 = byte_arr?.get(1)?.toInt(16)
             var byteul_5 = byte_arr?.get(5)?.toInt(16)
             var byteul_6 = byte_arr?.get(6)?.toInt(16)?.shl(8)
@@ -1493,7 +1479,11 @@ class MiBand(device: BluetoothDevice) {
 
     fun connect() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dev.connectGatt(globalContext.context, false, gattCallback) //autoconnect true poate ancarca mai des
+            dev.connectGatt(
+                globalContext.context,
+                false,
+                gattCallback
+            ) //autoconnect true poate ancarca mai des
         } //schimba la true sa se conecteze automat
 
     }

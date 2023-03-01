@@ -1,36 +1,27 @@
 package com.example.MiBand
 
 import MiBand.R
-import android.bluetooth.BluetoothDevice
-import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
-import kotlin.system.exitProcess
 
 class miband_view_activity : AppCompatActivity() {
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_miband_view)
 
-
-
-
     }
+
     fun updateLoop() {
         Thread {
             while (true) {
                 runOnUiThread {
                     findViewById<TextView>(R.id.text_steps).text =
-                        miband_global?.steps.toString()+" " + getString(R.string.steps_miband)
+                        miband_global?.steps.toString() + " " + getString(R.string.steps_miband)
                     //                    findViewById<TextView>(R.id.text_calories).text =
                     //                        miband_global?.calories.toString() + " kCal"
                     findViewById<TextView>(R.id.text_distance).text =
@@ -47,7 +38,7 @@ class miband_view_activity : AppCompatActivity() {
 
 
 
-        Thread{ //salveaza la fiecaerr 5 s
+        Thread { //salveaza la fiecaerr 5 s
             while (true) {
                 miband_global?.saveMeasurements()
                 Thread.sleep(5000)
@@ -100,8 +91,6 @@ class miband_view_activity : AppCompatActivity() {
         System.exit(0)
 
     }
-
-
 
     //on back pressed si butonu de back fac acelasi lucru
     fun closeApp(view: View) {
