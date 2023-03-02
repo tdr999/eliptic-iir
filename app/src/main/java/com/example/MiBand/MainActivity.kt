@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         current_user.device_mac = intent.getStringExtra("mac")
         globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
         Log.i("primit prevConn", "${globalIsKnownDevice.isKnown}")
-        //        current_user.username = "tudor_en"
 //        current_user.device_mac = "E5:4C:5D:74:BE:7B"
 //        current_user.username = "tudor_en"
         var lang = current_user.username
