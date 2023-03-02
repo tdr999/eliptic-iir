@@ -8,6 +8,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
+import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.AnimationDrawable
@@ -18,6 +19,8 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.support.annotation.RequiresApi
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.ContextCompat.getSystemService
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -49,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         globalIsKnownDevice.isKnown = intent.getStringExtra("previousConnected").toBoolean()
         Log.i("primit prevConn", "${globalIsKnownDevice.isKnown}")
         //        current_user.username = "tudor_en"
+//        current_user.device_mac = "E5:4C:5D:74:BE:7B"
+//        current_user.username = "tudor_en"
         var lang = current_user.username
         lang = lang!!.split("_")[1]
 
@@ -71,19 +76,8 @@ class MainActivity : AppCompatActivity() {
 
         requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 200)
 
-        //        gloabal_database.insertUser("mihai", "parola_de_test") // test
         globalContext.setGlobalContext(this.applicationContext)
         // initializam tot ce avem nevoie pentru alerte
-
-        //teste
-        //                current_user.username = "tudor"
-        //        current_user.device_mac = "E5:4C:5D:74:BE:7B"
-        //                current_user.device_mac = "DC:D9:40:49:26:EB" //chinezeasca
-        //        current_user.device_mac = "CC:71:A2:68:2D:CB" //test timeout
-        //                globalIsKnownDevice.isKnown = false
-        //        current_user.device_mac = "DB:D3:99:69:1A:EC" //bratara oana
-        //        current_user.device_mac = "F0:CA:3F:4E:7B:79"
-
         findViewById<TextView>(R.id.usernameID).text = current_user.username
 
 
@@ -184,7 +178,8 @@ class MainActivity : AppCompatActivity() {
 
     fun startBleScan() {
         findViewById<TextView>(R.id.loginId).text = getString(R.string.scanning)
-        findViewById<TextView>(R.id.usernameID).text = current_user.device_mac
+        findViewById<TextView>(R.id.usernameID).text = current_user.device_mac.toString()
+
         bleScanner.startScan(null, settings, scanCallBack)
         //facem mare inginerie pentru timeout
         Handler(Looper.getMainLooper()).postDelayed(
@@ -217,16 +212,26 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
-    private fun promptEnableLocation() {
+//    @RequiresApi(Build.VERSION_CODES.P)
+//    private fun promptEnableLocation() {
+//
+//        val locManager: LocationManager =
+//            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        if (!locManager.isLocationEnabled) {
+//            val enableLocationIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+//            startActivity(enableLocationIntent)
+//        }
+//    }
+//
 
+    private fun promptEnableLocation() {
         val locManager: LocationManager =
             getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!locManager.isLocationEnabled) {
+        if (!locManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             val enableLocationIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivity(enableLocationIntent)
         }
     }
 
-}
 
+}
