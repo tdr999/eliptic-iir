@@ -1,4 +1,0 @@
-\babel@toc {english}{}\relax 
-\contentsline {chapter}{Lista figurilor}{iii}{chapter*.2}%
-\contentsline {chapter}{Lista tabelelor}{iv}{chapter*.3}%
-\contentsline {chapter}{\numberline {1}Connecting to the Pulse Oximeter}{v}{chapter.1}%
