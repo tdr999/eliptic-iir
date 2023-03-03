@@ -231,6 +231,4 @@ class MainActivity : AppCompatActivity() {
             startActivity(enableLocationIntent)
         }
     }
-
-
 }

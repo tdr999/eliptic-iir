@@ -27,13 +27,14 @@
 
     <ImageView
         android:id="@+id/anim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/usernameID"
+        android:layout_width="70dp"
+        android:layout_height="81dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loginId" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameID"
+        app:layout_constraintVertical_bias="0.155" />
 
     <TextView
         android:id="@+id/usernameID"
